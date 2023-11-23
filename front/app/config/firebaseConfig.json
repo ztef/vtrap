@@ -1,0 +1,13 @@
+{
+"credentials":{
+    "apiKey": "AIzaSyAtFQf2c8ohsCHXHJnYQB0pig82Lb-3F-Q",
+    "authDomain": "vixroader.firebaseapp.com",
+    "projectId": "vixroader",
+    "storageBucket": "vixroader.appspot.com",
+    "messagingSenderId": "445371639222",
+    "appId": "1:445371639222:web:b8607e42343fd0edca4d17",
+    "measurementId": "G-QE6S1YSDT4"
+  },
+  "collection":"trips",
+  "collectionName":"Mobiles en Ruta"
+}

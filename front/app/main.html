@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+
+<!-- 
+    
+
+    VISUAL INTERACTION SYSTEMS
+
+    Esqueleto generico para aplicaciones.
+
+
+-->
+
+
+
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+
+  <link href="https://fonts.googleapis.com/css?family=Cabin" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Coda:400,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Lora" rel="stylesheet">
+        <link rel="stylesheet" href="stylesheets/all.min.css">
+        <link rel="stylesheet" href="stylesheets/bootstrap.min.css" />
+        <link rel="stylesheet" href="stylesheets/style.css" />
+
+        <script type="text/javascript" src="javascripts/config.js"></script>
+        <script type="text/javascript" src="javascripts/libs/jquery-3.1.1.min.js"></script>
+        <script type="text/javascript" src="javascripts/libs/popper.min.js"></script>
+        <script type="text/javascript" src="javascripts/libs/bootstrap.min.js"></script>
+        <script type="text/javascript" src="javascripts/libs/three.min.js"></script>
+        <!-- <script type="text/javascript" src="javascripts/libs/CSS3DRenderer.js"></script> -->
+        <script type="text/javascript" src="javascripts/libs/OrbitControls.js"></script>
+        <script type="text/javascript" src="javascripts/libs/TrackballControls.js"></script>
+        <script type="text/javascript" src="javascripts/libs/VOne.min.js"></script>
+        <script type="text/javascript" src="javascripts/libs/Tween.js"></script>
+
+        <script type="text/javascript" src="javascripts/data.js"></script>
+        <!-- <script type="text/javascript" src="javascripts/rtClient.js"></script> -->
+        <!-- <script type="text/javascript" src="javascripts/rtManager.js"></script> -->
+        <script type="text/javascript" src="javascripts/helperFunctions.js"></script>
+        <script type="text/javascript" src="javascripts/visualization.js"></script>
+        <script type="text/javascript" src="javascripts/init.js"></script>
+
+  <script src="../viOne/js/jquery/jquery.min.js"></script>
+  <script src="../viOne/view/vi_tooltipHelpers.js"></script>
+
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <link rel="stylesheet" href="../styles/jquery/ui/1.12.1/themes/base/jquery-ui.css">
+  
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+<link rel="stylesheet" href="styles.css"> 
+
+
+</head>
+<body>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "/front/app/build/three.module.js",
+        "three/addons/": "/front/app/build/jsm/"
+      }
+    }
+  </script>
+
+
+
+  <div class="logo-container">
+    <img src="./assets/sundek.png" alt="Logo">
+  </div>
+
+
+
+   <!-- CONTENEDOR DE MAPA -->
+  <div id="mapContainer"></div>
+
+  
+  <!-- MENU DE OBJETOS DE ESTUDIO -->
+  <div id="objects_menu"></div> 
+
+   
+  <!-- VENTANA DE DETALLE AL SELECCIONAR UN OBJETO DE ESTUDIO -->
+
+
+  <div id="detail"  style="width: 800px; height: 600px;">       
+  </div>
+
+  <div id="detail1"  style="width: 800px; height: 600px;">       
+  </div>
+
+  <!-- MODULO PRINCIPAL -->
+  <script type="module">
+
+
+    // Formatea div de objetos para que sea una ventana :
+    vix_tt_formatToolTip("#objects_menu","Objetos",500,350);
+    vix_positionDiv("objects_menu",10,50);
+
+
+    // Formatea el DIV de detalle como una ventana flotante :
+
+    vix_tt_formatToolTip("#detail","Detalles",500,350);
+    vix_positionDiv("detail",70,60);
+
+    vix_tt_formatToolTip("#detail1","Detalles",500,350);
+    vix_positionDiv("detail1",70,60);
+     
+    
+
+    //  IMPORTA LIBRERIAS viONE
+    import { vi_ObjectModel, vi_MapFactory, vi_RemoteListenerFactory, vi_ObjectGridView, vi_Controller, vi_DataSource} from '../viOne/all.js';
+
+
+   // CREA UN CONTROLADOR
+      const controller = new vi_Controller();
+    
+   // CREA UN MODELO DE OBJETOS 
+      const objectModel = new vi_ObjectModel(controller);
+
+   // CREA UN MAPA TIPO Cesium
+      const mapFactory = new vi_MapFactory();
+      const map = mapFactory.createMap("Cesium", controller);
+   
+   // CREA UNA FABRICA PARA LISTENERS REMOTOS   
+      const remoteListenerFactory = new vi_RemoteListenerFactory();
+
+   // CREA UN DATASOURCE para trips
+  //    const tripDataSource = new vi_DataSource('Firebase', './config/firebaseConfig.json');
+
+   // CREA UN DATASOURCE PARA CEDIS   
+      const cedisDataSource = new vi_DataSource('GoogleSheet', './config/googlesheetconfig.json');
+
+
+   // DECLARA LISTENERS PARA Mobiles y CEDIS   
+      var mobilesRemoteListener;
+      var cedisRemoteListener;
+
+     
+   // Cuando carga el DOM completo    
+    document.addEventListener("DOMContentLoaded", function () {
+        
+     
+
+
+
+      // Usa el div para que el controlador actualice los datos de los objetos de manera continua en una tabla dentro del div
+      // Nota :  Usa funciones auxiliares para detallar el header y las filas de la tabla
+      const gridView = new vi_ObjectGridView('objects_menu',controller, headerFunction, rowFunction);
+        
+      // Carga Mapa y activa listener continuo
+      map.load().then(()=>{
+         //   mobilesRemoteListener = remoteListenerFactory.createRemoteListener(tripDataSource,objectModel);
+            cedisRemoteListener = remoteListenerFactory.createRemoteListener(cedisDataSource,objectModel);
+          })
+   
+    });
+
+ 
+    // AGREGA COMO OBSERVADOR A LA FUNCION BLOC  (BUSINESS LOGC COMPONENT)
+
+    controller.addObserver("objectSelected",BLOC);
+
+
+    /*
+    
+          BLOC PRINCIPAL : BUSINESS LOGIC 
+
+
+          Recibe eventos y toma decisiones
+
+    */
+
+    function BLOC(event, data){
+
+        var action;
+
+        switch (event) {
+
+
+        // Al seleccionar un objeto :  
+        case 'objectSelected':
+
+
+              let object = objectModel.readObject(data.id);
+          
+
+              // Si se trata de un objeto estatico :
+              if(object.collection == 'cedis') {
+                console.log("CEDIS SELECCIONADO");
+
+              }
+
+              // Si se trata de un objeto dinamico
+              if(object.collection == 'trips') {
+
+                mobilesRemoteListener.getDocument('units','82hBiiCS1dKo14spE3AE')
+                .then((documentData) => {
+                  if (documentData) {
+                    // Handle the retrieved document data here
+                    console.log('Document Data:', documentData);
+                  } else {
+                    console.log('Document not found');
+                  }
+                })
+                .catch((error) => {
+                  console.error('Error getting document:', error);
+                });
+
+
+              } 
+
+
+
+           break;
+
+        default:
+          throw new Error(`Unsupported event: ${event}`);
+        }
+
+        return action;
+    }
+
+
+
+    /* 
+    
+        Funciones Auxiliares 
+
+    */
+
+
+    // Detalla el header de la tabla
+    function headerFunction(){
+
+      const html = `
+      <th style="color: white;">ID</th>
+      <th style="color: white;">Collection</th>
+      <th style="color: white;">Facility</th>
+      <th style="color: white;">Location</th>
+      <th style="color: white;">Alerts</th>
+      <th style="color: white;">Contact</th>
+      `;
+
+      return (html);
+
+
+    }
+
+
+    // Detalla el contenido de cada fila en la tabla de seleccion de objetos
+
+    function rowFunction(id, collection, data){
+      
+      // Extrae los campos a utilizar 
+      const { destination, tripState, unit } = data;
+  
+      // Usa un circulo de color basado en el campo trip state
+      let circleColor = "red"; // Default circle color
+  
+      if (tripState === "loading") {
+        circleColor = "green"; 
+      } else if (tripState === "Completed") {
+        circleColor = "blue"; 
+      }  
+  
+      // Crea HTML de detalle
+     
+      const html = `
+      <td>
+        <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="10" cy="10" r="8" fill="${circleColor}" />
+        </svg>
+      </td>
+      <td style="color: white;">Type. ${collection}</td>
+
+      <td style="color: white;">Facility No. ${id}</td>
+      <td style="color: white;"> ${destination}</td>
+      <td style="color: white;"> ${name}</td>
+      
+      `;
+
+      return (html);
+
+    }
+
+
+   
+
+     // initApp();
+
+
+  </script>
+
+
+<script type="module">
+ 
+
+ /*
+ import { CustomGeometryRenderer } from '/viOne/view/vi_geometry_render.js';
+ import {vi_geometry_factory } from '/viOne/view/vi_geometry_factory.js';
+
+  const geom_factory = new vi_geometry_factory();
+
+  const customGeometry = geom_factory.createGeometry('Circle', [20,32,10,10]);
+  const renderer = new CustomGeometryRenderer('detail', customGeometry);
+
+
+  const esfera1 =  geom_factory.createGeometry('Sphere', [.2,32,32]);
+  const o1 = geom_factory.createObject(esfera1, {x:0, y:0, z:5} , 0x00ff00);
+  const vo1 =  geom_factory.createVisualObject(o1,'objeto1');
+
+  renderer.addGeometry(vo1);
+
+
+  
+  renderer.addGLTFModel('./assets/lacomer.glb', 10);
+*/
+
+import { vi_3DSceneRenderer } from '../viOne/view/vi_scene_render.js';
+
+const scene = new vi_3DSceneRenderer('detail');
+scene.loadGLTFModelc('./assets/lacomerx.glb');
+
+
+const scene1 = new vi_3DSceneRenderer('detail1');
+//scene1.loadOBJModel('./assets/lacomerold.obj','./assets/lacomerold.mtl',1);
+//scene1.loadOBJModel('./assets/tiendas1.obj','./assets/tiendas1.mtl',1);
+scene1.loadOBJModel('./assets/sundek_inventory.obj','./assets/sundek_inventory.mtl',1);
+
+
+</script>
+
+		
+
+   
+
+
+</body>
+</html>
