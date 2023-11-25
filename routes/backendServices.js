@@ -25,7 +25,7 @@ function isAuthenticated(req, res, next) {
   next();
 };
 
-router.use(isAuthenticated);
+//router.use(isAuthenticated);
 
 
 const { googleCreds } = require('../GoogleAuthConfig');
