@@ -31,7 +31,7 @@ function isAuthenticated(req, res, next) {
 const { googleCreds } = require('../GoogleAuthConfig');
 
 
-
+console.log(googleCreds);
 
 async function getFromSheet(data){
 
