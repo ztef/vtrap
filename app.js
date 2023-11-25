@@ -23,8 +23,8 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');    // Router de Inicio
 var usersRouter = require('./routes/users');    // Router de Usuarios
 var authRouter = require('./routes/auth');      // Ruta de Autentificacion
-var frontRouter = require('./routes/front');    // Ruta de Fron End
-var sheetRouter = require('./routes/backendServices');   // Ruta de Servicios de backend
+var frontRouter = require('./routes/front');    // Ruta de Front End
+var backendRouter = require('./routes/backendServices');   // Ruta de Servicios de backend
 
 // initialize express
 var app = express();
@@ -57,7 +57,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/auth', authRouter);
-app.use('/sheets',sheetRouter);
+app.use('/api',backendRouter);
 app.use('/front', frontRouter);
 
 

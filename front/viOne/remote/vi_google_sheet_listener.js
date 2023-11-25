@@ -23,7 +23,7 @@ class vi_GoogleSheetListener extends vi_RemoteListener {
     try {
       console.log("Fetch de datos de google");
       // Make an HTTP GET request to your Node.js route
-      const response = await fetch('/sheets/getFromSheet?sheet='+this.dataSource.config.SPREADSHEET_ID);
+      const response = await fetch('/api/getFromSheet?sheet='+this.dataSource.config.SPREADSHEET_ID);
   
       if (response.ok) {
         // Parse the response as JSON

@@ -11,8 +11,8 @@ var express = require('express');
 
 const AuthProviderFactory = require('../auth/AuthProviderFactory');
 
-// Use AzureAuthProvider Simple | azure
-const authProvider = AuthProviderFactory.createProvider('azure');
+// Use AzureAuthProvider simple | azure
+const authProvider = AuthProviderFactory.createProvider('simple');
 
 
 const { REDIRECT_URI, POST_LOGOUT_REDIRECT_URI } = require('../AzureAuthConfig');

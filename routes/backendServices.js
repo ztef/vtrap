@@ -8,22 +8,30 @@
  */
 
 var express = require('express');
+const swaggerUi = require('swagger-ui-express');
+const specs = require('./swagger');
+const fs = require('fs'); 
+require('dotenv').config();
+
 const sheets = require('google-spreadsheet');
 var router = express.Router();
 
 
-const fs = require('fs');
+function isAuthenticated(req, res, next) {
+  if (!req.session.isAuthenticated) {
+      return res.redirect('/auth/signin'); // redirect to sign-in route
+  }
 
-try {
-  // Read the JSON file
-  const rawData = fs.readFileSync('./key.json');
-  var creds = JSON.parse(rawData);
-  
-  // Use the `creds` object
-  //console.log(creds);
-} catch (error) {
-  console.error('Error reading JSON file:', error);
-}
+  next();
+};
+
+router.use(isAuthenticated);
+
+
+const { googleCreds } = require('../GoogleAuthConfig');
+
+
+
 
 async function getFromSheet(data){
 
@@ -36,7 +44,7 @@ async function getFromSheet(data){
   
     
     const doc = new sheets.GoogleSpreadsheet(SPREADSHEET_ID);
-    await doc.useServiceAccountAuth(creds);
+    await doc.useServiceAccountAuth(googleCreds);
     
     
     await doc.loadInfo();
@@ -67,6 +75,42 @@ async function getFromSheet(data){
           return out;
     }
   
+
+
+/**
+ * @swagger
+ * /getFromSheet:
+ *   get:
+ *     summary: Obtiene data de una hoja de calculo en GoogleSheets.
+ *     description: Obtiene datos al pasar como parametro el ID de la hoja de calculo.
+ *     parameters:
+ *       - in: query
+ *         name: fechaInicio
+ *         description: The start date for the query.
+ *         required: true
+ *         schema:
+ *           type: string
+ *       
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   col1:
+ *                     type: string
+ *                   col2:
+ *                     type: string
+ *       400:
+ *         description: Bad request
+ */
+
+
+
     router.get('/getFromSheet',async (req, res) => {
   
       console.log("Recibiendo Info : ");
@@ -82,6 +126,6 @@ async function getFromSheet(data){
     });
 
 
-
+    router.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 module.exports = router;

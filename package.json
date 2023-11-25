@@ -17,6 +17,8 @@
     "google-spreadsheet": "^3.3.0",
     "hbs": "^4.2.0",
     "http-errors": "^2.0.0",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0"
   }
 }

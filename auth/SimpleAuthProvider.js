@@ -36,6 +36,7 @@ class SimpleAuthProvider {
     redirectToAuthCodeUrl() {
         return async (req, res, next) => {
           
+                req.session.isAuthenticated = true;
                 res.redirect('/front/app/main.html');
             
         };
