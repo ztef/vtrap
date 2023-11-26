@@ -41,7 +41,10 @@ async function getFromSheet(data){
     //var SPREADSHEET_ID = '1jcCmQGVd8e0iWGSKs9koz2wNKjgDQAdV4KRbL90eCyI';
     
     var SPREADSHEET_ID = data.sheet;
-  
+
+
+    console.log("Hoja : ",SPREADSHEET_ID);
+    console.log("Creds :", googleCreds);
     
     const doc = new sheets.GoogleSpreadsheet(SPREADSHEET_ID);
     await doc.useServiceAccountAuth(googleCreds);
