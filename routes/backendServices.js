@@ -48,7 +48,7 @@ try {
 
 
 
-console.log(googleCreds);
+//console.log(googleCreds);
 
 async function getFromSheet(data){
 
@@ -65,7 +65,7 @@ async function getFromSheet(data){
     console.log("Creds old :", creds);
     
     const doc = new sheets.GoogleSpreadsheet(SPREADSHEET_ID);
-    await doc.useServiceAccountAuth(creds);
+    await doc.useServiceAccountAuth(googleCreds);
     
     
     await doc.loadInfo();
