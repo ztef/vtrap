@@ -30,6 +30,7 @@ function isAuthenticated(req, res, next) {
 
 const { googleCreds } = require('../GoogleAuthConfig');
 
+/*
 try {
   // Read the JSON file
   const rawData = fs.readFileSync('./key.json');
@@ -40,6 +41,7 @@ try {
 } catch (error) {
   console.error('Error reading JSON file:', error);
 }
+*/
 
 
 
@@ -60,9 +62,9 @@ async function getFromSheet(data){
     var SPREADSHEET_ID = data.sheet;
 
 
-    console.log("Hoja : ",SPREADSHEET_ID);
-    console.log("Creds :", googleCreds);
-    console.log("Creds old :", creds);
+    //console.log("Hoja : ",SPREADSHEET_ID);
+    //console.log("Creds :", googleCreds);
+    //console.log("Creds old :", creds);
     
     const doc = new sheets.GoogleSpreadsheet(SPREADSHEET_ID);
     await doc.useServiceAccountAuth(googleCreds);
