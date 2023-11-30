@@ -317,7 +317,7 @@ class vi_CesiumMap extends vi_Map {
             this.tooltipElement.style.left = `${movement.endPosition.x}px`;
             this.tooltipElement.style.top = `${movement.endPosition.y}px`;
           } else {
-            this.tooltipElement.style.display = 'none';
+            //this.tooltipElement.style.display = 'none';
           }
         },
         Cesium.ScreenSpaceEventType.MOUSE_MOVE

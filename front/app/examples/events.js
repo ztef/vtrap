@@ -31,9 +31,28 @@ const windowFormater = new vi_WindowFormater();
  const cedisRemoteListener = remoteListenerFactory.createRemoteListener(sucursalesDataSource,objectModel);
 
 
+ controller.addObserver("objectSelected",BLOC);
 
 
+ function BLOC(event, data){
+
+   
+   switch (event) {
+    // Al seleccionar un objeto :  
+    case 'objectSelected':
 
 
+         let object = objectModel.readObject(data.id);
+     
+         alert(object.data.fields.nombre);
+          
+      break;
+
+    default:
+      throw new Error(`Unsupported event: ${event}`);
+    }
+
+   
+}
 
 
