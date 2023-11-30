@@ -9,12 +9,24 @@
 
 class vi_ObjectGridView {
   
-  constructor(divID, controller, headerFunction, cellFunction ) {
+  constructor(divID, controller, headerFunction , rowFunction ) {
     // ...
 
     this.controller = controller;
+    
+    if(headerFunction){
     this.headerFunction = headerFunction;
-    this.cellFunction = cellFunction;
+    } else {
+      this.headerFunction = this.defaultHeaderFunction;
+    }
+
+    if(rowFunction){
+      this.rowFunction = rowFunction;
+      } else {
+        this.rowFunction = this.defaultRowFunction;
+      }
+    
+    
 
     this.controller.addObserver('objectSelected', this.handleObjectSelected.bind(this));
     this.controller.addObserver('objectAdded', this.addObject.bind(this));
@@ -29,19 +41,12 @@ class vi_ObjectGridView {
       this.content.style.height = '90%';
 
      
-
-
       this.table = document.createElement("table");
       this.table.style.borderCollapse = "collapse";
 
+      this.hasRecords = false;
 
-      const header = document.createElement("tr");
-      header.innerHTML = this.headerFunction();
-  
-      this.table.appendChild(header);
       
-
-
       this.content.appendChild(this.table);
 
 
@@ -51,10 +56,41 @@ class vi_ObjectGridView {
 
     }
 
-
-   
-
+    defaultHeaderFunction(id, collection, data){
   
+
+        var htmlOut = '';
+        for(let field in data.fields){
+          if(data.fields.hasOwnProperty(field) ){
+          htmlOut = htmlOut + `<th style="color: white;">${field}</th>`;
+        }
+        }
+        
+        return htmlOut;
+
+    }
+
+    defaultRowFunction(id, collection, data){
+  
+
+      var htmlOut = '';
+      for(let field in data.fields){
+        if(data.fields.hasOwnProperty(field) ){
+        htmlOut = htmlOut + `<th style="color: white;">${data.fields[field]}</th>`;
+      }
+      }
+      
+      return htmlOut;
+
+  }
+
+
+    createHeader(id, collection, data){
+      const header = document.createElement("tr");
+      header.innerHTML = this.headerFunction(id, collection, data);
+      this.table.appendChild(header);
+    }
+   
 
     /*
     
@@ -94,7 +130,7 @@ class vi_ObjectGridView {
     createObjectHtml(id, collection, data) { 
 
 
-      return this.cellFunction(id, collection, data);
+      return this.rowFunction(id, collection, data);
       
       
     }
@@ -103,9 +139,19 @@ class vi_ObjectGridView {
 
       console.log("GRID : NUEVO SI LLEGA",newObject);
 
+     
+
       let id = newObject.id;
       let data = newObject.data;
       let collection = newObject.collection;
+
+       // Si es el primer registro lo aprovecha para crear el header :
+       if(!this.hasRecords){
+        this.createHeader(id, collection,data);
+      }
+
+      // Ya hay al menos un registro
+      this.hasRecords = true;
 
      
       const row = document.createElement("tr");

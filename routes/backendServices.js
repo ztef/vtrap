@@ -47,14 +47,11 @@ try {
 
 
 
-
-
-
 //console.log(googleCreds);
 
 async function getFromSheet(data){
 
-    console.log("Leyendo google sheet");
+    console.log("Leyendo google sheet", data.sheet);
     
     
     //var SPREADSHEET_ID = '1jcCmQGVd8e0iWGSKs9koz2wNKjgDQAdV4KRbL90eCyI';

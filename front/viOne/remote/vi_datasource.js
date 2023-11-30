@@ -1,11 +1,12 @@
 class vi_DataSource {
-    constructor(sourceType, configPath) {
+    constructor(sourceType, config, configPath) {
         this.sourceType = sourceType;
         this.configPath = configPath;
-        this.config = null;
+        this.config = config;
 
-        // Load the configuration in the constructor
-        this.loadConfig();
+        //if(this.config == '')
+        //   this.loadConfig();
+
     }
 
     // Method to load the configuration from the specified path

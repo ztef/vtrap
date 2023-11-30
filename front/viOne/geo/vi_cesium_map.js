@@ -24,7 +24,7 @@ class vi_CesiumMap extends vi_Map {
       
     }
   
-    async load() {
+    async loadMap(map_window) {
 
       await this.loadExternalFiles();
   
@@ -35,7 +35,7 @@ class vi_CesiumMap extends vi_Map {
 
       
 
-            this.viewer = new Cesium.Viewer('mapContainer', {
+            this.viewer = new Cesium.Viewer(map_window, {
                 terrain: Cesium.Terrain.fromWorldTerrain(),
                 pickEnabled: true,
                 timeline: false,
@@ -84,16 +84,14 @@ class vi_CesiumMap extends vi_Map {
 
     async loadExternalFiles() {
       // Define the URLs of the JavaScript and CSS files
-     // const cesiumJsUrl =
-     //   'http://cesium-dev.s3-website-us-east-1.amazonaws.com/cesium/worker-inline/Build/Cesium/Cesium.js';
+      //const cesiumJsUrl =
+     //   'http://cesium-dev.s3-website-us-east-1.amazonaws.com/cesium/worker-inline/Build';
      // const cesiumCssUrl =
      //   'http://cesium-dev.s3-website-us-east-1.amazonaws.com/cesium/worker-inline/Build/Cesium/Widgets/widgets.css';
   
-    const cesiumJsUrl =
-        '/front/viOne/js/Cesium/Cesium.js';
+      const cesiumJsUrl = '/front/viOne/js/Cesium/Cesium.js';
 
-      const cesiumCssUrl =
-        '/front/viOne/js/Cesium/Widgets/widgets.css';
+      const cesiumCssUrl = '/front/viOne/js/Cesium/Widgets/widgets.css';
   
 
 
@@ -201,8 +199,8 @@ class vi_CesiumMap extends vi_Map {
     addObject(event, newObject) {
 
       const id = newObject.id; // Use the mobile object's ID as the cylinder ID
-      const initialLatitude = newObject.data.positionCurrent._lat; // Use the mobile object's latitude
-      const initialLongitude = newObject.data.positionCurrent._long; // Use the mobile object's longitude
+      const initialLatitude = newObject.data.position._lat; // Use the mobile object's latitude
+      const initialLongitude = newObject.data.position._long; // Use the mobile object's longitude
     
 
          

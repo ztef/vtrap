@@ -37,7 +37,7 @@ class SimpleAuthProvider {
         return async (req, res, next) => {
           
                 req.session.isAuthenticated = true;
-                res.redirect('/front/app/main.html');
+                res.redirect('/');
             
         };
     }
@@ -62,7 +62,8 @@ class SimpleAuthProvider {
     logout(options = {}) {
         return (req, res, next) => {
              
-                res.redirect('/');
+             req.session.isAuthenticated = false;
+             res.redirect('/');
         }
     }
 

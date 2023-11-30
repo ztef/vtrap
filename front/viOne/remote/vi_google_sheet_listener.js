@@ -33,7 +33,11 @@ class vi_GoogleSheetListener extends vi_RemoteListener {
         console.log("DATOS DE LA HOJA DE CALCULO");
         console.log(data);
   
-        // TEMPORAL , Esto es dependiente de la aplicacion
+        // TODOS LOS REGISTROS DEBEN TENER :
+            // id
+            // type (opcional)
+            // position (_lat, _long) (opcional)
+
         for (const key in data) {
           if (data.hasOwnProperty(key)) {
             const element = data[key];
@@ -41,20 +45,19 @@ class vi_GoogleSheetListener extends vi_RemoteListener {
             const record = {
                 id:element.id,
                 type: element.type,
-                positionCurrent:{
+                position:{
                     _lat: element._lat,
                     _long: element._long
                 },
-                destination:element.destination,
-                tripState:element.tripstate,
-                unit:element.unit
+                fields:element
+
             };
-            console.log(element);
+            console.log(record);
             this.objectModel.updateOrAddObject(record.id,  this.collection, record);
           }
         }
   
-        // You can update your mobileObjectModel with the data here
+       
       } else {
         console.error('Failed to fetch data:', response.status, response.statusText);
       }

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Online Editor</title>
+  <link rel="stylesheet" href="../viOne/editor/style.css">
+  <script src="head-content.js" defer></script>
+  <script src="../viOne/js/jquery/jquery.min.js"></script>    
+  <script type="text/javascript" src="javascripts/libs/jquery-3.1.1.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <link rel="stylesheet" href="../styles/jquery/ui/1.12.1/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="editor.css"> 
+</head>
+<body>
+  <div class="editor-container">
+    <div class="editor-header">
+      <img src="icon.png" alt="Logo" class="logo">
+      <select id="example-dropdown" onchange="loadExample()">
+        <option value="">Select an example</option>
+        <option value="simple_map">Crear un Mapa</option>
+        <option value="map_window">Crea un Mapa dentro de una ventana</option>
+        <option value="load_sheet">Carga datos de una hoja de calculo</option>
+        
+      </select>
+      <button onclick="runCode()"><i class="fas fa-play"></i></button>
+    </div>
+    <textarea class="editor-textarea" id="html-editor" placeholder="Enter HTML code..."></textarea>
+    <textarea class="editor-textarea" id="js-editor" placeholder="Enter JavaScript code..."></textarea>
+     
+  </div>
+
+  
+  <div id="result-container"></div>
+  <script src="../viOne/editor/editor.js"></script>
+  <script>
+    function loadExample() {
+
+      console.log("Cargando ejemplo");
+      const exampleDropdown = document.getElementById('example-dropdown');
+      const selectedExample = exampleDropdown.value;
+
+      if (selectedExample) {
+        // Fetch the HTML content
+        fetch(`examples/${selectedExample}.html`)
+          .then(response => response.text())
+          .then(htmlContent => {
+            document.getElementById('html-editor').value = htmlContent;
+          });
+
+        // Fetch the JavaScript content
+        fetch(`examples/${selectedExample}.js`)
+          .then(response => response.text())
+          .then(jsContent => {
+            document.getElementById('js-editor').value = jsContent;
+          });
+      }
+    }
+  </script>
+  
+ 
+</body>
+</html>

@@ -18,6 +18,7 @@ var session = require('express-session');
 var createError = require('http-errors');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var cors = require('cors');
 
 // Routers :
 var indexRouter = require('./routes/index');    // Router de Inicio
@@ -28,6 +29,10 @@ var backendRouter = require('./routes/backendServices');   // Ruta de Servicios 
 
 // initialize express
 var app = express();
+
+app.use(cors());
+app.options('*', cors());
+
 
 /**
  * Middleware para el manejo de sesiones 
@@ -59,6 +64,8 @@ app.use('/users', usersRouter);
 app.use('/auth', authRouter);
 app.use('/api',backendRouter);
 app.use('/front', frontRouter);
+
+app.use(express.static('assets'));
 
 
 // Intercepcion de errores 404 y forward hacia Error handler

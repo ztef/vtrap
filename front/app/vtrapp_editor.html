@@ -1,0 +1,20 @@
+<div id="mapContainer"></div> 
+
+import { vi_MapFactory, vi_Controller} from '../viOne/all.js';
+    const controller = new vi_Controller();
+
+  const mapFactory = new vi_MapFactory();
+      const map = mapFactory.createMap("Cesium", controller);
+    map.loadMap('mapContainer');
+
+
+
+    import { vi_WindowFormater, vi_MapFactory, vi_Controller} from '../viOne/all.js';
+    const controller = new vi_Controller();
+
+const windowFormater = new vi_WindowFormater();
+
+ windowFormater.formatWindow("#mapContainer","Objetos",500,350);
+  const mapFactory = new vi_MapFactory();
+      const map = mapFactory.createMap("Cesium", controller);
+    map.loadMap('mapContainer');
