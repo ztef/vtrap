@@ -69,8 +69,8 @@
 
      //  IMPORTA LIBRERIAS viONE
      
-     import { vi_WindowFormater, vi_ObjectModel, vi_MapFactory, vi_RemoteListenerFactory, vi_ObjectGridView, vi_Controller, vi_DataSource} from '../viOne/all.js';
-     import { vi_3DSceneRenderer } from '../viOne/view/vi_scene_render.js';
+     import { vi_3DSceneRenderer, vi_WindowFormater, vi_ObjectModel, vi_MapFactory, vi_RemoteListenerFactory, vi_ObjectGridView, vi_Controller, vi_DataSource} from '../viOne/all.js';
+   //  import { c } from '../viOne/view/vi_scene_render.js';
 
       
       
@@ -105,8 +105,6 @@
 
 
 
-
-
    // DECLARA LISTENERS PARA Mobiles y CEDIS   
       var mobilesRemoteListener;
       var cedisRemoteListener;
@@ -119,7 +117,7 @@
 
     // Formatea el DIV de detalle como una ventana flotante :
 
-    windowFormater.formatWindow("#detail","Detalles",500,350);
+    windowFormater.formatWindow("#detail","ALMACEN",500,350);
     windowFormater.positionDiv("detail",70,60);
 
     windowFormater.formatWindow("#detail1","Detalles",500,350);

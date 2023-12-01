@@ -228,7 +228,11 @@ class vi_CesiumMap extends vi_Map {
           },
         });
 
-        
+  
+        objectEntity.description = newObject.getFormatedData();
+
+
+        /*
         objectEntity.description =
   '\
 <img\
@@ -252,6 +256,8 @@ class vi_CesiumMap extends vi_Map {
     target="_blank"\
     href="http://en.wikipedia.org/wiki/Wyoming">Wikpedia</a>\
 </p>';
+
+*/
 
       
         this.objectEntities[id] = objectEntity; // Store the cylinder entity with its ID

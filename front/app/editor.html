@@ -14,6 +14,15 @@
   <link rel="stylesheet" href="editor.css"> 
 </head>
 <body>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "/front/app/build/three.module.js",
+        "three/addons/": "/front/app/build/jsm/"
+      }
+    }
+  </script>
+
   <div class="editor-container">
     <div class="editor-header">
       <img src="icon.png" alt="Logo" class="logo">
@@ -24,6 +33,10 @@
         <option value="load_sheet">Carga datos de una hoja de calculo</option>
         <option value="events">Responder a Eventos</option>
         <option value="map_data">Cargar datos a un Mapa</option>
+        <option value="load_stream">Carga Stream de datos en tiempo real</option>
+        <option value="map_stream">Mapa con datos en tiempo real</option>
+        <option value="load_model">Infraestructura en 3D</option>
+        <option value="inventory_model">CEDIS Inventarios en 3D</option>
         
       </select>
       <button onclick="runCode()"><i class="fas fa-play"></i></button>

@@ -8,6 +8,8 @@
 */
 
 
+import vi_Object from "./vi_object.js"
+
 class vi_ObjectModel  {
 
     constructor(controller) {
@@ -39,12 +41,17 @@ class vi_ObjectModel  {
         return existingObject;
       } else {
         
+        /*
         const newObject = {
           id,
           collection: collection,
           data,
            
         };
+        */
+
+        const newObject = new vi_Object(id, collection, data);
+
         this.objects.push(newObject);
         this.controller.triggerObjectAdded(newObject);
 
