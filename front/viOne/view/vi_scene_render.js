@@ -19,6 +19,8 @@ import { PerspectiveCamera, OrthographicCamera } from 'three';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
+import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 
 export class vi_3DSceneRenderer {
     constructor(containerId, useOrthographicCamera = false) {
@@ -26,6 +28,7 @@ export class vi_3DSceneRenderer {
         this.objects = new Map();
         this.useOrthographicCamera = useOrthographicCamera; // Determine camera type
         this.init();
+        this.selectedObject = null;
     }
 
     init() {
@@ -94,15 +97,16 @@ export class vi_3DSceneRenderer {
     
     setupControls() {
 
-        /*
+        
         this.controls = new TrackballControls(this.camera, this.renderer.domElement);
         this.controls.rotateSpeed = 1.0;
         this.controls.zoomSpeed = 1.2;
         this.controls.panSpeed = 0.8;
         this.controls.keys = ['KeyA', 'KeyS', 'KeyD'];
-`       */
 
 
+
+        /*
         this.controls = new MapControls( this.camera, this.renderer.domElement );
 
 			
@@ -116,7 +120,7 @@ export class vi_3DSceneRenderer {
 
 				this.controls.maxPolarAngle = Math.PI / 2;
 
-
+        */
 
     }
 
@@ -179,13 +183,49 @@ export class vi_3DSceneRenderer {
     }
 
     handleObjectSelection(object) {
-        // Handle the interaction with the selected object
+       
         const customObject = this.objects.get(object);
         if (customObject) {
             console.log('Selected object ID:', customObject.id);
+            this.selectedObject = object;
+            // Change the color of the selected object (assuming it has a material)
+            const material = object.material;
+            if (material) {
+                material.color.set(0xff0000); // Change to red (adjust the color as needed)
+            }
+            // Transform the selected object (for example, scale it on the z-axis)
+            object.scale.z += 0.1;
         } else {
             console.log('Selected  x object ID:', object);
+            if (object.name === 'Plane_17' && object.isMesh) {
+                // Create a cylinder
+                const cylinderGeometry = new THREE.CylinderGeometry(1, 1, 5, 32);
+                const cylinderMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 }); // Green color, adjust as needed
+                const cylinder = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
+    
+                // Set the position of the cylinder on the top-left corner of the plane
+                const planeBoundingBox = new THREE.Box3().setFromObject(object);
+                const planeSize = new THREE.Vector3();
+                planeBoundingBox.getSize(planeSize);
+    
+                const planePosition = new THREE.Vector3();
+                object.getWorldPosition(planePosition);
+    
+                // Adjust the position to the top-left corner
+                    cylinder.position.x = planePosition.x;
+                    cylinder.position.y = planePosition.y + planeSize.y / 2;
+                    cylinder.position.z = planePosition.z;
+
+                // Add the cylinder to the scene
+                this.scene.add(cylinder);
+                const material = object.material;
+                if (material) {
+                    material.color.set(0xff0000); 
+                }
         }
+
+    }
+
     }
 
     loadGLTFModel(gltfUrl) {
@@ -193,7 +233,7 @@ export class vi_3DSceneRenderer {
     
         loader.load(gltfUrl, (gltf) => {
             this.scene.add(gltf.scene);
-            // You can access and manipulate the loaded model here
+          
         }, undefined, (error) => {
             console.log(error);
         });
@@ -211,7 +251,7 @@ export class vi_3DSceneRenderer {
         // Load the model
         loader.load(gltfUrl, (gltf) => {
             this.scene.add(gltf.scene);
-            // You can access and manipulate the loaded model here
+          
         }, undefined, (error) => {
             console.log(error);
         });
@@ -220,6 +260,57 @@ export class vi_3DSceneRenderer {
     addGeometry(visualObject) {    
         this.objects.set(visualObject.mesh, visualObject);
         this.scene.add(visualObject.mesh);
+    }
+
+
+    addLineAndLabels() {
+        // Create a line along the x-axis
+        const lineGeometry = new THREE.BufferGeometry().setFromPoints([
+            new THREE.Vector3(-50, 0, 0),
+            new THREE.Vector3(50, 0, 0),
+        ]);
+        const lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 });
+        const line = new THREE.Line(lineGeometry, lineMaterial);
+    
+        // Add the line to the scene
+        this.scene.add(line);
+
+     
+
+       // Load the font
+    const loader = new FontLoader();
+    loader.load('/front/app/assets/gentilis_bold.typeface.json', (font) => {
+        // Create text geometry
+        const textGeometry = new TextGeometry('Jala esta Madre', {
+            font: font,
+            size: 2, // Adjust size as needed
+            height: 0.1, // Adjust height as needed
+        });
+
+        // Create a material for the text
+        const textMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+
+        // Create a mesh using the text geometry and material
+        const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+
+        // Position the text
+        textMesh.position.set(0, 2, 0); // Adjust position as needed
+
+        // Add the text mesh to the scene
+        this.scene.add(textMesh);
+    });
+    }
+
+    focus(x, y, z, distance) {
+        // Set the position of the camera to be at a certain distance from the target point
+        this.camera.position.set(x, y, z + distance);
+
+        // Set the camera's look-at point to the target point
+        this.camera.lookAt(x, y, z);
+
+        // Update the controls to reflect the new camera position
+        this.controls.target.set(x, y, z);
+        this.controls.update();
     }
 
 
@@ -262,18 +353,17 @@ export class vi_3DSceneRenderer {
         const center = boundingBox.getCenter(new THREE.Vector3());
     
         // Assuming `camera` is your THREE.PerspectiveCamera
-        const distance = this.calculateDistanceToModel(model); // You need to implement this function
+        const distance = this.calculateDistanceToModel(model); 
         this.camera.position.set(center.x, center.y, center.z + distance);
         this.camera.lookAt(center);
     }
 
     calculateDistanceToModel(model) {
-        // You may want to calculate the appropriate distance based on the size of the model
-        // For example, you can use the diagonal length of the bounding box
+      
         const boundingBox = new THREE.Box3().setFromObject(model);
         const size = new THREE.Vector3();
         boundingBox.getSize(size);
-        return Math.max(size.x, size.y, size.z) * 2; // Adjust the multiplier as needed
+        return Math.max(size.x, size.y, size.z) * 2; 
     }
 
 

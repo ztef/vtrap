@@ -6,4 +6,9 @@ export { default as vi_Controller } from './controller/vi_controller.js';
 export { default as vi_DataSource } from './remote/vi_datasource.js';
 export {  vi_WindowFormater } from './view/vi_window_formater.js';
 export { vi_3DSceneRenderer } from './view/vi_scene_render.js';
-
+export { vi_geometry_factory } from './view/vi_geometry_factory.js';
+export { vi_abstractBoard } from './view/vi_abstract_board.js';
+export { vi_dimension } from './view/vi_dimension.js';
+export { vi_segment } from './view/vi_segment.js';
+export { vi_range } from './view/vi_range.js';
+export { vi_segment as vi_value } from './view/vi_segment.js';

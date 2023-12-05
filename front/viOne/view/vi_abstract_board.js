@@ -4,12 +4,17 @@ export class vi_abstractBoard {
        
         this.name = name;
 
-        this.dimensions = [];
+        this.dimensions = {};
     }
 
 
     addDimension(dim){
-       this.dimensions.push(dim);
+        if (!this.dimensions.hasOwnProperty(dim.name)) {
+            this.dimensions[dim.name] = dim;
+            
+        } else {
+            console.error(`Dimension name ${dim.name} already exists.`);
+        }
     }
 
 

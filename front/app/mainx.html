@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+
+<!-- 
+    
+
+    VISUAL INTERACTION SYSTEMS
+
+    Esqueleto generico para aplicaciones.
+
+
+-->
+
+
+
+
+<html lang="en">
+<head>
+
+        <meta charset="utf-8">
+        <script src="head-content.js" defer></script>
+        <script src="../viOne/js/jquery/jquery.min.js"></script>    
+        <script type="text/javascript" src="javascripts/libs/jquery-3.1.1.min.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <link rel="stylesheet" href="../styles/jquery/ui/1.12.1/themes/base/jquery-ui.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+        <link rel="stylesheet" href="styles.css"> 
+
+
+</head>
+<body>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "/front/app/build/three.module.js",
+        "three/addons/": "/front/app/build/jsm/"
+      }
+    }
+  </script>
+
+
+ 
+
+
+   <!-- CONTENEDOR DE MAPA -->
+  <div id="container"></div>
+
+  
+   
+
+  <!-- MODULO PRINCIPAL -->
+  <script type="module">
+
+
+     //  IMPORTA LIBRERIAS viONE
+     
+     import {vi_abstractBoard, vi_dimension, vi_range, vi_segment, vi_geometry_factory, vi_3DSceneRenderer, vi_WindowFormater, vi_ObjectModel, vi_MapFactory, vi_RemoteListenerFactory, vi_ObjectGridView, vi_Controller, vi_DataSource} from '../viOne/all.js';
+    
+
+      
+      
+    const windowFormater = new vi_WindowFormater();
+
+    
+
+   // CREA UN CONTROLADOR
+      const controller = new vi_Controller();
+    
+   // CREA UN MODELO DE OBJETOS 
+      const objectModel = new vi_ObjectModel(controller);
+
+    
+   
+    
+   
+     
+      
+ 
+
+    // Formatea div de objetos para que sea una ventana :
+    windowFormater.formatWindow("#container","Objetos",500,350);
+     
+  const scene = new vi_3DSceneRenderer('container');
+
+  var gf = new vi_geometry_factory();
+
+
+  var tablero = new vi_abstractBoard('chess');
+  
+      var estado = new vi_dimension("estado");
+          estado.setGraphics({"type":"line","axis":"x","start":0, "end":100});
+  
+        var cdmx = new vi_segment("cdmx","Ciudad de Mexico");
+        var nl = new vi_segment("nl","Nuevo Leon");
+        var son = new vi_segment("son","Sonora");
+
+        estado.addSegment(cdmx);
+        estado.addSegment(nl);
+        estado.addSegment(son);
+
+      tablero.addDimension(estado);
+
+
+  var p1 = gf.createPlane("p1",{x:0,y:0,z:0},[10,10,20,20], { color: 0xffff00 })
+  var p2 = gf.createPlane("p2",{x:30,y:30,z:0},[10,10,20,20], { color: 0xffff00 })
+
+  scene.addGeometry(p1);
+  scene.addGeometry(p2);
+
+
+  scene.addLineAndLabels();
+
+  scene.focus(0,0,0,100);
+  
+
+
+</script>
+
+		
+
+   
+
+
+</body>
+</html>

@@ -1,11 +1,19 @@
-export class vi_segment {
+export class vi_segment{
 
-    constructor(id, label, range){
+    constructor(name, label){
         
-        this.id = id;
+        this.name = name;
         this.label = label;
-        this.range = range;
+        
+    
+    }
 
+    in(n){
+        if(n == this.name){
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

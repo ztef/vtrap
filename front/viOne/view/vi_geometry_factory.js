@@ -22,8 +22,6 @@ export class vi_geometry_factory {
             break;
 
 
-          
-
 
            case 'Sphere':
             
@@ -46,7 +44,7 @@ export class vi_geometry_factory {
 
         const position = new THREE.Vector3(pos.x, pos.y, pos.z);
         
-        const material = new THREE.MeshBasicMaterial({ color });
+        const material = new THREE.MeshBasicMaterial(color);
         
         const mesh = new THREE.Mesh(geometry, material);
        
@@ -59,6 +57,16 @@ export class vi_geometry_factory {
 
             return new vi_visualObject(mesh,id);
         }
+
+
+     createPlane(id,center,size, color){
+      const g1 = this.createGeometry('Plane',size);
+      const  m1 = this.createObject(g1,center, color);
+      
+      return this.createVisualObject(m1,"id")
+     
+    }
+
 
  
 }

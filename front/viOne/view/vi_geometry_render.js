@@ -135,9 +135,13 @@ export class CustomGeometryRenderer {
 
 
 
-    addGeometry(visualObject) {    
+    addVisualObject(visualObject) {    
         this.objects.set(visualObject.mesh, visualObject);
         this.scene.add(visualObject.mesh);
+    }
+
+    addObject(newObject){
+        this.scene.add(newObject);
     }
 
 
