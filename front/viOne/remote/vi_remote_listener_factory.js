@@ -18,7 +18,7 @@
 
 import vi_FirebaseListener from "./vi_firebase_listener.js";
 import vi_GoogleSheetListener from "./vi_google_sheet_listener.js";
-
+import vi_aws_mqtt_listener from "./vi_aws_mqtt_listener.js";
 
 class vi_RemoteListenerFactory {
     createRemoteListener(dataSource, model) {
@@ -32,6 +32,11 @@ class vi_RemoteListenerFactory {
         case 'GoogleSheet':  
 
           return new vi_GoogleSheetListener(dataSource, model);
+          break;
+
+        case 'aws-mqtt':  
+
+          return new vi_aws_mqtt_listener(dataSource, model);
           break;
 
         default:

@@ -20,10 +20,14 @@
         <script src="head-content.js" defer></script>
         <script src="../viOne/js/jquery/jquery.min.js"></script>    
         <script type="text/javascript" src="javascripts/libs/jquery-3.1.1.min.js"></script>
+       
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
         <link rel="stylesheet" href="../styles/jquery/ui/1.12.1/themes/base/jquery-ui.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
         <link rel="stylesheet" href="styles.css"> 
+        <script defer="defer" src="/front/viOne/js/aws/main.b08e794a.js"></script>
+
+       
 
 
 </head>
@@ -37,8 +41,8 @@
       }
     }
   </script>
-
-
+  
+  <div id="root"></div>
 
   <div class="logo-container">
     <img src="./assets/sundek.png" alt="Logo">
@@ -70,7 +74,7 @@
      //  IMPORTA LIBRERIAS viONE
      
      import { vi_3DSceneRenderer, vi_WindowFormater, vi_ObjectModel, vi_MapFactory, vi_RemoteListenerFactory, vi_ObjectGridView, vi_Controller, vi_DataSource} from '../viOne/all.js';
-   //  import { c } from '../viOne/view/vi_scene_render.js';
+      
 
       
       
@@ -103,7 +107,8 @@
       const cedisDataSource = new vi_DataSource('GoogleSheet', cf, './config/googlesheetconfig.json');
 
 
-
+   
+ 
 
    // DECLARA LISTENERS PARA Mobiles y CEDIS   
       var mobilesRemoteListener;
@@ -127,6 +132,38 @@
    // Cuando carga el DOM completo    
     document.addEventListener("DOMContentLoaded", function () {
         
+    const config = {
+    "credentials":{
+      "awsSettings":{
+		    "Auth": {
+		      "identityPoolId": 'us-east-1:b52d3392-dd5a-4aa4-b4a5-203d3df23ef3',
+		      "region": 'us-east-1',
+		      "userPoolId": 'us-east-1_2FfwVWHSA',
+		      "userPoolWebClientId": '37p9ficqb17ou7r8kdm7utgf2a'
+		    }},
+      "mqttSettings":{
+		    "AWS_REGION": 'us-east-1',
+		    "AWS_WEBSOCKET": 'wss://a1q6zds606s7ll-ats.iot.us-east-1.amazonaws.com/mqtt',
+		    "CHANNEL": `routes/vehicles/d0c1a9b3-81fb-4b45-b42b-dc170408a227`,
+		    "IAM_PASSWORD": 'uhGZJg6uo2U!',
+		    "IAM_USERNAME": 'adonai@bsdenterprise.com',
+	      }
+
+      },
+      "collection":"moviles",
+      "collectionName":"Mobiles en Ruta",
+      "library" : RTLib
+    }
+
+    
+    // Konectivan
+
+    /*
+    const konectivanDataSource = new vi_DataSource('aws-mqtt', config );
+    var konectivanRemoteListener = remoteListenerFactory.createRemoteListener(konectivanDataSource,objectModel);
+    */
+   
+
 
       // Usa el div para que el controlador actualice los datos de los objetos de manera continua en una tabla dentro del div
       // Nota :  Usa funciones auxiliares para detallar el header y las filas de la tabla

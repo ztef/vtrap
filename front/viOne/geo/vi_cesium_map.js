@@ -269,8 +269,8 @@ class vi_CesiumMap extends vi_Map {
     updateObject(event, updatedObject) {
 
       const id = updatedObject.id; // Use the mobile object's ID as the cylinder ID
-      const newLatitude = updatedObject.data.positionCurrent._lat; // Use the mobile object's latitude
-      const newLongitude = updatedObject.data.positionCurrent._long; // Use the mobile object's longitude
+      const newLatitude = updatedObject.data.position._lat; // Use the mobile object's latitude
+      const newLongitude = updatedObject.data.position._long; // Use the mobile object's longitude
 
 
         const objectEntity = this.objectEntities[id]; // Get the cylinder entity by ID
