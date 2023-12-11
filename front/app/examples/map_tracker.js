@@ -70,13 +70,59 @@ const mapFactory = new vi_MapFactory();
 const map = mapFactory.createMap("Cesium", controller);
 
 
+
+
 // Formatea el contendor de mapa como ventana
  windowFormater.formatWindow("#mapContainer","Mapa",500,350);
 
 var konectivanRemoteListener;
 
-// Carga el mapa en su contenedor
+
 map.loadMap('mapContainer').then(()=>{
+
+
+   var altura=400;
+
+	var radio=100;	
+
+   map.addObjectGeometry('moviles', [
+      
+      
+   {
+      offset: {x:0, y:0, z:2200},
+      cylinder : {
+      length : altura,
+      topRadius :  radio,
+      bottomRadius : radio,
+      material : map.MapLib.Color.fromCssColorString("#FFFFFF").withAlpha(.2)
+      
+   }},
+
+
+   {
+      offset: {x:0, y:0, z:2100},
+      cylinder : {
+         length : altura*.5,
+         topRadius :  radio*.8,
+         bottomRadius : radio*.8,
+         material : map.MapLib.Color.fromCssColorString("#FFEA00").withAlpha(1)
+         
+      }
+   },
+
+   {
+      offset: {x:0, y:0, z:500},
+      cylinder : {
+      length : 3000,
+      topRadius :  20,
+      bottomRadius : 20,
+      material : Cesium.Color.fromCssColorString("#ffffff").withAlpha(.2)								
+   }
+  }
+
+]);
+
+
    konectivanRemoteListener = remoteListenerFactory.createRemoteListener(konectivanDataSource,objectModel); 
 });
 

@@ -53,6 +53,12 @@ const mapFactory = new vi_MapFactory();
 // Crea un mapa 
 const map = mapFactory.createMap("Cesium", controller);
 
+var altura=1400;
+
+var radio=100;	
+
+
+
 
 // Formatea el contendor de mapa como ventana
  windowFormater.formatWindow("#mapContainer","Mapa",500,350);
@@ -60,5 +66,21 @@ const map = mapFactory.createMap("Cesium", controller);
 var movilesRemoteListener;
 // Carga el mapa en su contenedor
 map.loadMap('mapContainer').then(()=>{
+   
+   map.addObjectGeometry('trips', [
+   
+   
+      {
+         offset: {x:0, y:0, z:0},
+         cylinder : {
+         length : altura,
+         topRadius :  radio,
+         bottomRadius : radio,
+         material : map.MapLib.Color.fromCssColorString("#FFFFFF")
+         
+      }},
+      
+      
+      ]);
        movilesRemoteListener = remoteListenerFactory.createRemoteListener(movilesDataSource,objectModel);
 });

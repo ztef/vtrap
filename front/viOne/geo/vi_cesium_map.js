@@ -14,13 +14,12 @@ import vi_Map from '/front/viOne/geo/vi_map.js';
 class vi_CesiumMap extends vi_Map {
 
   constructor(controller) {
-    // ...
-
-    super(controller);
-
-    this.previousCameraAltitude = null; 
     
-    
+
+      super(controller);
+
+      this.previousCameraAltitude = null; 
+     
       
     }
   
@@ -28,12 +27,14 @@ class vi_CesiumMap extends vi_Map {
 
       await this.loadExternalFiles();
   
-     
+      this.MapLib = Cesium;
+    
      
       Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIwODczNzBiYy0xOGZmLTQyOWEtYjdjNy00NmM1YzlhYWUzOWMiLCJpZCI6MTQ3MDQ0LCJpYXQiOjE2ODY4MDYxNjR9.8OgBzwtTc65BVPlZbo6MOozogPQMsnUtc4Hg9lBFLMQ';
 
 
-      
+          
+
 
             this.viewer = new Cesium.Viewer(map_window, {
                 terrain: Cesium.Terrain.fromWorldTerrain(),
@@ -178,6 +179,8 @@ class vi_CesiumMap extends vi_Map {
 
     updateObjectsScale(scalingFactor) {
 
+      /*
+
         console.log("ESCALANDO");
         // Iterate through all cylinder entities and update their scale
         for (const id in this.objectEntities) {
@@ -190,6 +193,8 @@ class vi_CesiumMap extends vi_Map {
                 objectEntity.cylinder.bottomRadius = 10 * scalingFactor; // Adjust the bottom radius as needed
             }
         }
+
+        */
     }
   
    
@@ -198,95 +203,66 @@ class vi_CesiumMap extends vi_Map {
    
     addObject(event, newObject) {
 
-      const id = newObject.id; // Use the mobile object's ID as the cylinder ID
-      const initialLatitude = newObject.data.position._lat; // Use the mobile object's latitude
-      const initialLongitude = newObject.data.position._long; // Use the mobile object's longitude
     
 
-         
-        const objectCoordinates = Cesium.Cartesian3.fromDegrees(
-          initialLongitude,
-          initialLatitude,
-          500
-        );
+            const entities = this.entityBuilder(newObject);
+
+            var entitiesList = [];
+
+
+            //const objectEntity = this.viewer.entities.add(entity);
+
+            entities.forEach(entity => {
       
-        const tooltipHTML = `
-          <h3>Cylinder Data</h3>
-          <p>Length: 100 meters</p>
-          <p>Top Radius: 20 meters</p>
-          <p>Bottom Radius: 20 meters</p>
-        `;
+              const objectEntity = this.viewer.entities.add(entity);
+              objectEntity.description = newObject.getFormatedData();
       
-        const objectEntity = this.viewer.entities.add({
-          position: objectCoordinates,
-          name:  id,
-          cylinder: {
-            length: 1000,
-            topRadius: 10,
-            bottomRadius: 10,
-            material: Cesium.Color.RED,
-          },
-        });
+              entitiesList.push(objectEntity);
 
-  
-        objectEntity.description = newObject.getFormatedData();
-
-
-        /*
-        objectEntity.description =
-  '\
-<img\
-  width="50%"\
-  style="float:left; margin: 0 1em 1em 0;"\
-  src="/app/assets/sundek.png"/>\
-<p>\
-  Principales Indicadores de la tienda \
-  Seleccionada.\
-</p>\
-<p>\
-  Ventas Mes : $0,00,00 \
-  RH : 45 Empleados \
-  Incidencias : 1 \
-  Out of Stock : \
-  .\
-</p>\
-<p>\
-  Source: \
-  <a style="color: WHITE"\
-    target="_blank"\
-    href="http://en.wikipedia.org/wiki/Wyoming">Wikpedia</a>\
-</p>';
-
-*/
+           });
+       
 
       
-        this.objectEntities[id] = objectEntity; // Store the cylinder entity with its ID
+            this.objectEntities[newObject.id] = entitiesList; 
       
-        this.setupTooltip(tooltipHTML);
+       
     }
       
 
     updateObject(event, updatedObject) {
+
+      
 
       const id = updatedObject.id; // Use the mobile object's ID as the cylinder ID
       const newLatitude = updatedObject.data.position._lat; // Use the mobile object's latitude
       const newLongitude = updatedObject.data.position._long; // Use the mobile object's longitude
 
 
-        const objectEntity = this.objectEntities[id]; // Get the cylinder entity by ID
+        const objectEntities = this.objectEntities[id];  
 
         
       
-        if (objectEntity) {
+        if (objectEntities) {
              
-          const objectCoordinates = Cesium.Cartesian3.fromDegrees(
-            newLongitude,
-            newLatitude,
-            500
+
+          objectEntities.forEach((entity) =>{
+
+            const objectCoordinates = Cesium.Cartesian3.fromDegrees(
+              newLongitude,
+              newLatitude,
+              entity.offset.z
+            );
+        
+            entity.position.setValue(objectCoordinates);
+          
+          
+          }
+
           );
-      
-          objectEntity.position.setValue(objectCoordinates); // Update the specified cylinder entity's position
+
+           // Update the specified cylinder entity's position
         }
+        
     }
 
     removeObject(event, id) {
