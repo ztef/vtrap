@@ -39,9 +39,6 @@ class vi_Map {
       const initialLongitude = newObject.data.position._long; // Use the mobile object's longitude
     
 
-         
-        
-
         
       const geometries = this.geometryBuilder(newObject.collection);
 
@@ -64,7 +61,7 @@ class vi_Map {
           const objectCoordinates = this.MapLib.Cartesian3.fromDegrees(
             initialLongitude+ ox,
             initialLatitude+ oy,
-            500+oz
+            oz
           );
 
 

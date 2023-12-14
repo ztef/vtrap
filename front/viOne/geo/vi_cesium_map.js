@@ -33,9 +33,6 @@ class vi_CesiumMap extends vi_Map {
       Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIwODczNzBiYy0xOGZmLTQyOWEtYjdjNy00NmM1YzlhYWUzOWMiLCJpZCI6MTQ3MDQ0LCJpYXQiOjE2ODY4MDYxNjR9.8OgBzwtTc65BVPlZbo6MOozogPQMsnUtc4Hg9lBFLMQ';
 
 
-          
-
-
             this.viewer = new Cesium.Viewer(map_window, {
                 terrain: Cesium.Terrain.fromWorldTerrain(),
                 pickEnabled: true,
@@ -80,6 +77,37 @@ class vi_CesiumMap extends vi_Map {
                 console.log('Deselected.');
               }
             });
+
+
+            // Inicializa Reloj y Marker
+
+            var start = Cesium.JulianDate.fromIso8601('2018-01-01T00:00:00.00Z');
+            var mid = Cesium.JulianDate.addSeconds(start, 5, new Cesium.JulianDate());
+            var stop = Cesium.JulianDate.addSeconds(start, 10, new Cesium.JulianDate());
+            
+            this.clock = this.viewer.clock;
+            this.clock.startTime = start;
+            this.clock.currentTime = start;
+            this.clock.stopTime = stop;
+            this.clock.clockRange = Cesium.ClockRange.LOOP_STOP;
+            //this.clock.clockRange = Cesium.ClockRange.UNBOUNDED;
+      
+            this.clock.shouldAnimate = true;
+      
+            
+            this.pulseProperty = new Cesium.SampledProperty(Number);
+            this.pulseProperty.setInterpolationOptions({
+                interpolationDegree : 3,
+                interpolationAlgorithm : Cesium.HermitePolynomialApproximation
+            });
+            
+            this.pulseProperty.addSample(start, 7.0);
+            this.pulseProperty.addSample(mid, 1000.0);
+            this.pulseProperty.addSample(stop, 7.0);
+
+
+
+
      
     }
 
@@ -254,16 +282,75 @@ class vi_CesiumMap extends vi_Map {
             );
         
             entity.position.setValue(objectCoordinates);
-          
+
+            entity.cylinder.material.color.setValue(Cesium.Color.fromCssColorString("#FFEAFF").withAlpha(1));
+            entity.cylinder.material.color.setValue(Cesium.Color.fromCssColorString("#FFEA00").withAlpha(1));
+
           
           }
 
           );
 
-           // Update the specified cylinder entity's position
+          this.placeMarker(newLatitude,newLongitude);
+
+           
+
+           
         }
         
     }
+
+
+    placeMarker(newLatitude,newLongitude){
+
+     if(this.marker){
+
+      const objectCoordinates = Cesium.Cartesian3.fromDegrees(
+        newLongitude,
+        newLatitude,
+        500
+      );
+  
+      this.marker.position.setValue(objectCoordinates);
+
+
+
+
+
+     } else {
+
+      var pos = {
+        position : Cesium.Cartesian3.fromDegrees(
+          newLongitude,
+          newLatitude,
+         500
+          ),
+       
+        ellipse: {
+          semiMinorAxis: this.pulseProperty,
+          semiMajorAxis: this.pulseProperty,
+          height: 500.0,
+          material:  Cesium.Color.ORANGERED,
+          outline: true, // height must be set for outline to display
+        }
+
+
+
+     };
+
+     /*
+      point : {
+            pixelSize : this.pulseProperty,
+            color : Cesium.Color.ORANGERED
+        },
+     */
+
+      this.marker = this.viewer.entities.add(pos);
+      
+  
+    }
+  }
+
 
     removeObject(event, id) {
       const objectEntity = this.objectEntities[id]; // Get the cylinder entity by ID

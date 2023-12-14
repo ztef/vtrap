@@ -71,7 +71,7 @@ map.loadMap('mapContainer').then(()=>{
    
    
       {
-         offset: {x:0, y:0, z:0},
+         offset: {x:0, y:0, z:1500},
          cylinder : {
          length : altura,
          topRadius :  radio,
