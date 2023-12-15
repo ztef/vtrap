@@ -13,10 +13,10 @@ import vi_Map from '/front/viOne/geo/vi_map.js';
 
 class vi_CesiumMap extends vi_Map {
 
-  constructor(controller) {
+  constructor(controller, domains) {
     
 
-      super(controller);
+      super(controller, domains);
 
       this.previousCameraAltitude = null; 
      
@@ -67,8 +67,10 @@ class vi_CesiumMap extends vi_Map {
                   const objectData = this.objectEntities[uniqueId];
             
                   if (objectData) {
+
+                    const payload = {id:uniqueId}
                     
-                    this.controller.triggerObjectPicked(objectData);
+                    this.controller.triggerObjectPicked(objectData.collection, payload);
                   }
                 } else {
                   console.log('Unknown entity selected.');
@@ -176,7 +178,7 @@ class vi_CesiumMap extends vi_Map {
     
 
 
-    handleObjectSelectedOutside(event, payload) {
+    handleObjectSelectedOutside(domain, event, payload) {
     
       // Check if the payload has the ID
       if (payload.id && this.objectEntities[payload.id]) {
@@ -184,7 +186,7 @@ class vi_CesiumMap extends vi_Map {
         const objectEntity = this.objectEntities[payload.id];
 
         if(objectEntity){
-          this.viewer.flyTo(objectEntity);
+          this.viewer.flyTo(objectEntity.entities);
         }
 
        
@@ -229,7 +231,7 @@ class vi_CesiumMap extends vi_Map {
   
 
    
-    addObject(event, newObject) {
+    addObject(domain, event, newObject) {
 
     
 
@@ -251,13 +253,13 @@ class vi_CesiumMap extends vi_Map {
        
 
       
-            this.objectEntities[newObject.id] = entitiesList; 
-      
+           // this.objectEntities[newObject.id] = entitiesList; 
+           this.objectEntities[newObject.id] = {id:newObject.id, collection:domain, entities:entitiesList};
        
     }
       
 
-    updateObject(event, updatedObject) {
+    updateObject(domain, event, updatedObject) {
 
       
 
@@ -273,7 +275,7 @@ class vi_CesiumMap extends vi_Map {
         if (objectEntities) {
              
 
-          objectEntities.forEach((entity) =>{
+          objectEntities.entities.forEach((entity) =>{
 
             const objectCoordinates = Cesium.Cartesian3.fromDegrees(
               newLongitude,
@@ -352,7 +354,7 @@ class vi_CesiumMap extends vi_Map {
   }
 
 
-    removeObject(event, id) {
+    removeObject(domain, event, id) {
       const objectEntity = this.objectEntities[id]; // Get the cylinder entity by ID
       if (objectEntity) {
         this.viewer.entities.remove(objectEntity); // Remove the specified cylinder entity from the viewer

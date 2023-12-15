@@ -14,41 +14,53 @@ class vi_Controller {
     constructor() {
 
       this.actionObserver = new vi_ActionObserver();
-      
+      this.model = null;  
      
     }
 
 
+    setModel(m){
+      this.model = m;
+    }
+
+
+
     /*
+        domain<<<<<<<
         Agrega a un Observador (una Funcion) para una accion determinada
     */
 
-    addObserver(actionName, observerFunction) {
-        this.actionObserver.addObserver(actionName, observerFunction);
+    addObserver(domain, actionName, observerFunction) {
+        this.actionObserver.addObserver(domain, actionName, observerFunction);
     }
     
 
-    triggerObjectSelected(data) {
-        this.actionObserver.notify('objectSelected', data);
-    }
-
-    triggerObjectPicked(data) {
-      this.actionObserver.notify('objectPicked', data);
+    triggerAction(domain, action, data){
+      this.actionObserver.notify(domain, action, data);
     }
 
 
-    triggerObjectAdded(data) {
+    triggerObjectSelected(domain, data) {
+        this.actionObserver.notify(domain, 'objectSelected', data);
+    }
+
+    triggerObjectPicked(domain, data) {
+      this.actionObserver.notify(domain, 'objectPicked', data);
+    }
+
+
+    triggerObjectAdded(domain, data) {
       
-      this.actionObserver.notify('objectAdded', data);
+      this.actionObserver.notify(domain, 'objectAdded', data);
     }
 
-    triggerObjectUpdated(data) {
+    triggerObjectUpdated(domain, data) {
       
-      this.actionObserver.notify('objectUpdated', data);
+      this.actionObserver.notify(domain, 'objectUpdated', data);
     }
 
-    triggerObjectDeleted(data) {
-      this.actionObserver.notify('objectDeleted', data);
+    triggerObjectDeleted(domain, data) {
+      this.actionObserver.notify(domain, 'objectDeleted', data);
     }
 
 

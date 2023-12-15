@@ -52,7 +52,7 @@ const windowFormater = new vi_WindowFormater();
 
   
 
- const gridView = new vi_ObjectGridView('ventana',controller,
+ const gridView = new vi_ObjectGridView('moviles','ventana',controller,
  ()=>{
     return "<th>ID</th><th>Placas</th><th>Desc</th><th>Lat</th><th>Long</th>";
  },
@@ -67,7 +67,7 @@ const windowFormater = new vi_WindowFormater();
 const mapFactory = new vi_MapFactory();
 
 // Crea un mapa 
-const map = mapFactory.createMap("Cesium", controller);
+const map = mapFactory.createMap("Cesium", controller,['moviles']);
 
 
 

@@ -16,6 +16,7 @@ class vi_ObjectModel  {
       
 
       this.controller = controller;
+      this.controller.setModel(this);
   
      
       this.objects = [];
@@ -29,14 +30,14 @@ class vi_ObjectModel  {
 
     updateOrAddObject(id, collection, data) {
 
-      const existingObject = this.objects.find((object) => object.id === id);
+      const existingObject = this.objects.find((object) => object.id === id && object.collection === collection);
 
       if (existingObject) {
         
         existingObject.data = data;
         existingObject.collection = collection;
          
-        this.controller.triggerObjectUpdated(existingObject);
+        this.controller.triggerObjectUpdated(collection, existingObject);
          
         return existingObject;
       } else {
@@ -53,7 +54,7 @@ class vi_ObjectModel  {
         const newObject = new vi_Object(id, collection, data);
 
         this.objects.push(newObject);
-        this.controller.triggerObjectAdded(newObject);
+        this.controller.triggerObjectAdded(collection, newObject);
 
         return newObject;
       }
@@ -65,9 +66,13 @@ class vi_ObjectModel  {
   
     */
 
-    readObject(id) {
-      return this.objects.find((object) => object.id === id);
+   
+
+
+    readObject(collection, id) {
+      return this.objects.find((object) => object.id === id && object.collection === collection);
     }
+    
   
     /* 
     
@@ -75,13 +80,13 @@ class vi_ObjectModel  {
     
     */
     
-      deleteObject(id) {
+      deleteObject(collection, id) {
 
-      const index = this.objects.findIndex((object) => object.id === id);
+      const index = this.objects.findIndex((object) => {object.id === id && object.collection === collection});
       if (index !== -1) {
         this.objects.splice(index, 1);
         
-        this.controller.triggerObjectDeleted(id);
+        this.controller.triggerObjectDeleted(collection, id);
         return true; // Object deleted successfully
       }
       return false; // Object not found

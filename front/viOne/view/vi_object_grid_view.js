@@ -9,8 +9,11 @@
 
 class vi_ObjectGridView {
   
-  constructor(divID, controller, headerFunction , rowFunction ) {
+  constructor(domain, divID, controller, headerFunction , rowFunction ) {
     // ...
+
+
+    this.domain = domain;
 
     this.controller = controller;
     
@@ -28,10 +31,10 @@ class vi_ObjectGridView {
     
     
 
-    this.controller.addObserver('objectSelected', this.handleObjectSelected.bind(this));
-    this.controller.addObserver('objectAdded', this.addObject.bind(this));
-    this.controller.addObserver('objectUpdated', this.updateObject.bind(this));
-    this.controller.addObserver('objectDeleted', this.removeObject.bind(this));
+    this.controller.addObserver(domain,'objectSelected', this.handleObjectSelected.bind(this));
+    this.controller.addObserver(domain,'objectAdded', this.addObject.bind(this));
+    this.controller.addObserver(domain,'objectUpdated', this.updateObject.bind(this));
+    this.controller.addObserver(domain,'objectDeleted', this.removeObject.bind(this));
 
       this.modelView = document.getElementById(divID);
 
@@ -98,9 +101,9 @@ class vi_ObjectGridView {
     
     */
 
-    handleRowClick(mobileId) {
+    handleRowClick(objectId) {
   
-      this.controller.triggerObjectSelected({ id: mobileId });
+      this.controller.triggerObjectSelected(this.domain, { id: objectId });
   
     }
 
@@ -135,7 +138,7 @@ class vi_ObjectGridView {
       
     }
    
-    addObject(event, newObject) {
+    addObject(domain, event, newObject) {
 
       console.log("GRID : NUEVO SI LLEGA",newObject);
 
@@ -171,7 +174,7 @@ class vi_ObjectGridView {
       this.table.appendChild(row);
     }
   
-    updateObject(event, object) {
+    updateObject(domain, event, object) {
 
       console.log("GRID : SI LLEGA", object);
 

@@ -1,14 +1,23 @@
 class vi_Map {
 
-  constructor(controller) {
+  constructor(controller,domains) {
     // ...
 
   
     this.controller = controller;
-    this.controller.addObserver('objectSelected', this.handleObjectSelectedOutside.bind(this));
-    this.controller.addObserver('objectAdded', this.addObject.bind(this));
-    this.controller.addObserver('objectUpdated', this.updateObject.bind(this));
-    this.controller.addObserver('objectDeleted', this.removeObject.bind(this));
+
+
+
+    domains.forEach((domain)=>{
+
+      this.controller.addObserver(domain,'objectSelected', this.handleObjectSelectedOutside.bind(this));
+      this.controller.addObserver(domain,'objectAdded', this.addObject.bind(this));
+      this.controller.addObserver(domain,'objectUpdated', this.updateObject.bind(this));
+      this.controller.addObserver(domain,'objectDeleted', this.removeObject.bind(this));
+
+    });
+
+   
 
 
       this.viewer = null;

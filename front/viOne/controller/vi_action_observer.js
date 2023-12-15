@@ -15,41 +15,33 @@
 */
 
 class vi_ActionObserver {
-    constructor() {
-      this.observers = {};
-    }
-  
-    /*
-    
-    Registra a un observador para una accion especifica
-
-    */
-
-
-    addObserver(actionName, observerFunction) {
-      if (!this.observers[actionName]) {
-        this.observers[actionName] = [];
-      }
-      this.observers[actionName].push(observerFunction);
-    }
-  
-    /*
-   
-     Notifica a los observadores de una accion 
-   
-    */
-
-     notify(actionName, payload) {
-      const observers = this.observers[actionName];
-      if (observers) {
-        observers.forEach((observer) => {
-          observer(actionName,payload);
-        });
-      }
-    }
+  constructor() {
+    this.observers = {};
   }
 
-  export default vi_ActionObserver;
-  
+  addObserver(domain, actionName, observerFunction) {
+    if (!this.observers[domain]) {
+      this.observers[domain] = {};
+    }
+
+    if (!this.observers[domain][actionName]) {
+      this.observers[domain][actionName] = [];
+    }
+
+    this.observers[domain][actionName].push(observerFunction);
+  }
+
+  notify(domain, actionName, payload) {
+    const observers = this.observers[domain] && this.observers[domain][actionName];
+    if (observers) {
+      observers.forEach((observer) => {
+        observer(domain, actionName, payload);
+      });
+    }
+  }
+}
+
+export default vi_ActionObserver;
+
   
  

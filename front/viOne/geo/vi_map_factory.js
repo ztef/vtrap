@@ -17,10 +17,10 @@ import vi_CesiumMap from "./vi_cesium_map.js"
 
 class vi_MapFactory {
 
-  createMap(type, controller) {
+  createMap(type, controller,domains) {
       switch (type) {
         case 'Cesium':
-          return new vi_CesiumMap(controller);
+          return new vi_CesiumMap(controller, domains);
         
         default:
           throw new Error(`Unsupported map type: ${type}`);

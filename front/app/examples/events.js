@@ -26,15 +26,15 @@ const windowFormater = new vi_WindowFormater();
  windowFormater.formatWindow("#objects_menu","Sucursales",500,350);
  windowFormater.positionDiv("objects_menu",10,50);
 
- const gridView = new vi_ObjectGridView('objects_menu',controller);
+ const gridView = new vi_ObjectGridView('sucursales','objects_menu',controller);
      
  const cedisRemoteListener = remoteListenerFactory.createRemoteListener(sucursalesDataSource,objectModel);
 
 
- controller.addObserver("objectSelected",BLOC);
+ controller.addObserver('sucursales',"objectSelected",BLOC);
 
 
- function BLOC(event, data){
+ function BLOC(domain, event, data){
 
    
    switch (event) {
@@ -42,7 +42,7 @@ const windowFormater = new vi_WindowFormater();
     case 'objectSelected':
 
 
-         let object = objectModel.readObject(data.id);
+         let object = objectModel.readObject(domain, data.id);
      
          alert(object.data.fields.nombre);
           

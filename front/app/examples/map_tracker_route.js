@@ -1,4 +1,4 @@
-import { vi_MapFactory, vi_WindowFormater, vi_ObjectModel, vi_RemoteListenerFactory, vi_ObjectGridView, vi_Controller, vi_DataSource} from '../viOne/all.js';
+import { vi_MapFactory, vi_WindowFormater, vi_ObjectModel, vi_RemoteListenerFactory, vi_ObjectDetailView, vi_ObjectGridView, vi_Controller, vi_DataSource} from '../viOne/all.js';
  
 const windowFormater = new vi_WindowFormater();
 
@@ -43,6 +43,25 @@ const windowFormater = new vi_WindowFormater();
     const konectivanDataSource = new vi_DataSource('aws-mqtt', config );
     
 
+// DataSource de clientes
+
+const config_clientes = {
+   "SPREADSHEET_ID": "1VrupNQhTn1Du6dQIcepa7UtqddTfyHsK9-bqZ5AQpPo",
+   "collection":"clientes",
+   "collectionName" : "CLIENTES"
+  }
+  
+  const clientesDataSource = new vi_DataSource('GoogleSheet', config_clientes);
+
+
+// Formatea div de objetos para que sea una ventana :
+windowFormater.formatWindow("#clientes","Clientes",500,350);
+windowFormater.positionDiv("clientes",10,50);
+
+const gridViewClientes = new vi_ObjectGridView('clientes','clientes',controller);
+    
+const clietesRemoteListener = remoteListenerFactory.createRemoteListener(clientesDataSource,objectModel);
+
 
 
 
@@ -50,9 +69,13 @@ const windowFormater = new vi_WindowFormater();
  windowFormater.formatWindow("#ventana","Moviles en Transito",500,350);
  windowFormater.positionDiv("ventana",10,50);
 
+
+// Ventana de informacion al seleccionar un elemento
+ windowFormater.formatWindow("#info","Movil Seleccionado :",500,350);
+
   
 
- const gridView = new vi_ObjectGridView('ventana',controller,
+ const gridView = new vi_ObjectGridView('moviles','ventana',controller,
  ()=>{
     return "<th>ID</th><th>Placas</th><th>Desc</th><th>Lat</th><th>Long</th>";
  },
@@ -63,11 +86,28 @@ const windowFormater = new vi_WindowFormater();
  });
      
 
+
+
+const detailView = new vi_ObjectDetailView('moviles','info',controller,
+()=>{
+   return "<th>ID</th><th>Placas</th><th>Desc</th><th>Lat</th><th>Long</th>";
+},
+(id,collection,data)=>{
+   return `<tr><td>ID</td><td>${data.id}</td></tr>
+   <tr><td>PLACA</td><td>${data.fields.plate}</td></tr>
+   <tr><td>DESC</td><td>${data.fields.device.description}</td></tr>
+   <tr><td>LAT</td><td>${data.position._lat}</td></tr>
+   <tr><td>LNG</td><td>${data.position._long}</td></tr>`;
+});
+
+
+
+
 // Crea un Factory de Mapas
 const mapFactory = new vi_MapFactory();
 
 // Crea un mapa 
-const map = mapFactory.createMap("Cesium", controller);
+const map = mapFactory.createMap("Cesium", controller,['moviles']);
 
 
 
@@ -130,10 +170,10 @@ map.loadMap('mapContainer').then(()=>{
 
 // AREA REACTIVA (Reaccion a eventos)
 
-controller.addObserver("objectSelected",BLOC);
-controller.addObserver("objectPicked",BLOC);
+controller.addObserver('moviles',"objectSelected",BLOC);
+controller.addObserver('moviles',"objectPicked",BLOC);
 
-function BLOC(event, data){
+function BLOC(domain, event, data){
 
    var object;
   
@@ -142,18 +182,18 @@ function BLOC(event, data){
    case 'objectSelected':
 
 
-       object = objectModel.readObject(data.name);
+       object = objectModel.readObject(domain, data.id);
     
-        alert(object.data.fields.nombre);
+       
          
      break;
 
    case 'objectPicked':
 
 
-      object = objectModel.readObject(data[0].name);
+      object = objectModel.readObject(domain, data.id);
  
-     alert(object.data.fields.nombre);
+    
       
   break;
 

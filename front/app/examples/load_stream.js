@@ -37,7 +37,7 @@ const windowFormater = new vi_WindowFormater();
 
   
 
- const gridView = new vi_ObjectGridView('objects_menu',controller,
+ const gridView = new vi_ObjectGridView('trips','objects_menu',controller,
  ()=>{
     return "<th>Unidad</th><th>Destino</th><th>Estado</th>";
  },
