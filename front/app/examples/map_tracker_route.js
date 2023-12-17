@@ -47,8 +47,14 @@ const windowFormater = new vi_WindowFormater();
 
 const config_clientes = {
    "SPREADSHEET_ID": "1VrupNQhTn1Du6dQIcepa7UtqddTfyHsK9-bqZ5AQpPo",
-   "collection":"clientes",
-   "collectionName" : "CLIENTES"
+   "collections":[{
+         "collection":"clientes",
+         "collectionName" : "CLIENTES"
+      },
+      {
+         "collection":"rutas",
+         "collectionName" : "RUTAS"
+      }]
   }
   
   const clientesDataSource = new vi_DataSource('GoogleSheet', config_clientes);
@@ -58,7 +64,10 @@ const config_clientes = {
 windowFormater.formatWindow("#clientes","Clientes",500,350);
 windowFormater.positionDiv("clientes",10,50);
 
+windowFormater.formatWindow("#rutas","Rutas",500,350);
+
 const gridViewClientes = new vi_ObjectGridView('clientes','clientes',controller);
+const gridViewRutas = new vi_ObjectGridView('rutas','rutas',controller);
     
 const clietesRemoteListener = remoteListenerFactory.createRemoteListener(clientesDataSource,objectModel);
 
@@ -168,12 +177,12 @@ map.loadMap('mapContainer').then(()=>{
 
 
 
-// AREA REACTIVA (Reaccion a eventos)
+// AREA REACTIVA (Reaccion a eventos en moviles)
 
-controller.addObserver('moviles',"objectSelected",BLOC);
-controller.addObserver('moviles',"objectPicked",BLOC);
+controller.addObserver('moviles',"objectSelected",BLOC_MOVILES);
+controller.addObserver('moviles',"objectPicked",BLOC_MOVILES);
 
-function BLOC(domain, event, data){
+function BLOC_MOVILES(domain, event, data){
 
    var object;
   
@@ -181,25 +190,15 @@ function BLOC(domain, event, data){
    // Al seleccionar un objeto :  
    case 'objectSelected':
 
-
-       object = objectModel.readObject(domain, data.id);
-    
-       
+       object = objectModel.readObject(domain, data.id);       
          
      break;
 
    case 'objectPicked':
 
-
       object = objectModel.readObject(domain, data.id);
- 
-    
-      
+       
   break;
-
-
-
-
 
    default:
      throw new Error(`Unsupported event: ${event}`);
@@ -207,6 +206,37 @@ function BLOC(domain, event, data){
 
   
 }
+
+
+controller.addObserver('rutas',"objectSelected",BLOC_RUTAS);
+
+function BLOC_RUTAS(domain, event, data){
+
+   var object;
+  
+  switch (event) {
+    
+   case 'objectSelected':
+
+       object = objectModel.readObject(domain, data.id);   
+
+       map.clearPolylines();
+      
+       map.loadPolylineFromKML(data.id, object.data.fields.url,600.0);
+       
+
+     break;
+
+  
+   default:
+     throw new Error(`Unsupported event: ${event}`);
+   }
+
+  
+}
+
+
+
 
 
 

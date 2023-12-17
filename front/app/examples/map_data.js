@@ -14,8 +14,13 @@ const controller = new vi_Controller();
 // CREA UN DATASOURCE PARA SUCURSALES   
    const config = {
     "SPREADSHEET_ID": "1-RBLm2NkUqA4BqQdIiwLJKa8F6QB5O-wIY_iL1cyj44",
-    "collection":"sucursales",
-    "collectionName" : "SUCURSALES"
+    "collections" : [
+      {
+         "collection":"sucursales",
+         "collectionName" : "SUCURSALES"
+      }
+    ]
+   
    }
    const sucursalesDataSource = new vi_DataSource('GoogleSheet', config);
 

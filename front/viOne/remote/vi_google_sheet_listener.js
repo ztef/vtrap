@@ -11,19 +11,35 @@ class vi_GoogleSheetListener extends vi_RemoteListener {
 
     super();
     this.dataSource = dataSource;
-    this.collection = dataSource.config.collection;
+    this.collections = dataSource.config.collections;
     this.objectModel = mobileObjectModel;
 
-    this.loadData();
+    this.loadSheets();
    
   }
 
 
-  async loadData() {
+  async loadSheets(){
+
+    var sheetnumber = 0;
+
+    this.collections.forEach(collection => {
+       
+        this.loadData(sheetnumber,collection.collection);
+
+        sheetnumber = sheetnumber + 1;
+
+    });
+
+
+  }
+
+
+  async loadData(sheetnumber, collection) {
     try {
       console.log("Fetch de datos de google");
       // Make an HTTP GET request to your Node.js route
-      const response = await fetch('/api/getFromSheet?sheet='+this.dataSource.config.SPREADSHEET_ID);
+      const response = await fetch('/api/getFromSheet?sheetnumber='+sheetnumber+'&sheet='+this.dataSource.config.SPREADSHEET_ID);
   
       if (response.ok) {
         // Parse the response as JSON
@@ -53,7 +69,7 @@ class vi_GoogleSheetListener extends vi_RemoteListener {
 
             };
             console.log(record);
-            this.objectModel.updateOrAddObject(record.id,  this.collection, record);
+            this.objectModel.updateOrAddObject(record.id,  collection, record);
           }
         }
   

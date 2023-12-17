@@ -57,6 +57,7 @@ async function getFromSheet(data){
     //var SPREADSHEET_ID = '1jcCmQGVd8e0iWGSKs9koz2wNKjgDQAdV4KRbL90eCyI';
     
     var SPREADSHEET_ID = data.sheet;
+    var sheetnumber = data.sheetnumber;
 
 
     //console.log("Hoja : ",SPREADSHEET_ID);
@@ -68,7 +69,7 @@ async function getFromSheet(data){
     
     
     await doc.loadInfo();
-    const sheet = doc.sheetsByIndex[0];
+    const sheet = doc.sheetsByIndex[sheetnumber];
   
     var out = {};
   

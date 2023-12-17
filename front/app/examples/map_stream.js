@@ -76,11 +76,31 @@ map.loadMap('mapContainer').then(()=>{
          length : altura,
          topRadius :  radio,
          bottomRadius : radio,
-         material : map.MapLib.Color.fromCssColorString("#FFFFFF")
+         material : map.MapLib.Color.fromCssColorString("#FF0000")
          
       }},
       
       
-      ]);
-       movilesRemoteListener = remoteListenerFactory.createRemoteListener(movilesDataSource,objectModel);
+   ]);
+
+
+   movilesRemoteListener = remoteListenerFactory.createRemoteListener(movilesDataSource,objectModel);
+
+   map.onObjectUpdated((updatedObject, objectEntities)=>{
+
+      var tripState = updatedObject.data.fields.tripState;
+      var color = '#000000';
+      if(tripState == 'loading'){
+         color = '#FF0000';
+      }
+      if(tripState == 'gas'){
+         color = '#00FF00';
+      }
+
+
+      objectEntities[0].cylinder.material.color.setValue(map.MapLib.Color.fromCssColorString(color).withAlpha(1));
+   });
+
+
+
 });

@@ -19,6 +19,7 @@ class vi_CesiumMap extends vi_Map {
       super(controller, domains);
 
       this.previousCameraAltitude = null; 
+      this.f = null;
      
       
     }
@@ -94,7 +95,7 @@ class vi_CesiumMap extends vi_Map {
             this.clock.clockRange = Cesium.ClockRange.LOOP_STOP;
             //this.clock.clockRange = Cesium.ClockRange.UNBOUNDED;
       
-            this.clock.shouldAnimate = true;
+            //this.clock.shouldAnimate = true;
       
             
             this.pulseProperty = new Cesium.SampledProperty(Number);
@@ -285,13 +286,20 @@ class vi_CesiumMap extends vi_Map {
         
             entity.position.setValue(objectCoordinates);
 
-            entity.cylinder.material.color.setValue(Cesium.Color.fromCssColorString("#FFEAFF").withAlpha(1));
-            entity.cylinder.material.color.setValue(Cesium.Color.fromCssColorString("#FFEA00").withAlpha(1));
+            //entity.cylinder.material.color.setValue(Cesium.Color.fromCssColorString("#FFEAFF").withAlpha(1));
+            //entity.cylinder.material.color.setValue(Cesium.Color.fromCssColorString("#FFEA00").withAlpha(1));
 
           
           }
 
           );
+
+
+
+          if(this.f){
+            this.f(updatedObject, objectEntities.entities);
+          }
+
 
           this.placeMarker(newLatitude,newLongitude);
 
@@ -303,6 +311,14 @@ class vi_CesiumMap extends vi_Map {
     }
 
 
+
+    onObjectUpdated(f){
+
+       this.f = f;
+
+    }
+
+
     placeMarker(newLatitude,newLongitude){
 
      if(this.marker){
@@ -310,13 +326,10 @@ class vi_CesiumMap extends vi_Map {
       const objectCoordinates = Cesium.Cartesian3.fromDegrees(
         newLongitude,
         newLatitude,
-        500
+        2500
       );
   
       this.marker.position.setValue(objectCoordinates);
-
-
-
 
 
      } else {
@@ -325,13 +338,13 @@ class vi_CesiumMap extends vi_Map {
         position : Cesium.Cartesian3.fromDegrees(
           newLongitude,
           newLatitude,
-         500
+         2500
           ),
        
         ellipse: {
           semiMinorAxis: this.pulseProperty,
           semiMajorAxis: this.pulseProperty,
-          height: 500.0,
+          height: 2500.0,
           material:  Cesium.Color.ORANGERED,
           outline: true, // height must be set for outline to display
         }
@@ -351,6 +364,14 @@ class vi_CesiumMap extends vi_Map {
       
   
     }
+
+
+    this.clock.shouldAnimate = true;
+    this.clock.onStop.addEventListener(() => {
+      this.clock.shouldAnimate = false;
+  });
+
+
   }
 
 
@@ -394,7 +415,73 @@ class vi_CesiumMap extends vi_Map {
         Cesium.ScreenSpaceEventType.MOUSE_MOVE
       );
     }
-  }
+  
+
+
+    async loadPolylineFromKML(id, url,altitude) {
+      try {
+       
+    
+        // Fetch KML content
+        const response = await fetch(url);
+        const kmlText = await response.text();
+    
+        // Parse KML content using DOMParser
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(kmlText, 'text/xml');
+    
+        // Extract coordinates from KML
+        const coordinates = [];
+        const coordinatesNodes = xmlDoc.querySelectorAll('coordinates');
+        coordinatesNodes.forEach(coordNode => {
+          const coordText = coordNode.textContent.trim();
+          const coordPairs = coordText.split(' ');
+    
+          coordPairs.forEach(coordPair => {
+            const [lon, lat, /* ignore altitude */] = coordPair.split(',').map(parseFloat);
+            if (!isNaN(lon) && !isNaN(lat)) {
+              // Add the coordinates with an altitude of 500 meters
+              coordinates.push(lon, lat, altitude);
+            }
+          });
+        });
+    
+        // Check if we have enough coordinates
+        if (coordinates.length < 6) {
+          throw new Error('Not enough coordinates to create a polyline');
+        }
+    
+        // Create polyline entity
+        const polylineEntity = this.viewer.entities.add({
+          polyline: {
+            positions: Cesium.Cartesian3.fromDegreesArrayHeights(coordinates),
+            width: 2,
+            material: Cesium.Color.RED,
+          },
+        });
+
+
+        this.polylineEntities[id] = {id:id, polylineEntity:polylineEntity};
+    
+        // Zoom to the extent of the polyline
+        this.viewer.zoomTo(polylineEntity);
+
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    clearPolylines(){
+      this.polylineEntities.forEach((p)=>{
+        var pp = p.polylineEntity;
+        this.viewer.entities.remove(pp); 
+      });
+      this.polylineEntities = [];
+    }
+    
+    
+
+}
   
   export default vi_CesiumMap;
   

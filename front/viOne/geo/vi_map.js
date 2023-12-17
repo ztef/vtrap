@@ -28,6 +28,7 @@ class vi_Map {
       this.currentLongitude = -100.3152;
 
       this.objectEntities = [];
+      this.polylineEntities = [];
       this.mapGeometries = {};
 
       this.MapLib;
