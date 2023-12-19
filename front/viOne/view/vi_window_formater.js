@@ -202,7 +202,7 @@ class vi_WindowFormater{
           } else {
     
             originalHeight = $(divElement).css("height");
-            $(divElement).css({ height: "30px", maxHeight: "650px", visibility: "visible" });
+            $(divElement).css({ height: "55px", maxHeight: "650px", visibility: "visible" });
             collapseButton.find("i").removeClass("fa-minus").addClass("fa-plus"); // Cambia el icono a +
             isCollapsed = true;
           }

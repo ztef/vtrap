@@ -9,7 +9,8 @@ const controller = new vi_Controller();
 const mapFactory = new vi_MapFactory();
 
 // Crea un mapa 
-const map = mapFactory.createMap("Cesium", controller);
+
+const map = mapFactory.createMap("Cesium", controller,[]);
 
 // Crea un Formateador de Ventanas
 const windowFormater = new vi_WindowFormater();

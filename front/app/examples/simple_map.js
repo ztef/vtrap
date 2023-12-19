@@ -8,7 +8,9 @@ const controller = new vi_Controller();
 const mapFactory = new vi_MapFactory();
 
 // Crea un mapa 
-const map = mapFactory.createMap("Cesium", controller);
+const map = mapFactory.createMap("Cesium", controller,[]);
+
+
 
 // Carga el mapa en su contenedor
 map.loadMap('mapContainer');
