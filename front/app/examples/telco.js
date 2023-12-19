@@ -58,6 +58,15 @@ var radio=500;
 // Formatea el contendor de mapa como ventana
 windowFormater.formatWindow("#segments","Segments",500,350);
 
+windowFormater.formatWindow("#ifr","Vista por Tiempo",650,450);
+
+//<iframe id="ifr" src="/front/app/semana/index.html" width="600" height="400" frameborder="0" ></iframe>
+
+const iframeHtml = '<iframe src="/front/app/semana/index.html" width="1200" height="800" frameborder="0"></iframe>';
+windowFormater.insertHtmlContent('ifr', iframeHtml);
+
+
+
 var routersRemoteListener;
 // Carga el mapa en su contenedor
 
@@ -300,7 +309,7 @@ function BLOC_ROUTERS(domain, event, data){
       if(router){
 
 
-            alert(router.data.fields.equipo);
+            //alert(router.data.fields.equipo);
       }
 
       

@@ -1,0 +1,102 @@
+
+<head>
+<meta charset="utf-8">
+<title></title>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+<link id="style" href="css/classic.css" rel="stylesheet" media="screen">
+<link href="http://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
+<style>
+
+@import url(css/StyledataTable.css);
+</style>
+</head>
+<body bgcolor="black" style="margin:1px;padding:0x;background-color: transparent;" height="100%">
+<img src="images/descarga.png" style="position:fixed;width:25px;float:left;top:0px;right:220px;opacity:1;z-index:800;pointer-events:none;z-index:999"></img>
+
+
+<div id="example1" height="100%"></div>
+		
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script> 
+<script src="js/jquery.columns-1.0.min.js"></script> 
+<script>
+function LimpiaDatos(){
+	console.log("LimpiaDatos");	
+}
+ $(function() {	
+	MuestraDatos(parent.getDatosList());
+});
+function MuestraDatos(datos){	
+
+	/*
+
+      Ejercicio: "2019"
+      Fecha_de_inicio_del_periodo_que_se_informa: "7/1/2019"
+      Fecha_de_termino_del_periodo_que_se_informa: "12/31/2019"
+      Descripcion_del_bien: "RACK SYSTEM HP"
+      Codigo_de_identificacion_en_su_caso: "134827"
+      Institución_a_cargo_del_bien_mueble_en_su_caso: "INFONAVIT"
+      Numero_de_inventario: "134827"
+      Monto_unitario_del_bien: "93635.21"
+      Area_responsable_que_genera_posee_publica_y_actualizan_la_informacion: "OFICINAS CENTRALES"
+      Fecha_de_validacion: "12/31/2019"
+      Fecha_de_actualizacion: "12/31/2019"
+      Nota: "NO SE CUENTA CON MARCA  Y MODELO CORRESPON
+
+    */
+
+
+	//Parse para conformar el CSV para descarga:
+	var textoCliipBoard="Ejercicio	Fecha_de_inicio_del_periodo_que_se_informa	Fecha_de_termino_del_periodo_que_se_informa	Descripcion_del_bien	Codigo_de_identificacion_en_su_caso 	Institución_a_cargo_del_bien_mueble_en_su_caso	Numero_de_inventario 	Monto_unitario_del_bien 	Fecha_de_validacion 	\n";
+	
+	for (var e in datos){
+		textoCliipBoard+=datos[e].name;
+		textoCliipBoard+="	"+datos[e].PRI;
+		textoCliipBoard+="	"+datos[e].PAN;
+		textoCliipBoard+="	"+datos[e].PRD;
+		textoCliipBoard+="	"+datos[e].NUEVA_ALIANZA;
+		textoCliipBoard+="	"+datos[e].movimientociudadano;
+		textoCliipBoard+="	"+datos[e].prd_psd;
+		textoCliipBoard+="	"+datos[e].psd;
+		textoCliipBoard+="	"+datos[e].pt;
+		textoCliipBoard+="	"+datos[e].totalVotos;
+		textoCliipBoard+="	"+datos[e].votosAnulados;
+		textoCliipBoard+="	"+datos[e].listaNominal;
+		textoCliipBoard+="\n";
+	}
+	parent.datosEnCSVEnPantalla=textoCliipBoard;
+	console.log("MuestraDatos",datos);
+
+	$('#example1').html("");
+	$('#example1').columns(
+		{
+	data:datos,
+	schema: [	
+	{"header":"Ejercicio", "key":"Ejercicio"},
+	{"header":"Fecha inicio", "key":"Fecha_de_inicio_del_periodo_que_se_informa"},
+	{"header":"Fecha termino", "key":"Fecha_de_termino_del_periodo_que_se_informa"},
+	{"header":"Descripcion", "key":"Descripcion_del_bien"},
+	{"header":"Codigo / ID", "key":"Codigo_de_identificacion_en_su_caso"},
+	{"header":"Institucióna cargo", "key":"Institución_a_cargo_del_bien_mueble_en_su_caso"},
+	{"header":"No. inventario", "key":"Numero_de_inventario"},
+	{"header":"Monto", "key":"Monto_unitario_del_bien"},
+	{"header":"Fecha validacion", "key":"Fecha_de_validacion"}
+	
+	]
+	});
+
+	
+	$(".columns.ui-table.ui-arrow").css('font-size', '10px');
+	$(".columns.ui-table").css('font-size', '10px');
+	$("tbody").css('font-size', '10px');
+	$("thead").css('font-size', '10px');
+	$(".ui-columns-search").css('font-size', '10px');
+	
+}		
+						
+</script>
+<script type="text/javascript"> 
+
+</script>
+
+</body>
+

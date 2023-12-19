@@ -251,6 +251,20 @@ class vi_WindowFormater{
       });
     
       }
+
+      insertHtmlContent(divElement, htmlContent) {
+        const container = document.getElementById(divElement);
+
+        if (container) {
+            // Find the top bar container
+            const topBarContainer = container.querySelector('.top-bar-container');
+
+            if (topBarContainer) {
+                // Insert the provided HTML content after the top bar container
+                topBarContainer.insertAdjacentHTML('afterend', htmlContent);
+            }
+        }
+    }
     
 
 
