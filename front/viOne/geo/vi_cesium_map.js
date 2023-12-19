@@ -8,18 +8,31 @@
 */
 
 import vi_Map from '/front/viOne/geo/vi_map.js'; 
+import { decode, encode } from "/front/viOne/js/@googlemaps/polyline-codec/dist/index.esm.js";
  
 
 
 class vi_CesiumMap extends vi_Map {
 
-  constructor(controller, domains) {
+  constructor(controller, domains, config) {
     
 
       super(controller, domains);
 
       this.previousCameraAltitude = null; 
       this.f = null;
+
+      this.markerWidth = 1000.0;
+      this.markerHeight = 2500;
+
+
+      if(config){
+        this.markerWidth = config.markerWidth;
+        this.markerHeight = config.markerHeight;
+      }
+
+
+
      
       
     }
@@ -105,7 +118,7 @@ class vi_CesiumMap extends vi_Map {
             });
             
             this.pulseProperty.addSample(start, 7.0);
-            this.pulseProperty.addSample(mid, 1000.0);
+            this.pulseProperty.addSample(mid, this.markerWidth);
             this.pulseProperty.addSample(stop, 7.0);
 
 
@@ -274,6 +287,8 @@ class vi_CesiumMap extends vi_Map {
         
       
         if (objectEntities) {
+
+          var maxh = 0;
              
 
           objectEntities.entities.forEach((entity) =>{
@@ -283,8 +298,14 @@ class vi_CesiumMap extends vi_Map {
               newLatitude,
               entity.offset.z
             );
+
+            if(maxh < entity.offset.z){
+              maxh = entity.offset.z;
+            }
         
             entity.position.setValue(objectCoordinates);
+
+            //
 
             //entity.cylinder.material.color.setValue(Cesium.Color.fromCssColorString("#FFEAFF").withAlpha(1));
             //entity.cylinder.material.color.setValue(Cesium.Color.fromCssColorString("#FFEA00").withAlpha(1));
@@ -301,7 +322,7 @@ class vi_CesiumMap extends vi_Map {
           }
 
 
-          this.placeMarker(newLatitude,newLongitude);
+          this.placeMarker(newLatitude,newLongitude,maxh);
 
            
 
@@ -319,14 +340,14 @@ class vi_CesiumMap extends vi_Map {
     }
 
 
-    placeMarker(newLatitude,newLongitude){
+    placeMarker(newLatitude,newLongitude,h){
 
      if(this.marker){
 
       const objectCoordinates = Cesium.Cartesian3.fromDegrees(
         newLongitude,
         newLatitude,
-        2500
+        h
       );
   
       this.marker.position.setValue(objectCoordinates);
@@ -338,16 +359,19 @@ class vi_CesiumMap extends vi_Map {
         position : Cesium.Cartesian3.fromDegrees(
           newLongitude,
           newLatitude,
-         2500
+          h
           ),
        
         ellipse: {
           semiMinorAxis: this.pulseProperty,
           semiMajorAxis: this.pulseProperty,
-          height: 2500.0,
+          height: this.markerHeight,
           material:  Cesium.Color.ORANGERED,
           outline: true, // height must be set for outline to display
-        }
+          clampToGround: true
+        },
+        heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+        extrudedHeightReference: Cesium.HeightReference.RELATIVE_TO_GROUND
 
 
 
@@ -418,6 +442,78 @@ class vi_CesiumMap extends vi_Map {
   
 
 
+
+    loadPolylineString(id, encodedPolyline) {
+
+      const poly = this.polylineEntities[id]; 
+      
+      if(poly){
+
+        this.viewer.zoomTo(poly.polylineEntity);
+
+      } else {
+
+      
+
+              try {
+                  // Assuming 'decode' directly returns an array of coordinates [latitude, longitude]
+                  const coordinates = decode(encodedPolyline, 5);
+          
+                  // Create a Cesium entity with a polyline
+                  const polylineEntity = this.viewer.entities.add({
+                      polyline: {
+                          positions: coordinates.map(coord => Cesium.Cartesian3.fromDegrees(coord[1], coord[0])), // Reversed order for Cesium
+                          width: 5,
+                          material: Cesium.Color.WHITE,
+                          clampToGround: true,
+                      },
+                  });
+
+                  this.polylineEntities[id] = {id:id, polylineEntity:polylineEntity};
+          
+                   
+
+              } catch (error) {
+                  console.error('Error decoding or loading polyline:', error);
+              }
+
+    }
+  }
+
+
+  setPolyline(id,color){
+
+    const poly = this.polylineEntities[id]; 
+      
+    if(poly){
+
+      
+
+      poly.polylineEntity.polyline.material = Cesium.Color.fromCssColorString(color).withAlpha(1);
+
+      
+    }
+
+
+  }
+
+
+  flyToPolyline(id){
+    const poly = this.polylineEntities[id]; 
+      
+    if(poly){
+
+
+       
+
+      this.viewer.zoomTo(poly.polylineEntity);
+      
+    }
+  }
+
+
+  
+
     async loadPolylineFromKML(id, url,altitude) {
       try {
        
@@ -457,6 +553,7 @@ class vi_CesiumMap extends vi_Map {
             positions: Cesium.Cartesian3.fromDegreesArrayHeights(coordinates),
             width: 2,
             material: Cesium.Color.RED,
+            clampToGround: true,
           },
         });
 

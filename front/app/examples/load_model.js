@@ -6,8 +6,8 @@ windowFormater.formatWindow("#almacen","Detalles",500,350);
 windowFormater.positionDiv("almacen",70,60);  
 
 const almacen3D = new vi_3DSceneRenderer('almacen');
-almacen3D.loadGLTFModelc('./assets/lacomerx.glb');
-
+//almacen3D.loadGLTFModelc('./assets/lacomerx.glb');
+almacen3D.loadGLTFModelc('./assets/telecom.glb');
 
 
 

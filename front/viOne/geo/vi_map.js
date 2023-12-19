@@ -80,6 +80,8 @@ class vi_Map {
           position: objectCoordinates,
           name:  id,
           ...geometry,
+          heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+          extrudedHeightReference: Cesium.HeightReference.RELATIVE_TO_GROUND
         };
 
         entities.push(entity);
@@ -121,6 +123,7 @@ class vi_Map {
         topRadius: 10,
         bottomRadius: 10,
         material: this.MapLib.Color.GREEN,
+        clampToGround: true
       }}];
        
       return geom;
