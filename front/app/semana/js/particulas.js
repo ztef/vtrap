@@ -246,12 +246,12 @@ function DibujaParticulas(){
 								      
 								    	var toolText =  
 								    					"<span style='color:#fff600'>Dia:  <span style='color:#ffffff'>"+data.dia+" <br>"+
-								    					"<span style='color:#fff600'>Edad:  <span style='color:#ffffff'>"+data.edad+"<br>"+
-								    					"<span style='color:#fff600'>Colonia:  <span style='color:#ffffff'> "+nombreColonias[data.colonia]+"<br><hr>"+
-								    					"<span style='color:#fff600'>Nombre Completo:  <span style='color:#ffffff'> <br>"+
+								    					"<span style='color:#fff600'>Alertas:  <span style='color:#ffffff'>"+data.edad+"<br>"+
+								    					"<span style='color:#fff600'>Router:  <span style='color:#ffffff'> "+nombreColonias[data.colonia]+"<br><hr>"+
+								    					"<span style='color:#fff600'>Marca:  <span style='color:#ffffff'> <br>"+
 								    					"<span style='color:#fff600'>Localidad:  <span style='color:#ffffff'><br>"+
-								    					"<span style='color:#fff600'>RFC:  <span style='color:#ffffff'><br>"+
-								    					"<span style='color:#fff600'>Sexo:  <span style='color:#ffffff'> <br>";
+								    					"<span style='color:#fff600'>Clave:  <span style='color:#ffffff'><br>"+
+								    					"<span style='color:#fff600'>Tipo:  <span style='color:#ffffff'> <br>";
 								    					;
 
 								
