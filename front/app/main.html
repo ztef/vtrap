@@ -90,7 +90,8 @@
 
    // CREA UN MAPA TIPO Cesium
       const mapFactory = new vi_MapFactory();
-      const map = mapFactory.createMap("Cesium", controller);
+      
+      const map = mapFactory.createMap("Cesium", controller,['cedis']);
    
    // CREA UNA FABRICA PARA LISTENERS REMOTOS   
       const remoteListenerFactory = new vi_RemoteListenerFactory();
@@ -101,9 +102,14 @@
    // CREA UN DATASOURCE PARA CEDIS   
       const cf = {
        "SPREADSHEET_ID": "1jcCmQGVd8e0iWGSKs9koz2wNKjgDQAdV4KRbL90eCyI",
-       "collection":"cedis",
-       "collectionName" : "CEDIS"
+       "collections":[{
+        "collection":"cedis",
+        "collectionName" : "CEDIS"
+       }]
       }
+
+
+     
       const cedisDataSource = new vi_DataSource('GoogleSheet', cf, './config/googlesheetconfig.json');
 
 
@@ -167,7 +173,7 @@
 
       // Usa el div para que el controlador actualice los datos de los objetos de manera continua en una tabla dentro del div
       // Nota :  Usa funciones auxiliares para detallar el header y las filas de la tabla
-      const gridView = new vi_ObjectGridView('objects_menu',controller, headerFunction, rowFunction);
+      const gridView = new vi_ObjectGridView('cedis','objects_menu',controller, headerFunction, rowFunction);
         
       // Carga Mapa y activa listener continuo
       map.loadMap('mapContainer').then(()=>{

@@ -369,6 +369,16 @@ export class vi_3DSceneRenderer {
 
 
 
+    createWireframedPlane(size, divisions) {
+        const planeGeometry = new THREE.PlaneGeometry(size, size, divisions, divisions);
+        const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x808080, wireframe: true });
+        const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+        plane.rotation.x = -Math.PI / 2; // Rotate the plane to align with the X-Y plane
+        this.scene.add(plane);
+    }
+
+
+
     animate() {
         requestAnimationFrame(() => this.animate());
 
