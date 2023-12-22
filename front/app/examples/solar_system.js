@@ -1,9 +1,15 @@
+import { vi_abstractBoard } from '../viOne/view/vi_abstract_board.js';
 import { vi_geometry_factory, vi_3DSceneRenderer, vi_WindowFormater, vi_ObjectModel, vi_RemoteListenerFactory, vi_ObjectGridView, vi_Controller, vi_DataSource} from '../viOne/all.js';
  
 const windowFormater = new vi_WindowFormater();
 
 windowFormater.formatWindow("#ventana","Detalles",500,350);
  
+
+
+
+// PARTE GRAFICA
+
 const renderer = new vi_3DSceneRenderer('ventana');
 
 
@@ -22,10 +28,64 @@ var o2 = gf.createVisualObject(m2,"ID2")
 renderer.addGeometry(o1);
 renderer.addGeometry(o2);
 
-renderer.createWireframedPlane(100, 10);
+
+renderer.createGridOfPlanes(5, 5, 20, 0x0088ff, 0.5); 
+//renderer.createColoredPlane(100, 0x0088ff, 0.5);
+//renderer.createWireframedPlane(100, 10);
 
 
 renderer.focus(0,0,0,100);
+
+
+
+
+var board_config = {
+
+    boardType: "xyz",
+    dimensions : [
+        {
+            name:"cliente",
+            label:"Clientes",
+            axis:"x",
+            delta:10,
+            dimensions : [
+                {
+                    name:"ruta",
+                    label:"Rutas",
+                    axis:"y",
+                    delta:10,
+                       dimensions : [
+                        {
+                            name:"mobil",
+                            label:"mobil",
+                            axis:"z",  
+                            delta:10, 
+                            dimensions: [
+                                {
+                                    name:"tipo",
+                                    label:"tipo",
+                                    axis:"color"   
+                                }
+                            ]
+                        }
+                       ]
+                }
+            ]   
+        },
+        
+    ]
+}
+
+var board = new vi_abstractBoard('tablero',board_config, renderer);
+
+
+board.addElement({cliente:'A', ruta:'R', mobil:'m1', tipo:'t1'});
+board.addElement({cliente:'B', ruta:'R', mobil:'m1', tipo:'t1'});
+board.addElement({cliente:'B', ruta:'R1', mobil:'m1', tipo:'t1'});
+
+
+board.print();
+
 
 
 

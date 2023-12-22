@@ -1,10 +1,17 @@
 export class vi_segment{
 
-    constructor(name, label){
+
+
+
+    // {dimension:this.name, label:data[this.name], position:this.position}
+    constructor(segment_data){
         
-        this.name = name;
-        this.label = label;
-        
+        this.name =segment_data.label;
+        this.dimension = segment_data.dimension;
+        this.position = segment_data.position;
+
+        console.log('segemto en dim:', this.dimension, ' name:', this.name, ' pos:', this.position);
+      
     
     }
 

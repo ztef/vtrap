@@ -186,7 +186,7 @@ export class vi_3DSceneRenderer {
        
         const customObject = this.objects.get(object);
         if (customObject) {
-            console.log('Selected object ID:', customObject.id);
+            console.log('Selected custom object ID:', customObject.id);
             this.selectedObject = object;
             // Change the color of the selected object (assuming it has a material)
             const material = object.material;
@@ -375,7 +375,41 @@ export class vi_3DSceneRenderer {
         const plane = new THREE.Mesh(planeGeometry, planeMaterial);
         plane.rotation.x = -Math.PI / 2; // Rotate the plane to align with the X-Y plane
         this.scene.add(plane);
+    
     }
+
+
+    createGridOfPlanes(n, m, planeSize, color, opacity) {
+        const spacing = planeSize * 1.5; // Adjust the spacing between planes
+
+        for (let i = 0; i < n; i++) {
+            for (let j = 0; j < m; j++) {
+                const x = i * spacing - (n * spacing) / 2;
+                const z = j * spacing - (m * spacing) / 2;
+                this.createColoredPlane(planeSize, color, opacity, x, 0, z);
+            }
+        }
+    }
+
+    createColoredPlane(size, color, opacity, x = 0, y = 0, z = 0) {
+        const planeGeometry = new THREE.PlaneGeometry(size, size);
+        const planeMaterial = new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: opacity });
+        const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+        plane.position.set(x, y, z);
+        plane.rotation.x = -Math.PI / 2; // Rotate the plane to align with the X-Y plane
+        this.scene.add(plane);
+    }
+
+
+    createColoredSinglePlane(size, color, opacity) {
+        const planeGeometry = new THREE.PlaneGeometry(size, size);
+        const planeMaterial = new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: opacity });
+        const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+        plane.rotation.x = -Math.PI / 2; // Rotate the plane to align with the X-Y plane
+        this.scene.add(plane);
+    }
+
+
 
 
 
