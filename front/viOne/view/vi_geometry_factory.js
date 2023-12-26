@@ -40,6 +40,17 @@ export class vi_geometry_factory {
       }
 
 
+      /*
+      
+        const planeGeometry = new THREE.PlaneGeometry(size, size);
+        const planeMaterial = new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: opacity });
+        const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+      
+      */
+
+
+
+
       createObject(geometry, pos , color) {
 
         const position = new THREE.Vector3(pos.x, pos.y, pos.z);

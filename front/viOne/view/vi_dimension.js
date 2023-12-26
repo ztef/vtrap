@@ -8,8 +8,11 @@ export class vi_dimension {
         this.label = config.label;
         this.axis = config.axis;            // eje
         this.delta = config.delta;          // delta o incremente entre segmentos
-        this.position = 0;                 // valor ultimo
-        this.dimensions = []                // SUBDIMENSIONES
+        this.position = config.value0;         // valor actual de la posicion
+        this.estimated_segments = config.segments;    // segmentos esperados
+        this.dimensions_def = [];              // SUBDIMENSIONES
+        this.numsegments = 0;              // numero de segmentos
+        
 
 
         console.log('dimension ', this.name, 'creada');
@@ -20,8 +23,8 @@ export class vi_dimension {
 
             config.dimensions.forEach((dimension_config) => {
                 
-                var dimension = new vi_dimension(dimension_config);  // Llamada Recursiva
-                this.dimensions.push(dimension);
+               
+                this.dimensions_def.push(dimension_config);
 
             });
 
@@ -35,45 +38,88 @@ export class vi_dimension {
     }
 
 
-    locateSegments(data, acum){
+    getSegments(data){
+
 
 
         var segment;
 
-        // checa si existe un segmento para este dato dentro de esta dimension
-        if (this.segments.hasOwnProperty(data[this.name]))
+        var segmentname =  data[this.name];
+
+       
+
+
+        // Si ya existe el segmento en esta dimension :
+        if (this.segments.hasOwnProperty(segmentname))
         {
             
-            segment = this.segments[data[this.name]];
+            segment = this.segments[segmentname];
+             
 
         } else {
 
 
-            // Crea el segmento si no existe
-            this.position = this.position + this.delta;
-            this.segments[data[this.name]] = new vi_segment({dimension:this.name, label:data[this.name], axis:this.axis, position:this.position});
+            // Si no existe el segmento
+            
+            // crea el segmento :
+            segment = new vi_segment({dimension:this.name, segmentname:segmentname, label:data[this.name], axis:this.axis, position:this.position, segments:this.estimated_segments, dimensions_def:this.dimensions_def, data:data});
         
-            segment = this.segments[data[this.name]]; 
+            // incrementa el numero de segmentos en esta dimension
+            this.numsegments = this.numsegments + 1;
+
+            // incrementa el valor de la posicion del segmento dentro de la dimension
+            this.position =  this.numsegments * this.delta;
+           
+           
+            
+           
+
+            this.segments[segmentname] = segment; 
+            
+
         }
 
 
-        // en este punto ya se localizo el segmento dentro de esta dimension.
-        // ahora hay que ir a las subdimensiones para localizar los segmentos en cada una de ellas
+
+        var subsegments = segment.addData(data);
+        segment.counter = segment.counter + 1;
+
+        var segments = [];
+        segments.push(segment);
+
+        subsegments.forEach((subs)=>{
+            segments.push(subs);       
+        });
 
 
-        this.dimensions.forEach((dimension)=>{
+        return segments;
 
-            var seg = dimension.locateSegments(data, acum);
-            //acum.push(seg);
+    }
+
+    
+
+    getMap(acum){
+
+
+        var map = {dimension:this.name,  axis:this.axis, value:this.value, delta:this.delta, segments:this.estimated_segments};
+
+        acum.push(map);
+
+        this.dimensions_def.forEach((dimension_def)=>{
+
+            var seg = this.getMap(acum);
+            acum.push(seg);
 
         });
 
-        acum.push(segment);
+        
 
         return acum;
         
 
     }
+    
+
 
 
     // imprime los segmentos
