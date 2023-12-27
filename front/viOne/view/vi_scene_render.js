@@ -292,14 +292,14 @@ export class vi_3DSceneRenderer {
         this.scene.add(line);
     }
 
-    addLabel(label, position = { x: 0, y: 0, z: 0 }, rotation = { x: 0, y: 0, z: 0 }) {
+    addLabel(label, position = { x: 0, y: 0, z: 0 }, rotation = { x: 0, y: 0, z: 0 }, size = {size:2, height:0.1}) {
         // Load the font
         this.setupFont().then(() => {
             // Create text geometry
             const textGeometry = new TextGeometry(label, {
                 font: this.font,
-                size: 2,
-                height: 0.1,
+                size: size.size,
+                height: size.height,
             });
     
             // Create a material for the text

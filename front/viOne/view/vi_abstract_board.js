@@ -150,6 +150,10 @@ export class vi_abstractBoard {
                     }
 
 
+
+                    // LABELS
+
+
                     if(dim.label){
 
                         var pos = {x:0, y:0, z:0};
@@ -174,8 +178,12 @@ export class vi_abstractBoard {
                         }
 
 
-                        this.render_engine.addLabel(dim.label,pos,rotate);
+                        this.render_engine.addLabel(dim.label,pos,rotate,{size:3, height:0.3});
                     }
+
+
+
+                    // EJES
 
 
                     if(dim.axis == 'x'){
@@ -224,11 +232,35 @@ export class vi_abstractBoard {
         var pos = {x:0, y:0, z:0, color:0};
         segments.forEach((segment)=>{
                
+                    // calcula posicion del elemento
                     pos[segment.axis] = pos[segment.axis] + segment.position;
-               
+                  
         });
 
-        console.log(pos);
+
+
+        segments.forEach((segment)=>{        
+                if(segment.axis == 'x'){
+                    var posit =  {x:pos.x, y:0, z:0};
+                    var rotate = {x:0, y:0, z:3.1415/2};
+                
+                    this.render_engine.addLabel(segment.name,posit,rotate,{size:1, height:0.1});
+                }
+
+                if(segment.axis == 'y'){
+                    var posit =  {x:pos.x -5 , y:pos.y, z:0};
+                    var rotate = {x:0, y:0, z:0};
+                
+                    this.render_engine.addLabel(segment.name,posit,rotate,{size:1, height:0.1});
+                }
+        });
+   
+
+
+
+
+
+         
 
         var g = this.geometry_factory.createGeometry('Sphere',[2,10,10]);
         var m = this.geometry_factory.createObject(g,{x:pos.x,y:pos.y,z:pos.z}, { color: pos.color });

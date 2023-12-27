@@ -141,10 +141,6 @@ board.draw();
 
 
 
-//renderer.addLabel('HOLA',{x:0,y:0,z:0},{x:0,y:0,z:3.1415/2});
-
-
-
 
 board.addElement({id:0, cliente:'A', ruta:'R', mobil:'m1', tipo:'truck'});
 board.addElement({id:1, cliente:'B', ruta:'R1', mobil:'m2', tipo:'truck'});
