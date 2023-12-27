@@ -29,6 +29,7 @@ export class vi_3DSceneRenderer {
         this.useOrthographicCamera = useOrthographicCamera; // Determine camera type
         this.init();
         this.selectedObject = null;
+        this.font = null;
     }
 
     init() {
@@ -48,6 +49,21 @@ export class vi_3DSceneRenderer {
     }
 
     
+   
+
+    setupFont() {
+        const loader = new FontLoader();
+    
+        return new Promise((resolve, reject) => {
+            loader.load('/front/app/assets/gentilis_bold.typeface.json', (font) => {
+                this.font = font;
+                resolve();
+            }, undefined, reject);
+        });
+    }
+
+
+
 
     setupCamera() {
         const aspect = this.container.clientWidth / this.container.clientHeight;
@@ -263,42 +279,46 @@ export class vi_3DSceneRenderer {
     }
 
 
-    addLineAndLabels() {
+    addLine(o = { x: 0, y: 0, z: 0 }, d = { x: 0, y: 0, z: 0 }) {
         // Create a line along the x-axis
         const lineGeometry = new THREE.BufferGeometry().setFromPoints([
-            new THREE.Vector3(-50, 0, 0),
-            new THREE.Vector3(50, 0, 0),
+            new THREE.Vector3(o.x, o.y, o.z),
+            new THREE.Vector3(d.x, d.y, d.z),
         ]);
         const lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 });
         const line = new THREE.Line(lineGeometry, lineMaterial);
     
         // Add the line to the scene
         this.scene.add(line);
+    }
 
-     
-
-       // Load the font
-    const loader = new FontLoader();
-    loader.load('/front/app/assets/gentilis_bold.typeface.json', (font) => {
-        // Create text geometry
-        const textGeometry = new TextGeometry('Jala esta Madre', {
-            font: font,
-            size: 2, // Adjust size as needed
-            height: 0.1, // Adjust height as needed
+    addLabel(label, position = { x: 0, y: 0, z: 0 }, rotation = { x: 0, y: 0, z: 0 }) {
+        // Load the font
+        this.setupFont().then(() => {
+            // Create text geometry
+            const textGeometry = new TextGeometry(label, {
+                font: this.font,
+                size: 2,
+                height: 0.1,
+            });
+    
+            // Create a material for the text
+            const textMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+    
+            // Create a mesh using the text geometry and material
+            const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+    
+            // Position the text
+            textMesh.position.set(position.x, position.y, position.z);
+    
+            // Set the rotation of the text
+            textMesh.rotation.set(rotation.x, rotation.y, rotation.z);
+    
+            // Add the text mesh to the scene
+            this.scene.add(textMesh);
+        }).catch((error) => {
+            console.error('Error loading font:', error);
         });
-
-        // Create a material for the text
-        const textMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
-
-        // Create a mesh using the text geometry and material
-        const textMesh = new THREE.Mesh(textGeometry, textMaterial);
-
-        // Position the text
-        textMesh.position.set(0, 2, 0); // Adjust position as needed
-
-        // Add the text mesh to the scene
-        this.scene.add(textMesh);
-    });
     }
 
     focus(x, y, z, distance) {

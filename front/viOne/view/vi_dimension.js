@@ -8,7 +8,9 @@ export class vi_dimension {
         this.label = config.label;
         this.axis = config.axis;            // eje
         this.delta = config.delta;          // delta o incremente entre segmentos
+        this.value0 = config.value0;
         this.position = config.value0;         // valor actual de la posicion
+        this.map = config.map;
         this.estimated_segments = config.segments;    // segmentos esperados
         this.dimensions_def = [];              // SUBDIMENSIONES
         this.numsegments = 0;              // numero de segmentos
@@ -61,14 +63,19 @@ export class vi_dimension {
             // Si no existe el segmento
             
             // crea el segmento :
-            segment = new vi_segment({dimension:this.name, segmentname:segmentname, label:data[this.name], axis:this.axis, position:this.position, segments:this.estimated_segments, dimensions_def:this.dimensions_def, data:data});
+            segment = new vi_segment({dimension:this.name, segmentname:segmentname, label:data[this.name], axis:this.axis, position:this.position, segments:this.estimated_segments, dimensions_def:this.dimensions_def, data:data, map:this.map});
         
-            // incrementa el numero de segmentos en esta dimension
+            // incrementa el numero de segmentos en esta dimensionthis.
             this.numsegments = this.numsegments + 1;
 
             // incrementa el valor de la posicion del segmento dentro de la dimension
-            this.position =  this.numsegments * this.delta;
-           
+
+            if(this.map){
+                this.position = this.map[data[this.name]];
+                segment.position = this.position;
+            } else {
+                this.position =  this.value0 + this.numsegments * this.delta;
+            }
            
             
            

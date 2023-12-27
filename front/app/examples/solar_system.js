@@ -52,7 +52,7 @@ var board_config = {
             name:"cliente",
             label:"Clientes",
             axis:"x",
-            value0: 0,
+            value0: 20,
             delta:20,
             segments:10,
             dimensions : [
@@ -60,23 +60,34 @@ var board_config = {
                     name:"ruta",
                     label:"Rutas",
                     axis:"y",
-                    value0: 0,
+                    value0: 20,
                     delta:20,
                     segments:10,
                        dimensions : [
                         {
                             name:"mobil",
-                            label:"mobil",
+                            label:"Moviles",
                             axis:"z",
                             value0: 0,  
                             delta:20, 
                             segments:10,
+                            
                             
                         }
                        ]
                 }
             ]   
         },
+
+        {
+            name:"tipo",
+            label:"color",
+            axis:"color",
+            value0: 0,  
+            delta:0, 
+            map: {"truck": 0xFF0000, "car":0x00FF00, "default":0x0000FF},
+            segments:10,  
+        }
         
     ]
 }
@@ -129,11 +140,17 @@ var board = new vi_abstractBoard('tablero',board_config, renderer);
 board.draw();
 
 
-board.addElement({id:0, cliente:'A', ruta:'R', mobil:'m1', tipo:'t1'});
-board.addElement({id:1, cliente:'B', ruta:'R1', mobil:'m', tipo:'t1'});
-board.addElement({id:2, cliente:'B', ruta:'R2', mobil:'m', tipo:'t1'});
-board.addElement({id:3, cliente:'B', ruta:'R2', mobil:'m2', tipo:'t1'});
-board.addElement({id:4, cliente:'C', ruta:'R', mobil:'m11', tipo:'t2'});
+
+//renderer.addLabel('HOLA',{x:0,y:0,z:0},{x:0,y:0,z:3.1415/2});
+
+
+
+
+board.addElement({id:0, cliente:'A', ruta:'R', mobil:'m1', tipo:'truck'});
+board.addElement({id:1, cliente:'B', ruta:'R1', mobil:'m2', tipo:'truck'});
+board.addElement({id:2, cliente:'B', ruta:'R2', mobil:'m3', tipo:'car'});
+board.addElement({id:3, cliente:'B', ruta:'R2', mobil:'m4', tipo:'car'});
+board.addElement({id:4, cliente:'C', ruta:'R', mobil:'m5', tipo:'truck'});
 
 
 

@@ -94,7 +94,7 @@ export class vi_abstractBoard {
 
         config.dimensions.forEach(dimension => {
             
-            var map = {dimension:dimension.name,  axis:dimension.axis, value:dimension.value0, delta:dimension.delta, segments:dimension.segments};
+            var map = {dimension:dimension.name, label:dimension.label, axis:dimension.axis, value:dimension.value0, delta:dimension.delta, segments:dimension.segments};
             acum.push(map);
 
             var sub = this.getMap(dimension); // Llamada recursiva
@@ -124,19 +124,19 @@ export class vi_abstractBoard {
 
             dimensions_map = this.getMap(this.config);
 
-                dimensions_map.forEach((subd)=>{
+                dimensions_map.forEach((dim)=>{
 
                     // Crea geometria :
       
-                    var pos = subd.value;
-                    for(var i=0; i < subd.segments; i ++){
+                    var pos = dim.value;
+                    for(var i=0; i < dim.segments; i ++){
 
 
-                        var magnitude = subd.value + subd.delta * i;
-                        var axis = subd.axis;
+                        var magnitude = dim.value + dim.delta * i;
+                        var axis = dim.axis;
                         var pos = {x:0, y:0, z:0, color:0x0088ff};
                         pos[axis] = magnitude;
-                        var id = subd.name + '_' + i;
+                        var id = dim.name + '_' + i;
 
 
                         var g = this.geometry_factory.createGeometry('Plane',[5,10,1,1]);
@@ -150,6 +150,43 @@ export class vi_abstractBoard {
                     }
 
 
+                    if(dim.label){
+
+                        var pos = {x:0, y:0, z:0};
+                        var rotate = {x:0, y:0, z:0};
+
+                        if(dim.axis == 'x'){
+                            pos =  {x:30, y:-10, z:0};
+                        }
+
+                        if(dim.axis == 'y'){
+                            pos =  {x:-10, y:30, z:0};
+                            rotate = {x:0, y:0, z:3.1415/2};
+                        }
+
+                        if(dim.axis == 'z'){
+                            pos =  {x:-10, y:-10, z:30};
+                            rotate = {x:0, y:3.1415/2, z:0};
+                        }
+
+                        if(dim.axis == 'color'){
+                            pos =  {x:0, y:-20, z:0};
+                        }
+
+
+                        this.render_engine.addLabel(dim.label,pos,rotate);
+                    }
+
+
+                    if(dim.axis == 'x'){
+                        this.render_engine.addLine({ x: 0, y: 0, z: 0 }, { x: 200, y: 0, z: 0 }) 
+                    }
+                    if(dim.axis == 'y'){
+                        this.render_engine.addLine({ x: 0, y: 0, z: 0 }, { x: 0, y: 200, z: 0 }) 
+                    }
+                    if(dim.axis == 'z'){
+                        this.render_engine.addLine({ x: 0, y: 0, z: 0 }, { x: 0, y: 0, z: 200 }) 
+                    }
 
 
                 });
@@ -182,18 +219,19 @@ export class vi_abstractBoard {
             });
 
 
-
         });
 
-        var pos = {x:0, y:0, z:0};
+        var pos = {x:0, y:0, z:0, color:0};
         segments.forEach((segment)=>{
-               pos[segment.axis] = pos[segment.axis] + segment.position;
+               
+                    pos[segment.axis] = pos[segment.axis] + segment.position;
+               
         });
 
         console.log(pos);
 
-        var g = this.geometry_factory.createGeometry('Sphere',[3,10,10]);
-        var m = this.geometry_factory.createObject(g,{x:pos.x,y:pos.y,z:pos.z}, { color: 0xFF0000 });
+        var g = this.geometry_factory.createGeometry('Sphere',[2,10,10]);
+        var m = this.geometry_factory.createObject(g,{x:pos.x,y:pos.y,z:pos.z}, { color: pos.color });
         var o = this.geometry_factory.createVisualObject(m,data.id);
           
         this.render_engine.addGeometry(o);
