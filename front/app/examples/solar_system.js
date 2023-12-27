@@ -42,6 +42,8 @@ renderer.focus(0,0,0,100);
 
 
 
+
+
 var board_config = {
 
     boardType: "xyz",
@@ -65,7 +67,7 @@ var board_config = {
                         {
                             name:"mobil",
                             label:"mobil",
-                            axis:"y",
+                            axis:"z",
                             value0: 0,  
                             delta:20, 
                             segments:10,
@@ -79,6 +81,48 @@ var board_config = {
     ]
 }
 
+
+/*
+var board_config = {
+
+    boardType: "xyz",
+    dimensions : [
+        {
+            name:"cliente",
+            label:"Clientes",
+            axis:"x",
+            value0: 0,
+            delta:20,
+            segments:10},
+        {
+            name:"ruta",
+            label:"Rutas",
+            axis:"y",
+            value0: 0,
+            delta:20,
+            segments:10,
+                dimensions : [
+                {
+                    name:"mobil",
+                    label:"mobil",
+                    axis:"z",
+                    value0: 0,  
+                    delta:20, 
+                    segments:10,
+                    
+                }
+                ]
+        }
+    ]
+              
+};
+*/
+        
+    
+
+
+
+
 var board = new vi_abstractBoard('tablero',board_config, renderer);
 
 
@@ -88,8 +132,8 @@ board.draw();
 board.addElement({id:0, cliente:'A', ruta:'R', mobil:'m1', tipo:'t1'});
 board.addElement({id:1, cliente:'B', ruta:'R1', mobil:'m', tipo:'t1'});
 board.addElement({id:2, cliente:'B', ruta:'R2', mobil:'m', tipo:'t1'});
-board.addElement({id:3, cliente:'B', ruta:'R3', mobil:'m', tipo:'t1'});
-board.addElement({id:4, cliente:'C', ruta:'R4', mobil:'m11', tipo:'t2'});
+board.addElement({id:3, cliente:'B', ruta:'R2', mobil:'m2', tipo:'t1'});
+board.addElement({id:4, cliente:'C', ruta:'R', mobil:'m11', tipo:'t2'});
 
 
 

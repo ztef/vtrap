@@ -22,8 +22,7 @@ export class vi_dimension {
         if(config.dimensions){
 
             config.dimensions.forEach((dimension_config) => {
-                
-               
+                   
                 this.dimensions_def.push(dimension_config);
 
             });

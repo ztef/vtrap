@@ -61,6 +61,9 @@ export class vi_abstractBoard {
         this.name = name;
         this.render_engine = render_engine;
         this.dimensions = [];
+        this.config = board_config;
+
+
         board_config.dimensions.forEach(dimension => {
             
                 var dim = new vi_dimension(dimension);
@@ -72,7 +75,6 @@ export class vi_abstractBoard {
 
           this.geometry_factory = new vi_geometry_factory();
 
-
     }
 
 
@@ -82,15 +84,45 @@ export class vi_abstractBoard {
             
     }
 
+
+
+   getMap(config){
+
+        var acum = [];
+
+        if(config.dimensions){
+
+        config.dimensions.forEach(dimension => {
+            
+            var map = {dimension:dimension.name,  axis:dimension.axis, value:dimension.value0, delta:dimension.delta, segments:dimension.segments};
+            acum.push(map);
+
+            var sub = this.getMap(dimension); // Llamada recursiva
+
+            sub.forEach((s)=>{
+                acum.push(s);
+            });
+
+         });
+
+        }
+
+        return acum;
+   
+
+   }
+
+
+
     
     draw(){
 
         var dimensions_map;
 
 
-        this.dimensions.forEach((dimension)=>{
+       
 
-            dimensions_map = dimension.getMap([]);
+            dimensions_map = this.getMap(this.config);
 
                 dimensions_map.forEach((subd)=>{
 
@@ -104,7 +136,7 @@ export class vi_abstractBoard {
                         var axis = subd.axis;
                         var pos = {x:0, y:0, z:0, color:0x0088ff};
                         pos[axis] = magnitude;
-                        var id = dimension.name + '_' + i;
+                        var id = subd.name + '_' + i;
 
 
                         var g = this.geometry_factory.createGeometry('Plane',[5,10,1,1]);
@@ -125,7 +157,7 @@ export class vi_abstractBoard {
 
 
 
-        }); 
+        
 
 
         console.log('MAPA');
@@ -138,13 +170,18 @@ export class vi_abstractBoard {
 
     addElement(data){
 
-        var segments;
+        var segments = [];
 
         // Checa data para cada dimension :
         this.dimensions.forEach((dimension)=>{
 
-            segments = dimension.getSegments(data,[],'');
-            //console.log(segments);
+            var segs = dimension.getSegments(data,[],'');
+            segs.forEach((s)=>{
+                segments.push(s);
+
+            });
+
+
 
         });
 
