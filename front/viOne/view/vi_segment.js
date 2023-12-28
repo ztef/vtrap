@@ -11,17 +11,19 @@ export class vi_segment{
         this.name =segment_data.segmentname;
         this.label=segment_data.label;
         this.dimension = segment_data.dimension;
+        this.dimension_ptr = segment_data.dimension_ptr;   // Pointer a la dimension
         this.position = segment_data.position;
         this.axis = segment_data.axis;
         this.counter = 0; // Numero de elementos que han caido en este segmento
         this.dimensions_def = segment_data.dimensions_def;
         this.data = segment_data.data;
         this.dimensions = [];
+        this.hasLabel = false;
         
 
         this.dimensions_def.forEach(dimension => {
             
-            var dim = new vi_dimension(dimension);
+            var dim = new vi_dimension(dimension, this.dimension_ptr);
              
             this.dimensions.push(dim);
 

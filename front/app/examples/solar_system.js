@@ -47,10 +47,13 @@ renderer.focus(0,0,0,100);
 var board_config = {
 
     boardType: "xyz",
+    labels: false,
+    axis:false,
     dimensions : [
         {
             name:"cliente",
             label:"Clientes",
+            segmentLabel: true,
             axis:"x",
             value0: 20,
             delta:20,
@@ -59,6 +62,7 @@ var board_config = {
                 {
                     name:"ruta",
                     label:"Rutas",
+                    segmentLabel: true,
                     axis:"y",
                     value0: 20,
                     delta:20,
@@ -67,6 +71,7 @@ var board_config = {
                         {
                             name:"mobil",
                             label:"Moviles",
+                            segmentLabel: false,
                             axis:"z",
                             value0: 0,  
                             delta:20, 
@@ -93,29 +98,32 @@ var board_config = {
 }
 
 
-/*
-var board_config = {
+
+var board_config1 = {
 
     boardType: "xyz",
     dimensions : [
         {
             name:"cliente",
             label:"Clientes",
+            segmentLabel: true,
             axis:"x",
-            value0: 0,
+            value0: 20,
             delta:20,
             segments:10},
         {
             name:"ruta",
             label:"Rutas",
+            segmentLabel: true,
             axis:"y",
-            value0: 0,
+            value0: 20,
             delta:20,
             segments:10,
                 dimensions : [
                 {
                     name:"mobil",
                     label:"mobil",
+                    segmentLabel: false,
                     axis:"z",
                     value0: 0,  
                     delta:20, 
@@ -123,18 +131,126 @@ var board_config = {
                     
                 }
                 ]
+        },
+        {
+            name:"tipo",
+            label:"color",
+            axis:"color",
+            value0: 0,  
+            delta:0, 
+            map: {"truck": 0xFF0000, "car":0x00FF00, "default":0x0000FF},
+            segments:10,  
         }
     ]
               
 };
-*/
+
         
     
+var board_config2 = {
+
+    boardType: "xyz",
+    dimensions : [
+        {
+            name:"cliente",
+            label:"Clientes",
+            segmentLabel: true,
+            axis:"x",
+            value0: 20,
+            delta:20,
+            segments:10,
+            dimensions : [
+                {
+                    name:"ruta",
+                    label:"Rutas",
+                    segmentLabel: true,
+                    axis:"x",
+                    value0: 0,
+                    delta:5,
+                    segments:10,
+                       dimensions : [
+                        {
+                            name:"mobil",
+                            label:"",
+                            segmentLabel: false,
+                            axis:"y",
+                            value0: 20,  
+                            delta:7, 
+                            segments:10,
+                            
+                            
+                        }
+                       ]
+                }
+            ]   
+        },
+
+        {
+            name:"tipo",
+            label:"color",
+            axis:"color",
+            value0: 0,  
+            delta:0, 
+            map: {"truck": 0xFF0000, "car":0x00FF00, "default":0x0000FF},
+            segments:10,  
+        }
+        
+    ]
+}
+
+var board_config3 = {
+
+    boardType: "polar",
+    labels: false,
+    axis:false,
+    dimensions : [
+        {
+            name:"cliente",
+            label:"Clientes",
+            segmentLabel: true,
+            axis:"x",                   // alfa
+            value0: 0,                  // 0 grados
+            delta:45,                   // 10 grados
+            segments:10,   
+        },
+        {
+            name:"ruta",
+            label:"Rutas",
+            segmentLabel: true,
+            axis:"y",
+            value0: 20,
+            delta:20,
+            segments:10,
+               dimensions : [
+                {
+                    name:"mobil",
+                    label:"Moviles",
+                    segmentLabel: false,
+                    axis:"z",
+                    value0: 0,  
+                    delta:20, 
+                    segments:10,
+                    
+                    
+                }
+               ]
+        },
+
+        {
+            name:"tipo",
+            label:"color",
+            axis:"color",
+            value0: 0,  
+            delta:0, 
+            map: {"truck": 0xFF0000, "car":0x00FF00, "default":0x0000FF},
+            segments:10,  
+        }
+        
+    ]
+}
 
 
-
-
-var board = new vi_abstractBoard('tablero',board_config, renderer);
+var board = new vi_abstractBoard('tablero',board_config3, renderer);
 
 
 board.draw();

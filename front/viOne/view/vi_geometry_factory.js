@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { vi_visualObject } from './vi_visual_object.js';
 
 
+
 export class vi_geometry_factory {
     
 
@@ -13,6 +14,14 @@ export class vi_geometry_factory {
               return new THREE.CircleGeometry(data[0], data[1]);
 
             break;
+
+            case 'Circlebuffer':
+  
+             
+           // return new THREE.CircleBufferGeometry(data[0], data[1]);
+
+            break;
+
 
             case 'Plane':
   
@@ -55,6 +64,8 @@ export class vi_geometry_factory {
 
         const position = new THREE.Vector3(pos.x, pos.y, pos.z);
         
+
+
         const material = new THREE.MeshBasicMaterial(color);
         
         const mesh = new THREE.Mesh(geometry, material);
@@ -62,7 +73,30 @@ export class vi_geometry_factory {
         mesh.position.copy(position);
       
         return mesh;
-    }
+      }
+
+
+
+      createBasicObject(geometry, pos , color) {
+
+        const position = new THREE.Vector3(pos.x, pos.y, pos.z);
+        
+
+
+        const lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0.5 });
+
+        const objectWireframe = new THREE.Line(geometry, lineMaterial);
+        
+       
+       
+        objectWireframe.position.copy(position);
+      
+        return objectWireframe;
+      }
+
+
+
+
 
         createVisualObject(mesh, id){
 
