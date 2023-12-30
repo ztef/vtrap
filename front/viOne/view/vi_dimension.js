@@ -2,9 +2,11 @@ import {vi_segment}  from './vi_segment.js';
 
 export class vi_dimension {
 
-    constructor(config, parent){
+    constructor(config, board, parent){
        
+        this.type = config.type;
         this.name = config.name;
+        this.board = board;
         this.parent = parent;                         // Dimension padre
         this.label = config.label;
         this.segmentLabel = config.segmentLabel;
@@ -16,6 +18,7 @@ export class vi_dimension {
         this.estimated_segments = config.segments;    // segmentos esperados
         this.dimensions_def = [];                     // SUBDIMENSIONES
         this.numsegments = 0;                         // numero de segmentos
+        this.config = config;
         
 
 
@@ -37,7 +40,16 @@ export class vi_dimension {
 
         this.segments = {};
 
+        this.draw();
+
         
+    }
+
+
+    draw(){
+        if(this.type == "container"){
+            this.board.draw(this.config);
+        }
     }
 
 
@@ -65,7 +77,7 @@ export class vi_dimension {
             // Si no existe el segmento
             
             // crea el segmento :
-            segment = new vi_segment({dimension:this.name, dimension_ptr:this, segmentname:segmentname, label:data[this.name], axis:this.axis, position:this.position, segments:this.estimated_segments, dimensions_def:this.dimensions_def, data:data, map:this.map});
+            segment = new vi_segment({dimension:this.name, dimension_ptr:this, segmentname:segmentname, label:data[this.name], axis:this.axis, position:this.position, segments:this.estimated_segments, dimensions_def:this.dimensions_def, data:data, map:this.map, board:this.board});
         
             // incrementa el numero de segmentos en esta dimensionthis.
             this.numsegments = this.numsegments + 1;
@@ -106,39 +118,11 @@ export class vi_dimension {
 
     
 
-    getMap(acum){
-
-
-        var map = {dimension:this.name,  axis:this.axis, value:this.value, delta:this.delta, segments:this.estimated_segments};
-
-        acum.push(map);
-
-        this.dimensions_def.forEach((dimension_def)=>{
-
-            var seg = this.getMap(acum);
-            acum.push(seg);
-
-        });
-
-        
-
-        return acum;
-        
-
-    }
     
 
 
 
-    // imprime los segmentos
-    print(){
-        for (let segmento in this.segments) {
-            if (this.segments.hasOwnProperty(segmento)) {
-                console.log(segmento + ': ' + this.segments[segmento]);
-            }
-        }
-
-    }
+    
 
 
 

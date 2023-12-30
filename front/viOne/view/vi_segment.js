@@ -8,6 +8,7 @@ export class vi_segment{
     // {dimension:this.name, label:data[this.name], position:this.position}
     constructor(segment_data){
         
+        this.board = segment_data.board;
         this.name =segment_data.segmentname;
         this.label=segment_data.label;
         this.dimension = segment_data.dimension;
@@ -23,7 +24,7 @@ export class vi_segment{
 
         this.dimensions_def.forEach(dimension => {
             
-            var dim = new vi_dimension(dimension, this.dimension_ptr);
+            var dim = new vi_dimension(dimension, this.board, this.dimension_ptr);
              
             this.dimensions.push(dim);
 
