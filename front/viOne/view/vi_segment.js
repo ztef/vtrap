@@ -24,7 +24,7 @@ export class vi_segment{
 
         this.dimensions_def.forEach(dimension => {
             
-            var dim = new vi_dimension(dimension, this.board, this.dimension_ptr);
+            var dim = new vi_dimension(dimension, this.board, this.dimension_ptr, this);
              
             this.dimensions.push(dim);
 
@@ -49,10 +49,7 @@ export class vi_segment{
 
         });
 
-        //var pos = {};
-        //segments.forEach((segment)=>{
-        //       pos[segment.axis] = segment.value;
-        //});
+       
 
         return segments;
 

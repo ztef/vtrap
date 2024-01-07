@@ -254,86 +254,82 @@ var board_config3 = {
 var board_config4 = {
 
   
-    dimensions : [
-        {
-            name:"world",
-            label:"World",
-            type:"container",
-            containerType: "xyz",
-            labels: false,
-            axis:false,
-            segmentLabel: true,
-            axis:"x",
-            value0: 0,
-            delta:500,
-            segments:3,
+   
                dimensions : [
                 {
                     name:"cliente",
                     type:"dimension",
+                    containerType: "xyz",
                     label:"Clientes",
                     segmentLabel: true,
                     axis:"x",                   // alfa
-                    value0: 0,                  // 0 grados
-                    delta:45,                   // 10 grados
-                    segments:10,   
-                },
-                {
-                    name:"ruta",
-                    type:"dimension",
-                    label:"Rutas",
-                    segmentLabel: true,
-                    axis:"x",
                     offset: {x:0, y:10, z:0},
-                    value0: 20,
-                    delta:20,
-                    segments:10,
-                       dimensions : [
+                    value0: 10,                  // 0 grados
+                    delta:40,                   // 10 grados
+                    segments:3,   
+                    dimensions : [
                         {
-                            name:"mobil",
+                            name:"ruta",
                             type:"dimension",
-                            label:"Moviles",
-                            segmentLabel: false,
-                            axis:"z",
-                            value0: 0,  
-                            delta:20, 
-                            segments:10,
-                            
-                            
+                            label:"Rutas",
+                            segmentLabel: true,
+                            axis:"y",
+                            offset: {x:0, y:20, z:0},
+                            value0: 0,
+                            delta:10,
+                            segments:3,
+                               dimensions : [
+                                {
+                                    name:"mobil",
+                                    type:"dimension",
+                                    label:"Moviles",
+                                    segmentLabel: false,
+                                    axis:"z",
+                                    value0: 0,  
+                                    delta:20, 
+                                    segments:10,
+                                    
+                                    
+                                }
+                               ]
                         }
-                       ]
+                    ]
+                },
+                ,
+                {
+                    name:"tipo",
+                    type:"dimension",
+                    label:"color",
+                    axis:"color",
+                    value0: 0,  
+                    delta:0, 
+                    map: {"truck": 0xFF0000, "car":0x00FF00, "default":0x0000FF},
+                    segments:3,  
                 }
+                
                ]
-        }  
-       ,
-        {
-            name:"tipo",
-            type:"dimension",
-            label:"color",
-            axis:"color",
-            value0: 0,  
-            delta:0, 
-            map: {"truck": 0xFF0000, "car":0x00FF00, "default":0x0000FF},
-            segments:10,  
-        }
+         
+       
         
-    ]
+    
 }
 
 
 var board = new vi_abstractBoard('tablero',board_config4, renderer);
 
 
-//board.drawBoard();
+board.draw();
 
 
 
 
-board.addElement({id:0, world:'w', cliente:'A', ruta:'R', mobil:'m1', tipo:'truck'});
-board.addElement({id:1, world:'w1', cliente:'B', ruta:'R1', mobil:'m2', tipo:'truck'});
-board.addElement({id:2, world:'w1', cliente:'B', ruta:'R2', mobil:'m3', tipo:'car'});
-board.addElement({id:3, world:'w1', cliente:'B', ruta:'R2', mobil:'m4', tipo:'car'});
-board.addElement({id:4, world:'w1', cliente:'C', ruta:'R', mobil:'m5', tipo:'truck'});
+//board.addElement({id:0, cliente:'A', ruta:'R', mobil:'m1', tipo:'truck'});
+//board.addElement({id:1, cliente:'A', ruta:'R1', mobil:'m2', tipo:'truck'});
+
+//board.addElement({id:2, cliente:'B', ruta:'R1', mobil:'m2', tipo:'truck'});
+//board.addElement({id:3, cliente:'C', ruta:'R2', mobil:'m3', tipo:'car'});
+//board.addElement({id:3, world:'w1', cliente:'B', ruta:'R2', mobil:'m4', tipo:'car'});
+//board.addElement({id:4, world:'w1', cliente:'C', ruta:'R', mobil:'m5', tipo:'truck'});
 
 
 

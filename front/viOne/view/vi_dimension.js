@@ -2,12 +2,13 @@ import {vi_segment}  from './vi_segment.js';
 
 export class vi_dimension {
 
-    constructor(config, board, parent){
+    constructor(config, board, parent_dim, parent){
        
         this.type = config.type;
         this.name = config.name;
+        this.parent = parent;
         this.board = board;
-        this.parent = parent;                         // Dimension padre
+        this.parent_dim = parent_dim;                         // Dimension padre
         this.label = config.label;
         this.segmentLabel = config.segmentLabel;
         this.axis = config.axis;                      // eje
@@ -19,7 +20,18 @@ export class vi_dimension {
         this.dimensions_def = [];                     // SUBDIMENSIONES
         this.numsegments = 0;                         // numero de segmentos
         this.config = config;
+        this.offset = config.offset;
         
+
+        if(this.parent){
+
+            if(this.axis == this.parent_dim.axis){
+             this.value0 = this.parent.position;
+             this.position = this.value0;
+            }
+        }
+
+
 
 
         console.log('dimension ', this.name, 'creada');
@@ -47,9 +59,9 @@ export class vi_dimension {
 
 
     draw(){
-        if(this.type == "container"){
-            this.board.draw(this.config);
-        }
+         
+            this.board.draw(this);
+        
     }
 
 

@@ -1,6 +1,7 @@
 
 import {vi_dimension}  from './vi_dimension.js';
 import { vi_geometry_factory } from './vi_geometry_factory.js';
+import {vi_HiperBoard } from './vi_hiperboard.js';
 
 export class vi_abstractBoard {
 
@@ -19,11 +20,10 @@ export class vi_abstractBoard {
 
         board_config.dimensions.forEach(dimension => {
             
-                var dim = new vi_dimension(dimension, this, null);   // config, board, parent null == root
+                var dim = new vi_dimension(dimension, this, null, null);   // config, board, parent null == root
                 this.addDimension(dim);
 
           });
-
         
     }
 
@@ -36,268 +36,261 @@ export class vi_abstractBoard {
 
 
 
-   getMap(config){
-
-        var acum = [];
-
-        if(config.dimensions){
-
-        config.dimensions.forEach(dimension => {
-            
-            var map = {dimension:dimension.name, label:dimension.label, axis:dimension.axis, offset:dimension.offset, value:dimension.value0, delta:dimension.delta, segments:dimension.segments};
-            acum.push(map);
-
-         });
-
-        }
-
-        return acum;
-
-   }
-
-
-
-   drawBoard(){
-    this.dimensions.forEach((dimension)=>{
-
-       dimension.draw();
-
-
-    });
-   }
-
-
-
-   draw(config, origin){
+   draw(dimension){
     
-        var w=0;
-        var x = 0;
+      
+           // this.drawLINE(dimension);
 
-        for(w=0; w <= this.config.dimensions[0].segments; w++){
+        var amplitude = 100;
+        var nummarkers = 8;
+        const centro = {x:10, y:0};
 
-            this.drawbyType(this.config.dimensions[0],{x:x, y:0, z:0});
-        
-            x = x +  this.config.dimensions[0].delta;
-        }
+
+
+           const hiperBoard = new vi_HiperBoard(amplitude, 0, centro);
+
+           // Set the total segments for the board
+           //hiperBoard.setTotalMarkers(nummarkers);
+           
+           hiperBoard.setLevels([8,3,2]);
+           
+
+
+           var pos =centro;
+           var color = 0x00ff00;
+
+           var g = this.geometry_factory.createGeometry('Circle',[amplitude,64]);
+           var m = this.geometry_factory.createObject(g,{x:pos.x,y:pos.y,z:pos.z}, { color: color,transparent: true, opacity: 0.5 });
+           var o = this.geometry_factory.createVisualObject(m,'hb');
        
+           this.render_engine.addGeometry(o); 
+
+
+
+
+           var points = hiperBoard.calculatePointsForLevel(0);
+           points.forEach((point)=>{
+
+            pos.x = point.x;
+            pos.y = point.y;
+            pos.z = 0;
+
+            color = 0xff0000;
+
+            var g = this.geometry_factory.createGeometry('Circle',[3,16]);
+            var m = this.geometry_factory.createObject(g,{x:pos.x,y:pos.y,z:pos.z}, { color: color,transparent: false, opacity: 0.5 });
+            var o = this.geometry_factory.createVisualObject(m,'hbp');
+
+            this.render_engine.addGeometry(o); 
+
+           });
+
+
+
+
+           var points = hiperBoard.calculatePointsForLevel(1);
+           points.forEach((point)=>{
+
+            pos.x = point.x;
+            pos.y = point.y;
+            pos.z = 0;
+
+            color = 0x0000FF;
+
+            var g = this.geometry_factory.createGeometry('Circle',[2,16]);
+            var m = this.geometry_factory.createObject(g,{x:pos.x,y:pos.y,z:pos.z}, { color: color,transparent: false, opacity: 0.5 });
+            var o = this.geometry_factory.createVisualObject(m,'hbp');
+
+            this.render_engine.addGeometry(o); 
+
+           });
+
+            
+
+           var points = hiperBoard.calculatePointsForLevel(2);
+           points.forEach((point)=>{
+
+            pos.x = point.x;
+            pos.y = point.y;
+            pos.z = 0;
+
+            color = 0x000000;
+
+            var g = this.geometry_factory.createGeometry('Circle',[1,16]);
+            var m = this.geometry_factory.createObject(g,{x:pos.x,y:pos.y,z:pos.z}, { color: color,transparent: false, opacity: 0.5 });
+            var o = this.geometry_factory.createVisualObject(m,'hbp');
+
+            this.render_engine.addGeometry(o); 
+
+           });
+
+
+
+
+           const levelToDraw = 2;
+           const lineLength = 150;
+
+           var lines = hiperBoard.calculateLinesForLevel(levelToDraw ,150);
+           lines.forEach((line)=>{
+
+            this.render_engine.addLine(line.start,{ x: line.end.x, y: line.end.y, z: 0 });
+
+           });
+
+
+
+           /*
+
+           const level = 0;
+           const markerNumber = 0;
+
+            const coordinates = hiperBoard.getCoordinatesForLevelAndMarker(level, markerNumber);
+
+            if (coordinates) {
+            console.log(`Coordinates for Level ${level}, Marker ${markerNumber}: (${coordinates.x}, ${coordinates.y})`);
+            } else {
+            console.error("Invalid coordinates");
+            }
+
+
+
+
+
+            
+             
+
+            hiperBoard.drawLinesForLevel(levelToDraw, lineLength, (points)=>{
+                this.render_engine.addLine(points.start,{ x: points.end.x, y: points.end.y, z: 0 });
+            });
+
+            */
+
+            
      
     
    }
 
 
 
-   drawbyType(config, origin){
 
-    if (config.containerType == "xyz"){
-
-        this.drawXYZ(config, origin);
-
-    }
-
-    if (config.containerType == "polar"){
-
-        this.drawPOLAR(config, origin);
-
-    }
+   drawLINE(dim){
 
 
-   }
 
+         var origin = {x:0, y:0, z:0, color:0};
+     
+                if(dim.parent){   // Si dim.parent es un segmento usa la posicion del segmento
+                        origin[dim.axis] =  dim.parent.position;
+                }
 
-   drawPOLAR(config, origin){
-
-
-        var id = 'base';
-
-        var pos = {x:origin.x, y:origin.y, z:origin.z, color:0x0088ff};
-        var g = this.geometry_factory.createGeometry('Circle',[10,64]);
-        var m = this.geometry_factory.createObject(g,{x:pos.x,y:pos.y,z:pos.z}, { color: pos.color,  onlyRendered: false });
-        var o = this.geometry_factory.createVisualObject(m,id);
     
-        this.render_engine.addGeometry(o);
+       // Crea Markers :
+
+            
+           for(var i=0; i < dim.estimated_segments; i ++){
+
+
+               var magnitude = dim.value0 + dim.delta * i;
+               var axis = dim.axis;
+               var pos = {x:origin.x, y:origin.y, z:origin.z, color:0x0088ff};
+
+               if(dim.offset){
+                    pos = this.addV(pos, dim.offset);                                                        
+               }
+
+
+               pos[axis] = pos[axis] + magnitude;
+               var id = dim.name + origin.x +'_' + i;
+
+
+               var g = this.geometry_factory.createGeometry('Plane',[5,10,1,1]);
+
+               // color: color, transparent: true, opacity: opacity }  0x0088ff, 0.5
+               var m = this.geometry_factory.createObject(g,{x:pos.x,y:pos.y,z:pos.z}, { color: pos.color, transparent: true, opacity: 0.5  });
+               var o = this.geometry_factory.createVisualObject(m,id);
+               
+               this.render_engine.addGeometry(o);
+
+           }
+       
 
 
 
-        var dimensions_map;
+       // LABELS
 
-        dimensions_map = this.getMap(config);
-
-        dimensions_map.forEach((dim)=>{
-
-             
-                    if(dim.axis == 'x'){
-
-                        var max_y = origin.x + 200; 
-                        for(var a = dim.value; a <= 360; a = a + dim.delta ){
-
-                            var pos = origin;
+        
 
 
-                            pos.x = max_y * Math.sin((a * Math.PI )/ 180);
-                            pos.y = max_y * Math.cos((a * Math.PI)/  180);
-                
-                            this.render_engine.addLine(origin, pos) ;
-
-
-                        }
-
-                       
-                    }
-                    if(dim.axis == 'y'){
-
-                        var max_y = 50; 
-                        var pos = {x:origin.x, y:origin.y, z:origin.z, color:0x0088ff};
-                        var delimiter = false;
-                        var color = pos.color;
-                        for(var i = 0; i <= dim.segments; i = i +1 ){
+               if(dim.label){
 
 
 
-                            var a = dim.delta * i;
-                            var id = dim.name;
+                   var pos = {x:origin.x, y:origin.y, z:origin.z, color:0x0088ff};
 
-                            if(delimiter){
-                                color = 0x000000;
-                                 a = a -dim.delta + 1;
-                            }    else {
-                                color = pos.color;
-                            }
+                   if(dim.offset){
+                      pos = this.addV(pos, dim.offset);                                                        
+                   }
+
+                   pos[dim.axis] = pos[dim.axis] + dim.value0;
 
 
-
-                            var g = this.geometry_factory.createGeometry('Circle',[a,64]);
-                            var m = this.geometry_factory.createObject(g,{x:pos.x,y:pos.y,z:pos.z}, { color: color,transparent: true, opacity: 0.5 });
-                            var o = this.geometry_factory.createVisualObject(m,id);
-                        
-                            this.render_engine.addGeometry(o);
-
-
-                            delimiter = ! delimiter;
-                            pos.z = pos.z - 1;
-                          
-
-
-                        }
-
-                       
-                    }
                    
+                   var rotate = {x:0, y:0, z:0};
 
-           
+                   if(dim.axis == 'x'){
+                       pos =  this.addV(pos, {x:0, y:-5, z:0});
+                   }
 
+                   if(dim.axis == 'y'){
+                       pos =  this.addV(pos, {x:-5, y:0, z:0});
+                       rotate = {x:0, y:0, z:3.1415/2};
+                   }
 
-        });
+                   if(dim.axis == 'z'){
+                       pos =  this.addV(pos, {x:-5, y:-10, z:0});
+                       rotate = {x:0, y:3.1415/2, z:0};
+                   }
 
-
-
-   }
-
-
-
-    
-    drawXYZ(config, origin){
-
-                 var dimensions_map;
-
-                dimensions_map = this.getMap(config);
-
-                dimensions_map.forEach((dim)=>{
-
-                    // Crea geometria :
-
-
-                    if(config.axis){
-      
-                        var pos = dim.value;
-                        for(var i=0; i < dim.segments; i ++){
-
-
-                            var magnitude = dim.value + dim.delta * i;
-                            var axis = dim.axis;
-                            var pos = {x:origin.x, y:origin.y, z:origin.z, color:0x0088ff};
-
-                            if(dim.offset){
-                                 pos = this.addV(origin,pos);                                                        
-                            }
-
-
-                            pos[axis] = pos[axis] + magnitude;
-                            var id = dim.name + origin.x +'_' + i;
-
-
-                            var g = this.geometry_factory.createGeometry('Plane',[5,10,1,1]);
-
-                            // color: color, transparent: true, opacity: opacity }  0x0088ff, 0.5
-                            var m = this.geometry_factory.createObject(g,{x:pos.x,y:pos.y,z:pos.z}, { color: pos.color, transparent: true, opacity: 0.5  });
-                            var o = this.geometry_factory.createVisualObject(m,id);
-                            
-                            this.render_engine.addGeometry(o);
-
-                        }
-                    }
-
-
-
-                    // LABELS
-
-                    if(config.labels){
-
-
-                            if(dim.label){
-
-                                var pos = origin;
-                                var rotate = {x:0, y:0, z:0};
-
-                                if(dim.axis == 'x'){
-                                    pos =  this.addV(origin, {x:30, y:-10, z:0});
-                                }
-
-                                if(dim.axis == 'y'){
-                                    pos =  this.addV(origin, {x:-10, y:30, z:0});
-                                    rotate = {x:0, y:0, z:3.1415/2};
-                                }
-
-                                if(dim.axis == 'z'){
-                                    pos =  this.addV(origin, {x:-10, y:-10, z:30});
-                                    rotate = {x:0, y:3.1415/2, z:0};
-                                }
-
-                                if(dim.axis != 'color'){
-                                    this.render_engine.addLabel(dim.label,pos,rotate,{size:3, height:0.3});
-                                }
-
-
-                            
-                            }
-
-                  }
-
-
-
-                    // EJES
-
-
-                    if(config.axis){
-
-                            if(dim.axis == 'x'){
-                                this.render_engine.addLine(origin, this.addV(origin, { x: 200, y: 0, z: 0 })) 
-                            }
-                            if(dim.axis == 'y'){
-                                this.render_engine.addLine(origin, this.addV(origin, { x: 0, y: 200, z: 0 })) 
-                            }
-                            if(dim.axis == 'z'){
-                                this.render_engine.addLine(origin, this.addV(origin, { x: 0, y: 0, z: 200 })) 
-                            }
-
+                   if(dim.axis != 'color'){
+                       this.render_engine.addLabel(dim.label,pos,rotate,{size:3, height:0.3});
                    }
 
 
-                });
+               
+               }
 
        
 
 
+
+       // EJE
+ 
+
+              var pos = {x:origin.x, y:origin.y, z:origin.z, color:0x0088ff};
+
+               if(dim.offset){
+                   pos = this.addV(pos, dim.offset);                                                        
+               }
+
+               pos[dim.axis] = pos[dim.axis] + dim.value0;
+
+
+               var line_lenght = dim.estimated_segments * dim.delta;
+
+
+               if(dim.axis == 'x'){
+                   this.render_engine.addLine(pos, this.addV(pos, { x: line_lenght, y: 0, z: 0 })) 
+               }
+               if(dim.axis == 'y'){
+                   this.render_engine.addLine(pos, this.addV(pos, { x: 0, y: line_lenght, z: 0 })) 
+               }
+               if(dim.axis == 'z'){
+                   this.render_engine.addLine(pos, this.addV(pos, { x: 0, y: 0, z: line_lenght })) 
+               }
+
+      
     }
+
     
 
     addV(vector1, vector2) {
@@ -305,6 +298,7 @@ export class vi_abstractBoard {
             x: vector1.x + vector2.x,
             y: vector1.y + vector2.y,
             z: vector1.z + vector2.z,
+            color: vector1.color
         };
     }
 
@@ -332,7 +326,16 @@ export class vi_abstractBoard {
         // Obtiene la posicion que corresponde de acuerdo a los segmentos en que cae
 
         var pos = {x:0, y:0, z:0, color:0};
+
+
+
         segments.forEach((segment)=>{
+
+
+                    if(segment.dimension_ptr.offset){
+                        pos = this.addV(pos, segment.dimension_ptr.offset);  
+                    }
+
                
                     // calcula posicion del elemento
                     pos[segment.axis] = pos[segment.axis] + segment.position;
@@ -343,7 +346,7 @@ export class vi_abstractBoard {
 
         // Resuelve LABELS
 
-        if(this.config.labels){
+        if(true){
 
                     segments.forEach((segment)=>{ 
                         
@@ -352,6 +355,12 @@ export class vi_abstractBoard {
 
 
                             var posit =  {x:pos.x, y:0, z:0};
+
+
+                           
+
+
+
                             var rotate = {x:0, y:0, z:0};
                             var counterpart = '';
 
@@ -379,10 +388,15 @@ export class vi_abstractBoard {
 
                                                                         // posicion relativa
 
-                                var parent_axis = segment.dimension_ptr.parent.axis;
+                                var parent_axis = segment.dimension_ptr.parent_dim.axis;
                                 posit[segment.axis] = pos[segment.axis];
                                 posit[counterpart] = 10;         
 
+                            }
+
+
+                            if(segment.dimension_ptr.offset){
+                                posit = this.addV(posit, segment.dimension_ptr.offset);  
                             }
 
                             this.render_engine.addLabel(segment.name,posit,rotate,{size:1, height:0.1});
@@ -408,7 +422,7 @@ export class vi_abstractBoard {
         }
 
 
-
+        // Dibuja el elemento
 
 
         var g = this.geometry_factory.createGeometry('Sphere',[2,10,10]);
@@ -420,17 +434,7 @@ export class vi_abstractBoard {
     };
 
 
-    print(){
-
-        console.log("TABLERO :");
-        this.dimensions.forEach((dimension)=>{
-
-            console.log('Dimension : ', dimension.name);
-            dimension.print();
-
-        });
-    }
-
+     
 
 
 
