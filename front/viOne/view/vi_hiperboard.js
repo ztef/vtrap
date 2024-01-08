@@ -1,6 +1,6 @@
 
 
-class vi_hiperCircle {
+class vi_mainCircle {
 
   constructor(radius, initialAngle = 0, origin = { x: 0, y: 0 }) {
     this.radius = Math.max(0, radius);
@@ -67,11 +67,14 @@ class vi_hiperCircle {
 
 }
 
-export class vi_HiperBoard {
+export class vi_HiperCircle {
+
+
   constructor(centralCircleRadius, initialAngle = 0, origin = { x: 0, y: 0 }) {
-    this.centralCircle = new vi_hiperCircle(centralCircleRadius, initialAngle, origin);
+    this.centralCircle = new vi_mainCircle(centralCircleRadius, initialAngle, origin);
     this.totalMarkers = 0;
     this.levels = [];
+    this.globalMap = new Map();
     
   }
 
@@ -79,7 +82,12 @@ export class vi_HiperBoard {
   setLevels(levels) {
     this.levels = levels;
     this.calculateTotalMarkers();
+    for (let i = 0; i < levels.length; i++) {
+      this.globalMap.set(i, this.calculatePointsForLevel(i));
+    }
+   
   }
+
 
   calculateTotalMarkers() {
     this.totalMarkers = this.levels.reduce((total, level) => total * level, 1);
@@ -119,6 +127,13 @@ export class vi_HiperBoard {
 
     return this.centralCircle.calculatePointsBetweenMarkers(markerNumber, m, this.totalMarkers);
   }
+
+
+  getSegments(level){
+
+    return this.globalMap.get(level);
+  }
+
 
 
   calculatePointsForLevel(level){ 
@@ -295,8 +310,6 @@ export class vi_HiperBoard {
         }
     }
 
-  
-
     
   }
 
@@ -318,10 +331,250 @@ export class vi_HiperBoard {
     }
     return totalMarkersInLevel;
   }
+
+
+  locatePointByPath(path) {
+    const pathSegments = path.split('.').map(Number);
+
+    if (!pathSegments.every(Number.isInteger)) {
+      console.error('Invalid path. Each segment in the path must be a number.');
+      return null;
+    }
+
+
+    // acumula el valor de cada nievel como si fueran centenas, decenas, unidades
+
+    var levelvalues = [];
+    for(let i=0; i < this.levels.length; i ++)
+    {
+      let v = 1;
+      for(let j=i+1; j < this.levels.length; j ++){
+          v = v * this.levels[j]; 
+      }
+
+      levelvalues.push(v);
+    }
+
+
+    // calculate the absolute index :
+
+    var index = 0;
+    for(let i=0; i< pathSegments.length-1; i++){
+      index = index + pathSegments[i] * levelvalues[i];
+    }
+
+    index = index + pathSegments[pathSegments.length-1];
+
+    let currentPoints = this.globalMap.get(pathSegments.length-1);
+    
+
+    return currentPoints[index];
+  }
+
+
+
+
+
+}
+
+class Segment {
+  constructor(basePoint, length, angle) {
+    this.basePoint = { ...basePoint };
+    this.length = length;
+    this.angle = angle;
+  }
+
+ 
+
+  generatePoints(numPoints) {
+    const points = [];
+
+    for (let i = 0; i < numPoints; i++) {
+      const t = (2 * i + 1) / (2 * numPoints); // Calculate the middle point within each subdivision
+      const x = this.basePoint.x + this.length * Math.cos(this.angle) * t;
+      const y = this.basePoint.y + this.length * Math.sin(this.angle) * t;
+      const z = this.basePoint.z; // Assuming z-coordinate remains constant for simplicity
+      points.push({ x, y, z });
+    }
+
+    return points;
+  }
+
+  
+}
+
+
+export class vi_HiperLine {
+  constructor(origin, angle, length) {
+    this.origin = { ...origin };
+    this.angle = angle || 0;
+    this.length = length || 0;
+    this.separation = 5;
+    this.globalMap = new Map();
+  }
+
+  
+
+  setLength(length) {
+    this.length = Math.max(0, length);
+  }
+
+
+  setLevels(levels) {
+    this.levels = levels || [];
+    // Calculate and store points for each level in the global map
+    for (let i = 0; i < levels.length; i++) {
+      this.globalMap.set(i, this.calcSegments(i));
+    }
+  }
+
+
+  getSegments(level){
+
+    return this.globalMap.get(level);
+  }
+
+  calcSegments(level){
+
+    const basePoint = this.origin;
+    const length = this.length;
+    const angle = this.angle;
+    var acumPoints = [];
+
+    const segment = new Segment(basePoint, length, angle);  // convierte la linea en un segmento
+
+
+    var startLevel = 0;
+
+    const divideRecursive = (currentLevel, segment) => {
+      if (currentLevel <= level) {
+
+        var points = segment.generatePoints(this.levels[currentLevel]); 
+
+
+        let delta = segment.length / points.length;
+        points.forEach((p)=>{
+    
+
+          //p.y = p.y + level * this.separation;
+
+
+          const separationX = level * this.separation * Math.sin(this.angle);
+          const separationY = level * this.separation * Math.cos(this.angle);
+
+          p.x -= separationX;
+          p.y += separationY;
+
+
+
+
+
+          if(currentLevel == level){
+              acumPoints.push(p);
+          }
+
+          var seg = new Segment(p, delta, angle );
+    
+          divideRecursive(currentLevel + 1, seg);
+    
+        })
+
+      }
+    };
+
+    divideRecursive(startLevel, segment);
+
+
+    return acumPoints;
+
+
+  }
+
+
+
+  locatePointByPath(path) {
+    const pathSegments = path.split('.').map(Number);
+
+    if (!pathSegments.every(Number.isInteger)) {
+      console.error('Invalid path. Each segment in the path must be a number.');
+      return null;
+    }
+
+
+    // acumula el valor de cada nievel como si fueran centenas, decenas, unidades
+
+    var levelvalues = [];
+    for(let i=0; i < this.levels.length; i ++)
+    {
+      let v = 1;
+      for(let j=i+1; j < this.levels.length; j ++){
+          v = v * this.levels[j]; 
+      }
+
+      levelvalues.push(v);
+    }
+
+
+    // calculate the absolute index :
+
+    var index = 0;
+    for(let i=0; i< pathSegments.length-1; i++){
+      index = index + pathSegments[i] * levelvalues[i];
+    }
+
+    index = index + pathSegments[pathSegments.length-1];
+
+    let currentPoints = this.globalMap.get(pathSegments.length-1);
+    
+
+    return currentPoints[index];
+  }
+  
+  
 }
 
 
 
+class vi_hiperBoard {
+  constructor() {
+    this.boardContainer = [];
+  }
+
+  addBoard(board) {
+    if (board instanceof vi_HiperBoard) {
+      this.boardContainer.push(board);
+      return true;
+    } else {
+      console.error('Invalid board. Must be an instance of vi_HiperBoard.');
+      return false;
+    }
+  }
+
+  getBoards() {
+    return this.boardContainer;
+  }
+}
+
+class vi_HiperBoard {
+  constructor(origin) {
+    this.origin = { ...origin }; // Copy the origin object to avoid external modification
+    // You can initialize other properties or setup here for the individual board
+  }
+  // You can add methods and other properties as needed for the individual board
+}
+
+// Example usage:
+
+const boardContainer = new vi_hiperBoard();
+
+const board1 = new vi_HiperBoard({ x: 0, y: 0, z: 0 });
+const board2 = new vi_HiperBoard({ x: 10, y: 5, z: 0 });
+
+boardContainer.addBoard(board1);
+boardContainer.addBoard(board2);
+
+const boards = boardContainer.getBoards();
+console.log(boards);
 
 
   

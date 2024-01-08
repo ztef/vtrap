@@ -1,7 +1,7 @@
 
 import {vi_dimension}  from './vi_dimension.js';
 import { vi_geometry_factory } from './vi_geometry_factory.js';
-import {vi_HiperBoard } from './vi_hiperboard.js';
+import {vi_HiperCircle, vi_HiperLine } from './vi_hiperboard.js';
 
 export class vi_abstractBoard {
 
@@ -41,18 +41,18 @@ export class vi_abstractBoard {
       
            // this.drawLINE(dimension);
 
-        var amplitude = 100;
-        var nummarkers = 8;
-        const centro = {x:10, y:0};
+        var amplitude = 20;
+       
+        const centro = {x:0, y:0};
 
 
 
-           const hiperBoard = new vi_HiperBoard(amplitude, 0, centro);
+           const hiperCircle = new vi_HiperCircle(amplitude, 0, centro);
 
            // Set the total segments for the board
            //hiperBoard.setTotalMarkers(nummarkers);
            
-           hiperBoard.setLevels([8,3,2]);
+           hiperCircle.setLevels([3,4,2]);
            
 
 
@@ -68,7 +68,7 @@ export class vi_abstractBoard {
 
 
 
-           var points = hiperBoard.calculatePointsForLevel(0);
+           var points = hiperCircle.getSegments(0);
            points.forEach((point)=>{
 
             pos.x = point.x;
@@ -88,7 +88,7 @@ export class vi_abstractBoard {
 
 
 
-           var points = hiperBoard.calculatePointsForLevel(1);
+           var points = hiperCircle.getSegments(1);
            points.forEach((point)=>{
 
             pos.x = point.x;
@@ -107,7 +107,7 @@ export class vi_abstractBoard {
 
             
 
-           var points = hiperBoard.calculatePointsForLevel(2);
+           var points = hiperCircle.getSegments(2);
            points.forEach((point)=>{
 
             pos.x = point.x;
@@ -127,10 +127,12 @@ export class vi_abstractBoard {
 
 
 
-           const levelToDraw = 2;
+
+
+           const levelToDraw = 0;
            const lineLength = 150;
 
-           var lines = hiperBoard.calculateLinesForLevel(levelToDraw ,150);
+           var lines = hiperCircle.calculateLinesForLevel(levelToDraw ,150);
            lines.forEach((line)=>{
 
             this.render_engine.addLine(line.start,{ x: line.end.x, y: line.end.y, z: 0 });
@@ -139,32 +141,112 @@ export class vi_abstractBoard {
 
 
 
-           /*
 
-           const level = 0;
-           const markerNumber = 0;
+           let p = hiperCircle.locatePointByPath('1.1.0');
 
-            const coordinates = hiperBoard.getCoordinatesForLevelAndMarker(level, markerNumber);
+           pos.x = p.x;
+           pos.y = p.y;
+           pos.z = 0;
 
-            if (coordinates) {
-            console.log(`Coordinates for Level ${level}, Marker ${markerNumber}: (${coordinates.x}, ${coordinates.y})`);
-            } else {
-            console.error("Invalid coordinates");
-            }
+           color = 0x00ff00;
+
+           var g = this.geometry_factory.createGeometry('Circle',[1,16]);
+           var m = this.geometry_factory.createObject(g,{x:pos.x,y:pos.y,z:pos.z}, { color: color,transparent: false, opacity: 0.5 });
+           var o = this.geometry_factory.createVisualObject(m,'hbp');
+
+           this.render_engine.addGeometry(o); 
 
 
 
 
 
-            
-             
 
-            hiperBoard.drawLinesForLevel(levelToDraw, lineLength, (points)=>{
-                this.render_engine.addLine(points.start,{ x: points.end.x, y: points.end.y, z: 0 });
-            });
 
-            */
 
+           // HIPERLINE 
+
+
+           const lineOrigin = { x: 0, y: -50, z: 0 };
+           const lineAngle = Math.PI / 4; // 45 degrees in radians
+           const linelength = 500;
+           const levelsArray = [10, 5, 4];
+
+           const hiperLine = new vi_HiperLine(lineOrigin, 0, linelength);
+           hiperLine.setLevels(levelsArray);
+
+            // Calculate points for a specific level (e.g., level 1)
+           
+           
+           var points = hiperLine.getSegments(0);
+
+           points.forEach((point)=>{
+
+            pos.x = point.x;
+            pos.y = point.y;
+            pos.z = 0;
+
+            color = 0xff0000;
+
+            var g = this.geometry_factory.createGeometry('Circle',[3,16]);
+            var m = this.geometry_factory.createObject(g,{x:pos.x,y:pos.y,z:pos.z}, { color: color,transparent: false, opacity: 0.5 });
+            var o = this.geometry_factory.createVisualObject(m,'hbp');
+
+            this.render_engine.addGeometry(o); 
+
+           });
+
+           
+           var points = hiperLine.getSegments(1);
+
+           points.forEach((point)=>{
+
+            pos.x = point.x;
+            pos.y = point.y;
+            pos.z = 0;
+
+            color = 0x0000ff;
+
+            var g = this.geometry_factory.createGeometry('Circle',[3,16]);
+            var m = this.geometry_factory.createObject(g,{x:pos.x,y:pos.y,z:pos.z}, { color: color,transparent: false, opacity: 0.5 });
+            var o = this.geometry_factory.createVisualObject(m,'hbp');
+
+            this.render_engine.addGeometry(o); 
+
+           });
+
+           var points = hiperLine.getSegments(2);
+
+           points.forEach((point)=>{
+
+            pos.x = point.x;
+            pos.y = point.y;
+            pos.z = 0;
+
+            color = 0x000000;
+
+            var g = this.geometry_factory.createGeometry('Circle',[1,16]);
+            var m = this.geometry_factory.createObject(g,{x:pos.x,y:pos.y,z:pos.z}, { color: color,transparent: false, opacity: 0.5 });
+            var o = this.geometry_factory.createVisualObject(m,'hbp');
+
+            this.render_engine.addGeometry(o); 
+
+           });
+
+          
+           const point = hiperLine.locatePointByPath('1.1.0');
+
+           pos.x = point.x;
+           pos.y = point.y;
+           pos.z = 0;
+
+           color = 0x00ff00;
+
+           var g = this.geometry_factory.createGeometry('Circle',[1,16]);
+           var m = this.geometry_factory.createObject(g,{x:pos.x,y:pos.y,z:pos.z}, { color: color,transparent: false, opacity: 0.5 });
+           var o = this.geometry_factory.createVisualObject(m,'hbp');
+
+           this.render_engine.addGeometry(o); 
+           
             
      
     
