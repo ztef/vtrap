@@ -1,4 +1,6 @@
 
+import { vi_geometry_factory } from './vi_geometry_factory.js';
+
 
 class vi_mainCircle {
 
@@ -371,8 +373,17 @@ export class vi_HiperCircle {
     return currentPoints[index];
   }
 
+  calculateAngleFromOrigin(x, y, ox, oy) {
+    return Math.atan2(y - oy, x - ox);
+  }
 
+  getAngleForPoint(point){
 
+    const angle = this.calculateAngleFromOrigin(point.x, point.y, this.centralCircle.origin.x, this.centralCircle.origin.y);
+    
+    return angle;
+
+  }
 
 
 }
@@ -405,7 +416,7 @@ class Segment {
 
 
 export class vi_HiperLine {
-  constructor(origin, angle, length) {
+  constructor(length, angle,origin ) {
     this.origin = { ...origin };
     this.angle = angle || 0;
     this.length = length || 0;
@@ -535,19 +546,170 @@ export class vi_HiperLine {
 
 
 
-class vi_hiperBoard {
-  constructor() {
-    this.boardContainer = [];
+class vi_Board {
+  constructor(render, origin, levels, type, angle = 0) {
+    this.render_engine = render;
+    this.origin = { ...origin };
+    this.levels = levels || [];
+    this.type = type || "";
+    this.content = null;
+    this.angle = angle;
+    this.amplitude = 100;
+    this.geometry_factory = new vi_geometry_factory();
+
+    // Initialize the content based on the board type
+    this.initializeContent();
   }
 
-  addBoard(board) {
-    if (board instanceof vi_HiperBoard) {
-      this.boardContainer.push(board);
-      return true;
-    } else {
-      console.error('Invalid board. Must be an instance of vi_HiperBoard.');
-      return false;
+  initializeContent() {
+    switch (this.type) {
+      case "a":
+        this.content = new vi_HiperCircle(this.amplitude, this.angle, this.origin);
+        this.content.setLevels(this.levels);
+        break;
+      case "x":
+          this.content = new vi_HiperLine(this.amplitude, this.angle, this.origin);
+          this.content.setLevels(this.levels);
+          break;
+      default:
+        console.error(`Unknown board type: ${this.type}`);
     }
+  }
+
+
+  arrayToDotNotation(arr) {
+    if (!Array.isArray(arr) || arr.length === 0) {
+      return '';
+    }
+  
+    return arr.join('.');
+  }
+
+  generateCombinations(arr, callback, currentCombination = [], currentIndex = 0) {
+    // Base case: if currentIndex reaches the end of the array
+    if (currentIndex === arr.length) {
+
+
+      let slot =  this.arrayToDotNotation(currentCombination);
+      
+      callback(slot);
+      
+      return;
+    }
+  
+    // Iterate over possible values for the current position
+    for (let i = 0; i < arr[currentIndex]; i++) {
+      // Create a copy of the current combination to avoid modifying it for different recursive calls
+      const newCombination = [...currentCombination];
+      newCombination.push(i);
+  
+      // Recursively generate combinations for the next index
+      this.generateCombinations(arr, callback, newCombination, currentIndex + 1);
+    }
+  }
+
+  printCombination(combination) {
+    console.log(combination);
+  }
+
+
+  traverse(callback){
+    const inputArray = this.levels;
+    this.generateCombinations(inputArray, callback);
+  }
+
+
+  draw(){
+
+   let pos = {x:0,y:0,z:0};
+
+   for(let level=0; level<this.levels.length; level++){
+
+
+    var points = this.content.getSegments(level);
+    points.forEach((point)=>{
+
+      
+
+              pos.x = point.x;
+              pos.y = point.y;
+              pos.z = 0;
+
+              let color = 0xff0000;
+
+              var g = this.geometry_factory.createGeometry('Circle',[1,16]);
+              var m = this.geometry_factory.createObject(g,{x:pos.x,y:pos.y,z:pos.z}, { color: color,transparent: false, opacity: 0.5 });
+              var o = this.geometry_factory.createVisualObject(m,'hbp');
+
+              this.render_engine.addGeometry(o); 
+
+    });
+
+
+
+   }
+
+
+  }
+
+
+}
+
+
+
+
+export class vi_HiperBoard {
+  constructor(render) {
+    this.render_engine = render;
+    this.boardContainer = [];
+    this.geometry_factory = new vi_geometry_factory();
+  }
+
+  addBoard(conf) {
+    const { type, origin, levels, content, angle } = conf.board;
+
+    
+    const newBoard = new vi_Board(this.render_engine, origin, levels, type, angle);
+    this.boardContainer.push(newBoard);
+
+    if(content.board){
+
+      newBoard.traverse((slot)=>{
+        
+        let p = newBoard.content.locatePointByPath(slot);
+        let a = newBoard.content.getAngleForPoint(p);
+        console.log(slot,p,a);
+
+        content.board.origin = p;
+        content.board.angle = a;
+
+        this.addBoard(content);
+
+
+      });
+
+    }
+
+    return true;
+  }
+
+
+  draw(){
+
+
+   this.boardContainer.forEach((board)=>{
+
+        board.draw();
+
+   })
+    
+
+  }
+
+
+
+  getBoards() {
+    return this.boardContainer;
   }
 
   getBoards() {
@@ -555,26 +717,8 @@ class vi_hiperBoard {
   }
 }
 
-class vi_HiperBoard {
-  constructor(origin) {
-    this.origin = { ...origin }; // Copy the origin object to avoid external modification
-    // You can initialize other properties or setup here for the individual board
-  }
-  // You can add methods and other properties as needed for the individual board
-}
 
-// Example usage:
 
-const boardContainer = new vi_hiperBoard();
-
-const board1 = new vi_HiperBoard({ x: 0, y: 0, z: 0 });
-const board2 = new vi_HiperBoard({ x: 10, y: 5, z: 0 });
-
-boardContainer.addBoard(board1);
-boardContainer.addBoard(board2);
-
-const boards = boardContainer.getBoards();
-console.log(boards);
 
 
   

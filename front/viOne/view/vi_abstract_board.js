@@ -1,7 +1,7 @@
 
 import {vi_dimension}  from './vi_dimension.js';
 import { vi_geometry_factory } from './vi_geometry_factory.js';
-import {vi_HiperCircle, vi_HiperLine } from './vi_hiperboard.js';
+import {vi_HiperCircle, vi_HiperLine, vi_HiperBoard } from './vi_hiperboard.js';
 
 export class vi_abstractBoard {
 
@@ -16,7 +16,7 @@ export class vi_abstractBoard {
 
         this.geometry_factory = new vi_geometry_factory();
 
-
+        /*
 
         board_config.dimensions.forEach(dimension => {
             
@@ -24,6 +24,12 @@ export class vi_abstractBoard {
                 this.addDimension(dim);
 
           });
+
+          */
+
+         
+
+
         
     }
 
@@ -36,7 +42,7 @@ export class vi_abstractBoard {
 
 
 
-   draw(dimension){
+   drawTest(dimension){
     
       
            // this.drawLINE(dimension);
@@ -253,6 +259,37 @@ export class vi_abstractBoard {
    }
 
 
+   draw(dimension){
+
+
+        var conf = {
+            board:{
+
+                type:"a",
+                origin: {x:0, y:0, z:0},
+                angle:0,
+                levels: [6,4],
+                content:
+                {
+                    board:{
+                        type:"x",
+                        origin: {x:0,y:0,z:0},
+                        angle: 0,
+                        levels:[10,2],
+                        content:{}
+                    }
+                }
+
+            }
+        }
+
+        var hb = new vi_HiperBoard(this.render_engine);
+        hb.addBoard(conf);
+        hb.draw();
+
+
+
+   }
 
 
    drawLINE(dim){
