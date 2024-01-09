@@ -418,7 +418,7 @@ class Segment {
 export class vi_HiperLine {
   constructor(length, angle,origin ) {
     this.origin = { ...origin };
-    this.angle = angle || 0;
+    this.angle = angle;
     this.length = length || 0;
     this.separation = 5;
     this.globalMap = new Map();
@@ -540,6 +540,18 @@ export class vi_HiperLine {
 
     return currentPoints[index];
   }
+
+
+
+  getAngleForPoint(point){
+
+    const angle =    Math.PI / 2 + this.angle;
+
+   
+    
+    return angle;
+
+  }
   
   
 }
@@ -547,7 +559,7 @@ export class vi_HiperLine {
 
 
 class vi_Board {
-  constructor(render, origin, levels, type, angle = 0) {
+  constructor(render, origin, levels, type, angle) {
     this.render_engine = render;
     this.origin = { ...origin };
     this.levels = levels || [];
@@ -668,7 +680,12 @@ export class vi_HiperBoard {
   addBoard(conf) {
     const { type, origin, levels, content, angle } = conf.board;
 
-    
+    if(levels.length == 1){
+      console.log('aqui empieza');
+    }
+
+
+
     const newBoard = new vi_Board(this.render_engine, origin, levels, type, angle);
     this.boardContainer.push(newBoard);
 
@@ -683,7 +700,7 @@ export class vi_HiperBoard {
         content.board.origin = p;
         content.board.angle = a;
 
-        this.addBoard(content);
+        this.addBoard(content);           // Llamada recursiva
 
 
       });

@@ -268,20 +268,63 @@ export class vi_abstractBoard {
                 type:"a",
                 origin: {x:0, y:0, z:0},
                 angle:0,
-                levels: [6,4],
+                levels: [3,2],
                 content:
                 {
                     board:{
                         type:"x",
                         origin: {x:0,y:0,z:0},
                         angle: 0,
-                        levels:[10,2],
-                        content:{}
+                        levels:[10],
+                        content:{
+
+                            board:{
+                                type:"x",
+                                origin: {x:0,y:0,z:0},
+                                angle: 0,
+                                levels:[2],
+                                content:{
+        
+                                    
+        
+                                }
+                            }
+
+                        }
                     }
                 }
 
             }
         }
+
+
+        var conf1 = {
+            board:{
+
+                type:"x",
+                origin: {x:0, y:0, z:0},
+                angle:Math.PI / 4,
+                levels: [10],
+                content:
+                {
+
+                    board:{
+                    type:"x",
+                    origin: {x:0, y:0, z:0},
+                    angle:0,
+                    levels: [1],
+                    content:
+                    {
+
+                                    
+                    }
+                }
+                   
+                }
+
+            }
+        }
+
 
         var hb = new vi_HiperBoard(this.render_engine);
         hb.addBoard(conf);
