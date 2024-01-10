@@ -16,7 +16,7 @@ export class vi_abstractBoard {
 
         this.geometry_factory = new vi_geometry_factory();
 
-        /*
+        
 
         board_config.dimensions.forEach(dimension => {
             
@@ -25,7 +25,7 @@ export class vi_abstractBoard {
 
           });
 
-          */
+          
 
          
 
@@ -42,7 +42,7 @@ export class vi_abstractBoard {
 
 
 
-   drawTest(dimension){
+   drawold(dimension){
     
       
            // this.drawLINE(dimension);
@@ -265,28 +265,37 @@ export class vi_abstractBoard {
         var conf = {
             board:{
 
-                type:"a",
+                type:"radial",
                 origin: {x:0, y:0, z:0},
+                amplitude: 50,
                 angle:0,
                 levels: [3,2],
+                graphics:{
+                    center:{amplitude:30, color:0x00ff00, transparent:true, opacity:0.5 }
+                },
                 content:
                 {
                     board:{
-                        type:"x",
+                        type:"linear",
                         origin: {x:0,y:0,z:0},
+                        amplitude: 100,
                         angle: 0,
                         levels:[10],
+                        graphics:{
+                            line:{color:0x00ff00, transparent:true, opacity:0.5}
+                        },
                         content:{
 
                             board:{
-                                type:"x",
+                                type:"linear",
                                 origin: {x:0,y:0,z:0},
+                                amplitude: 20,
                                 angle: 0,
                                 levels:[2],
+                                graphics:{
+                                    line:{color:0x00ff00, transparent:true, opacity:0.5}
+                                },
                                 content:{
-        
-                                    
-        
                                 }
                             }
 
@@ -299,43 +308,61 @@ export class vi_abstractBoard {
 
 
         var conf1 = {
-            board:{
+            
 
-                type:"x",
-                origin: {x:0, y:0, z:0},
-                angle:Math.PI / 4,
-                levels: [10],
-                content:
-                {
-
+               
                     board:{
-                    type:"x",
-                    origin: {x:0, y:0, z:0},
-                    angle:0,
-                    levels: [1],
-                    content:
-                    {
+                        type:"linear",
+                        origin: {x:0,y:0,z:0},
+                        amplitude: 100,
+                        angle: 0,
+                        levels:[10,2],
+                        graphics:{
+                            line:{color:0x00ff00, transparent:true, opacity:0.5}
+                        },
+                        content:{
 
-                                    
+                            board:{
+                                type:"linear",
+                                origin: {x:0,y:0,z:0},
+                                amplitude: 20,
+                                angle: 0,
+                                levels:[5],
+                                graphics:{
+                                    line:{color:0x00ff00, transparent:true, opacity:0.5}
+                                },
+                                content:{
+                                }
+                            }
+
+                        }
                     }
-                }
-                   
-                }
+                
 
-            }
+            
         }
 
 
         var hb = new vi_HiperBoard(this.render_engine);
-        hb.addBoard(conf);
+        hb.addBoard(conf1);
         hb.draw();
+
+        hb.setLabel('1.0', 'Valor 0');
+
+
+       
+       // this.render_engine.addLabel("SI JALA",{x:0,y:0,z:0, color:0x0088ff},rotate,{size:3, height:0.3});
+
+
+
+
 
 
 
    }
 
 
-   drawLINE(dim){
+   drawok(dim){
 
 
 

@@ -77,9 +77,17 @@ export class vi_HiperCircle {
     this.totalMarkers = 0;
     this.levels = [];
     this.globalMap = new Map();
-    
+    this.graphics = null;
   }
 
+
+
+
+  setGraphics(graphics){
+
+    this.graphics = graphics;
+
+  }
 
   setLevels(levels) {
     this.levels = levels;
@@ -422,6 +430,7 @@ export class vi_HiperLine {
     this.length = length || 0;
     this.separation = 5;
     this.globalMap = new Map();
+    this.graphics = null;
   }
 
   
@@ -437,6 +446,10 @@ export class vi_HiperLine {
     for (let i = 0; i < levels.length; i++) {
       this.globalMap.set(i, this.calcSegments(i));
     }
+  }
+
+  setGraphics(graphics){
+    this.graphics = graphics;
   }
 
 
@@ -559,15 +572,17 @@ export class vi_HiperLine {
 
 
 class vi_Board {
-  constructor(render, origin, levels, type, angle) {
+  constructor(slot, render, origin, levels, type, angle, amplitude, graphics) {
+    this.slot = slot;
     this.render_engine = render;
     this.origin = { ...origin };
     this.levels = levels || [];
     this.type = type || "";
     this.content = null;
     this.angle = angle;
-    this.amplitude = 100;
+    this.amplitude = amplitude;
     this.geometry_factory = new vi_geometry_factory();
+    this.graphics = graphics;
 
     // Initialize the content based on the board type
     this.initializeContent();
@@ -575,12 +590,14 @@ class vi_Board {
 
   initializeContent() {
     switch (this.type) {
-      case "a":
+      case "radial":
         this.content = new vi_HiperCircle(this.amplitude, this.angle, this.origin);
+        this.content.setGraphics(this.graphics);
         this.content.setLevels(this.levels);
         break;
-      case "x":
+      case "linear":
           this.content = new vi_HiperLine(this.amplitude, this.angle, this.origin);
+          this.content.setGraphics(this.graphics);
           this.content.setLevels(this.levels);
           break;
       default:
@@ -631,7 +648,66 @@ class vi_Board {
   }
 
 
+
+ drawCenter(){
+
+   var pos =this.origin;
+   var color = this.graphics.center.color;
+
+   var g = this.geometry_factory.createGeometry('Circle',[this.graphics.center.amplitude,64]);
+   var m = this.geometry_factory.createObject(g,{x:pos.x,y:pos.y,z:pos.z}, { color: color,transparent: this.graphics.center.transparent, opacity: this.graphics.center.opacity});
+   var o = this.geometry_factory.createVisualObject(m,'hb');
+
+   this.render_engine.addGeometry(o); 
+
+
+ }
+
+
+ getEndpoint(startX, startY, angleInRadians, length) {
+  // Calculate the x and y components of the vector
+  let deltaX = length * Math.cos(angleInRadians);
+  let deltaY = length * Math.sin(angleInRadians);
+
+  // Calculate the endpoint coordinates
+  let endX = startX + deltaX;
+  let endY = startY + deltaY;
+
+  return { x: endX, y: endY, z:0 };
+ }
+
+
+ drawLine(){
+
+  var pos =this.origin;
+  var color = this.graphics.line.color;
+  var endpoint = this.getEndpoint(pos.x,pos.y, this.angle, this.amplitude);
+
+
+  this.render_engine.addLine({ x: pos.x, y:pos.y, z: 0 },endpoint);
+
+
+}
+
+
+
+
+
   draw(){
+
+   if(this.graphics){
+
+        if(this.graphics.center){
+                 this.drawCenter();
+        }
+
+        if(this.graphics.line){
+          this.drawLine();
+        }
+
+        
+   }
+
 
    let pos = {x:0,y:0,z:0};
 
@@ -673,34 +749,47 @@ class vi_Board {
 export class vi_HiperBoard {
   constructor(render) {
     this.render_engine = render;
-    this.boardContainer = [];
+    this.boardContainer = new Map();
     this.geometry_factory = new vi_geometry_factory();
+    this.depth = 0;
   }
 
-  addBoard(conf) {
-    const { type, origin, levels, content, angle } = conf.board;
+  addBoard(conf, slot) {
+    const { type, origin, levels, content, angle, amplitude, graphics } = conf.board;
 
     if(levels.length == 1){
       console.log('aqui empieza');
     }
 
+    if(!slot){
+      slot = 'root';
+    }
+
+    if(this.depth < levels.length){
+      this.depth = levels.length;     
+    }
 
 
-    const newBoard = new vi_Board(this.render_engine, origin, levels, type, angle);
-    this.boardContainer.push(newBoard);
+
+    const newBoard = new vi_Board(slot, this.render_engine, origin, levels, type, angle, amplitude, graphics);
+    this.boardContainer.set(slot, newBoard);
+
+    
 
     if(content.board){
 
-      newBoard.traverse((slot)=>{
+      
+
+      newBoard.traverse((path)=>{
         
-        let p = newBoard.content.locatePointByPath(slot);
+        let p = newBoard.content.locatePointByPath(path);
         let a = newBoard.content.getAngleForPoint(p);
-        console.log(slot,p,a);
+        console.log(path,p,a);
 
         content.board.origin = p;
         content.board.angle = a;
 
-        this.addBoard(content);           // Llamada recursiva
+        this.addBoard(content,slot+'.'+path);           // Llamada recursiva
 
 
       });
@@ -714,7 +803,7 @@ export class vi_HiperBoard {
   draw(){
 
 
-   this.boardContainer.forEach((board)=>{
+   this.boardContainer.forEach((board,slot)=>{
 
         board.draw();
 
@@ -724,14 +813,184 @@ export class vi_HiperBoard {
   }
 
 
-
   getBoards() {
     return this.boardContainer;
   }
 
-  getBoards() {
-    return this.boardContainer;
+
+  /*
+  convertStringToArray(inputString) {
+    // Split the input string using the dot as a separator
+    let stringArray = inputString.split('.');
+
+    // Convert each element of the array to a number
+    let numberArray = stringArray.map(Number);
+
+  return numberArray;
+}
+
+ multiplyArrayValues(numbersArray) {
+  if (numbersArray.length === 0) {
+      // Handle the case where the array is empty
+      return 0;
   }
+
+  // Use the reduce function to calculate the product
+  let product = numbersArray.reduce((accumulator, currentValue) => accumulator * currentValue);
+
+  return product;
+ }
+
+ removeFirstNNumbers(path, n) {
+  // Split the input path using commas as separators
+  let pathArray = path.split('.');
+
+  // Remove the first n elements from the array
+  let newPathArray = pathArray.slice(n);
+
+  // Join the remaining elements to form the new path
+  let newPath = newPathArray.join('.');
+
+  return newPath;
+}
+
+getFirstElementAsNumber(path) {
+  // Split the input path using commas as separators
+  let pathArray = path.split(',');
+
+  // Get the first element and convert it to a number
+  let firstElement = parseFloat(pathArray[0]);
+
+  return firstElement;
+}
+
+removeFirstAndAddOne(inputArray) {
+  // Check if the input array is not empty
+  if (inputArray.length > 0) {
+      // Use slice to remove the first element
+      inputArray = inputArray.slice(1);
+  }
+
+  // Add 1 to the end of the array
+  inputArray.push(1);
+
+  return inputArray;
+}
+
+
+
+
+
+convertToDecimalFromArray(customNumberArray, _ranges) {
+  
+  const ranges = this.removeFirstAndAddOne( _ranges);
+  const base = ranges.length;
+
+
+  // Calculate the decimal value
+  let decimalValue = 0;
+
+  for (let i = 0; i < customNumberArray.length; i++) {
+      decimalValue += customNumberArray[i] * Math.pow(ranges[i], customNumberArray.length - i - 1);
+  }
+
+  return decimalValue;
+}
+
+ getFirstNElements(inputArray, n) {
+  return inputArray.slice(0, n);
+ }
+
+  locateBoardByPath(bp){
+
+     let board = bp.board;
+     let path = bp.path;
+
+
+      let p = this.convertStringToArray(path);
+
+      if (p.length > this.boardContainer[board].levels.length){
+         
+          
+        let nextPath = this.removeFirstNNumbers(path,this.boardContainer[board].levels.length);
+
+        let nextBoard = this.convertToDecimalFromArray(this.getFirstNElements(p,this.boardContainer[board].levels.length ),this.boardContainer[board].levels)+1;
+          
+
+          bp = this.locateBoardByPath({board:nextBoard,path:nextPath})       // Llamada recursiva
+        }
+      
+      return bp;
+
+  }
+
+  */
+
+  splitPath(path, n) {
+    // Split the path into sections using commas
+    const sections = path.split('.');
+
+    // Extract the first n sections as boardPath
+    const boardPath = sections.slice(0, n).join('.');
+
+    // Extract the rest of the sections as nodePath
+    const nodePath = sections.slice(n).join('.');
+
+    
+    return { boardPath, nodePath };
+ }
+
+  setLabel(absolutepath,label){
+
+    //let bp = this.locateBoardByPath({board:0, path:absolutepath});    // Ubicamos el board correcto iniciando en el 0
+
+    //let path = bp.path;
+    //let board = bp.board;
+    
+    
+    const { boardPath, nodePath } = this.splitPath(absolutepath, this.depth+1);
+
+    let root = this.boardContainer.get('root.'+boardPath);
+    let point = root.content.locatePointByPath(nodePath);
+    let angle = root.content.angle + Math.PI/2;
+
+
+    let pos = {x:0, y:0, z:0};
+
+    pos.x = point.x;
+    pos.y = point.y;
+    pos.z = 0;
+
+
+    let color = 0x00ff00;
+
+    var g = this.geometry_factory.createGeometry('Circle',[1,16]);
+    var m = this.geometry_factory.createObject(g,{x:pos.x,y:pos.y,z:pos.z}, { color: color,transparent: false, opacity: 0.5 });
+    var o = this.geometry_factory.createVisualObject(m,'hbp');
+
+    this.render_engine.addGeometry(o); 
+
+
+
+
+
+    color = 0x00ff00;
+
+   
+    pos.y = pos.y - 8;
+    
+
+    let rotate = {x:0, y:0, z:angle};
+
+    this.render_engine.addLabel(label,pos,rotate,{size:1, height:0.3});
+    
+   
+
+  }
+
+
+
+
 }
 
 
