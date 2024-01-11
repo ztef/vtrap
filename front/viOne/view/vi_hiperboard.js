@@ -751,34 +751,42 @@ export class vi_HiperBoard {
     this.render_engine = render;
     this.boardContainer = new Map();
     this.geometry_factory = new vi_geometry_factory();
-    this.depth = 0;
+    this.depth = 0;  // numero de niveles de profundidad del arbol
+    this.mask = '';  // mascara de sub boards
+    this.treeDepth = 1;  // profundidad del arbol
+    this.maxTreeDepth = 0;
   }
 
   addBoard(conf, slot) {
     const { type, origin, levels, content, angle, amplitude, graphics } = conf.board;
 
-    if(levels.length == 1){
-      console.log('aqui empieza');
-    }
+    
 
     if(!slot){
       slot = 'root';
     }
 
     if(this.depth < levels.length){
-      this.depth = levels.length;     
+      this.depth = levels.length; 
+        
     }
 
+    if(this.treeDepth > this.maxTreeDepth){
+      this.maxTreeDepth = this.treeDepth;
+      this.mask = this.mask + '.' + levels.length;
 
+    }
+
+    
 
     const newBoard = new vi_Board(slot, this.render_engine, origin, levels, type, angle, amplitude, graphics);
     this.boardContainer.set(slot, newBoard);
 
-    
+   
 
-    if(content.board){
+    if(content.board){ // si hay board dentro del board
 
-      
+     
 
       newBoard.traverse((path)=>{
         
@@ -789,10 +797,16 @@ export class vi_HiperBoard {
         content.board.origin = p;
         content.board.angle = a;
 
-        this.addBoard(content,slot+'.'+path);           // Llamada recursiva
+        this.treeDepth = this.treeDepth + 1;
+        this.addBoard(content,slot+'.'+path); 
+        this.treeDepth = this.treeDepth - 1;        
 
 
       });
+
+    } else {
+
+     
 
     }
 
@@ -931,26 +945,159 @@ convertToDecimalFromArray(customNumberArray, _ranges) {
     const sections = path.split('.');
 
     // Extract the first n sections as boardPath
-    const boardPath = sections.slice(0, n).join('.');
+    const bP = sections.slice(0, n).join('.');
 
     // Extract the rest of the sections as nodePath
-    const nodePath = sections.slice(n).join('.');
+    const nP = sections.slice(n).join('.');
 
     
-    return { boardPath, nodePath };
+    return { bP, nP };
  }
+
+
+ countPathElements(path) {
+  // Split the path into sections using dots
+  const sections = path.split('.');
+
+  // Count the number of elements
+  const numberOfElements = sections.length;
+
+  return numberOfElements;
+ }
+
+ checkMask(mask, n) {
+
+
+      let match = false;
+      let exceso = 0;
+
+
+      // Split the mask into sections using dots
+      const sections = mask.split('.');
+
+      // Remove the leading empty section resulting from a leading dot in the mask
+      sections.shift();
+
+      // Check if n matches any of the conditions
+      let currentSum = 0;
+      for (let i = 0; i < sections.length; i++) {
+          const currentNumber = parseInt(sections[i]);
+          currentSum += currentNumber;
+
+          if (n === currentSum) {
+              match = true;
+              return({match:true,section:i, exceso:0});
+          }
+
+          if(n < currentSum){
+              exceso = currentSum - n;
+              return({match:false, section:i, exceso:exceso});
+          }
+
+
+      }
+
+      return {match:false,section:0, exceeds:0};
+  }
+
+
+  extractSubpaths(mask, path) {
+    // Split the mask into sections using dots
+    const maskSections = mask.split('.');
+
+    // Remove the leading empty section resulting from a leading dot in the mask
+    maskSections.shift();
+
+    // Split the path into sections using commas
+    const pathSections = path.split('.');
+
+    // Initialize variables
+    let currentIndex = 0;
+    const subpaths = [];
+
+    // Iterate over mask sections to form subpaths
+    for (let i = 0; i < maskSections.length; i++) {
+        const sectionLength = parseInt(maskSections[i]);
+        
+        // Extract subpath from the current index to the specified length
+        const subpath = pathSections.slice(currentIndex, currentIndex + sectionLength).join('.');
+
+        // Add the subpath to the result array
+        subpaths.push(subpath);
+
+        // Update the current index for the next iteration
+        currentIndex += sectionLength;
+    }
+
+    return subpaths;
+}
+
+mask2array(mask){
+  const maskSections = mask.split('.');
+
+  // Remove the leading empty section resulting from a leading dot in the mask
+  maskSections.shift();
+  return maskSections;
+
+}
+
+
+
+removeExternalDots(inputString) {
+  // Use a regular expression to remove leading and trailing dots
+  const resultString = inputString.replace(/^\.+|\.+$/g, '');
+
+  return resultString;
+}
+
+removeLastElement(mask) {
+  // Split the mask into sections using dots
+  const maskSections = mask.split('.');
+
+  // Remove the last element
+  maskSections.pop();
+
+  // Join the sections back into a string
+  const updatedMask = maskSections.join('.')+'.9';
+
+  return updatedMask;
+}
+
 
   setLabel(absolutepath,label){
 
-    //let bp = this.locateBoardByPath({board:0, path:absolutepath});    // Ubicamos el board correcto iniciando en el 0
 
-    //let path = bp.path;
-    //let board = bp.board;
-    
-    
-    const { boardPath, nodePath } = this.splitPath(absolutepath, this.depth+1);
+    let boardPath = '';
+    let nodePath = '';
+    let mask = this.removeLastElement(this.mask) 
 
-    let root = this.boardContainer.get('root.'+boardPath);
+
+
+    let subpaths = this.extractSubpaths(mask, absolutepath);
+    
+    let masklevels = this.mask2array(mask); 
+
+    for(let i=0; i<masklevels.length; i ++){
+       if (this.countPathElements(subpaths[i]) == masklevels[i]){
+          boardPath = boardPath + '.' + subpaths[i];
+       } else {
+          nodePath = nodePath +  subpaths[i];
+       }
+    }
+   
+ 
+    boardPath = this.removeExternalDots(boardPath);
+    nodePath = this.removeExternalDots(nodePath);
+
+
+    
+    if(boardPath != ''){
+      boardPath = '.' + boardPath;
+    }
+    
+
+
+    let root = this.boardContainer.get('root'+boardPath);
     let point = root.content.locatePointByPath(nodePath);
     let angle = root.content.angle + Math.PI/2;
 

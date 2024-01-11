@@ -65,7 +65,7 @@ var conf1 = {
             board:{
                 type:"linear",
                 origin: {x:0,y:0,z:0},
-                amplitude: 150,
+                amplitude: 500,
                 angle: 0,
                 levels:[5,2],
                 graphics:{
@@ -76,26 +76,15 @@ var conf1 = {
                     board:{
                         type:"linear",
                         origin: {x:0,y:0,z:0},
-                        amplitude: 30,
+                        amplitude: 50,
                         angle: 0,
-                        levels:[5],
+                        levels:[5,2],
                         graphics:{
                             line:{color:0x00ff00, transparent:true, opacity:0.5}
                         },
                         content:{
 
-                            board:{
-                                type:"linear",
-                                origin: {x:0,y:0,z:0},
-                                amplitude: 10,
-                                angle: 0,
-                                levels:[3],
-                                graphics:{
-                                    line:{color:0x00ff00, transparent:true, opacity:0.5}
-                                },
-                                content:{
-                                }
-                            }
+                           
                         }
                     }
 
@@ -111,7 +100,7 @@ var hb = new vi_HiperBoard(renderer);
 hb.addBoard(conf1);
 hb.draw();
 
-hb.setLabel('2', 'Valor 0');
+hb.setLabel('0.1.1.0', 'Valor 0');
 
 
 
