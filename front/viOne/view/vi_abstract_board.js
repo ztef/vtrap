@@ -1,7 +1,7 @@
 
 import {vi_dimension}  from './vi_dimension.js';
 import { vi_geometry_factory } from './vi_geometry_factory.js';
-import {vi_HiperCircle, vi_HiperLine, vi_HiperBoard } from './vi_hiperboard.js';
+import { vi_HiperBoard } from './vi_hiperboard.js';
 
 export class vi_abstractBoard {
 
