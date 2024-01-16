@@ -6,15 +6,24 @@ class vi_mainCircle {
       this.initialAngle = initialAngle;
       
       this.origin = { ...origin };
+      this.separation = 0;
     }
   
-    divideCircle(totalMarkers) {
+    divideCircle(level, totalMarkers) {
       const points = [];
+      let delta = 0;
+
+
+      if(level > 0){
+        delta = this.separation*level;
+        this.initialAngle = ((2 * Math.PI) / (totalMarkers))/2;
+      }
+
   
       for (let i = 0; i < totalMarkers; i++) {
         const angle = (2 * Math.PI * i) / totalMarkers + this.initialAngle;
-        const x = this.origin.x + this.radius * Math.cos(angle);
-        const y = this.origin.y + this.radius * Math.sin(angle);
+        const x = this.origin.x + (this.radius+delta) * Math.cos(angle);
+        const y = this.origin.y + (this.radius+delta) * Math.sin(angle);
         points.push({ x, y });
       }
   
@@ -75,6 +84,12 @@ class vi_mainCircle {
       this.levels = [];
       this.globalMap = new Map();
       this.graphics = null;
+      this.render = null;
+      this.geometry_factory = null;
+      this.marker = null;
+      this.markerColor = 0xff0000;
+      this.separation = 5;
+      this.centralCircle.separation = this.separation; // delta de radio entre circulos (niveles)
     }
   
   
@@ -85,6 +100,22 @@ class vi_mainCircle {
       this.graphics = graphics;
   
     }
+
+
+    setRenderEngine(re,gf){
+      this.render = re;
+      this.geometry_factory = gf;
+      this.setMarker();
+
+  }
+
+  setMarker(){
+
+    this.marker = this.geometry_factory.createGeometry('Circle',[0.3,16]);
+
+
+  }
+
   
     setLevels(levels) {
       this.levels = levels;
@@ -140,6 +171,80 @@ class vi_mainCircle {
   
       return this.globalMap.get(level);
     }
+
+
+    draw(level){
+        
+      var points = this.getSegments(level);
+
+      
+      let init = this.centralCircle.origin;
+      let pos = {...points[0]};
+      
+
+      let color = this.markerColor;
+
+      points.forEach((point)=>{
+
+          pos.x = point.x;
+          pos.y = point.y;
+          pos.z = 0;
+
+     
+
+           
+          var m = this.geometry_factory.createObject(this.marker,{x:pos.x,y:pos.y,z:pos.z}, { color: color,transparent: false, opacity: 0.5 });
+          var o = this.geometry_factory.createVisualObject(m,'marker');
+
+          this.render.addGeometry(o); 
+
+          if(level==0){
+              this.render.addLine(init,pos);
+          }
+
+
+
+      });
+
+
+     
+    }
+
+    drawLabels(level, labels, offset){
+      var points = this.getSegments(level);
+
+      this.plotLabelsOnPoints(points, labels,offset)    
+
+    
+    }
+
+
+
+    plotLabelsOnPoints(points, labels, offset) {
+          const numPoints = points.length;
+      
+          for (let i = 0; i < numPoints; i++) {
+              const point = points[i];
+              const label = labels[i] || ''; // Use an empty label if there are fewer labels than points.y -
+
+
+
+              const angle = this.getAngleForPoint(point);
+
+              const offsetX =  offset * Math.cos(angle);
+              const offsetY =  offset * Math.sin(angle);
+      
+              point.x = point.x + offsetX;
+              point.y = point.y + offsetY;
+              point.z = 0;
+
+
+              let rotate = {x:0, y:0, z:angle};
+
+              this.render.addLabel(label,point,rotate,{size:1, height:0.3});
+  
+          }
+    }   
   
   
   
@@ -150,12 +255,12 @@ class vi_mainCircle {
         totalMarkersInLevel = totalMarkersInLevel * this.levels[i];
       }
   
-      return this.centralCircle.divideCircle(totalMarkersInLevel);
+      return this.centralCircle.divideCircle(level, totalMarkersInLevel);
     }
   
   
     calculateLinesForLevel(level,lineLength){ 
-  
+
       var totalMarkersInLevel = 1;
       for(var i=0; i<=level; i++){
         totalMarkersInLevel = totalMarkersInLevel * this.levels[i];

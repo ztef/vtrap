@@ -42,6 +42,15 @@ export class vi_geometry_factory {
                 return new THREE.BoxGeometry(data[0], data[1], data[2]);
 
             break;
+
+
+          case 'Cylinder':
+
+          //radiusTop, radiusBottom, height, radialSegments
+
+          return new THREE.CylinderGeometry(data[0], data[1], data[2], data[3]);
+
+             break;  
   
           default:
             throw new Error(`Unsupported geometry type: ${geometryType}`);

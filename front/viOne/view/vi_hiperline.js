@@ -34,6 +34,9 @@ class vi_Segment {
       this.globalMap = new Map();
       this.graphics = null;
       this.render = null;
+      this.marker = null;
+      this.markerColor = 0xff0000;
+
     }
   
     
@@ -41,6 +44,8 @@ class vi_Segment {
     setRenderEngine(re,gf){
         this.render = re;
         this.geometry_factory = gf;
+        this.setMarker();
+
     }
 
   
@@ -78,6 +83,9 @@ class vi_Segment {
   
   
       var startLevel = 0;
+
+      const separationX =  this.separation * Math.sin(this.angle);
+      const separationY =  this.separation * Math.cos(this.angle);
   
       const divideRecursive = (currentLevel, segment) => {
         if (currentLevel <= level) {
@@ -92,13 +100,12 @@ class vi_Segment {
             //p.y = p.y + level * this.separation;
   
   
-            const separationX = level * this.separation * Math.sin(this.angle);
-            const separationY = level * this.separation * Math.cos(this.angle);
-  
+            if(level>0){
+            
             p.x -= separationX;
             p.y += separationY;
   
-  
+          }
   
   
   
@@ -188,6 +195,14 @@ class vi_Segment {
 
 
 
+  setMarker(){
+
+    this.marker = this.geometry_factory.createGeometry('Circle',[0.1,16]);
+
+
+  }
+
+
 
     draw(level){
         
@@ -198,7 +213,7 @@ class vi_Segment {
             let pos = {...points[0]};
             
 
-            let color = 0xff0000;
+            let color = this.markerColor;
 
             points.forEach((point)=>{
 
@@ -208,9 +223,9 @@ class vi_Segment {
 
            
 
-                var g = this.geometry_factory.createGeometry('Circle',[1,16]);
-                var m = this.geometry_factory.createObject(g,{x:pos.x,y:pos.y,z:pos.z}, { color: color,transparent: false, opacity: 0.5 });
-                var o = this.geometry_factory.createVisualObject(m,'hbp');
+                 
+                var m = this.geometry_factory.createObject(this.marker,{x:pos.x,y:pos.y,z:pos.z}, { color: color,transparent: false, opacity: 0.5 });
+                var o = this.geometry_factory.createVisualObject(m,'marker');
 
                 this.render.addGeometry(o); 
 
@@ -226,7 +241,40 @@ class vi_Segment {
               this.render.addLine(init,pos);
 
             }
-          }
+      }
+
+
+      drawLabels(level, labels, offset){
+        var points = this.getSegments(level);
+
+        this.plotLabelsOnPoints(points, labels,offset)    
+
+      
+      }
+
+
+
+      plotLabelsOnPoints(points, labels, offset) {
+            const numPoints = points.length;
+        
+            for (let i = 0; i < numPoints; i++) {
+                const point = points[i];
+                const label = labels[i] || ''; // Use an empty label if there are fewer labels than points.y -
+
+
+                const offsetX =  offset * Math.cos(this.angle+Math.PI/2);
+                const offsetY =  offset * Math.sin(this.angle+Math.PI/2);
+        
+                point.x = point.x + offsetX;
+                point.y = point.y + offsetY;
+
+
+                let rotate = {x:0, y:0, z:this.angle+Math.PI/2};
+
+                this.render.addLabel(label,point,rotate,{size:1, height:0.3});
+    
+            }
+      }   
     
     
   }

@@ -8,9 +8,10 @@ import { vi_HiperCircle } from './vi_hipercircle.js';
 
 
 class vi_Board {
-  constructor(slot, render, origin, levels, type, angle, amplitude, graphics) {
+  constructor(slot, render,  origin, levels, type, angle, amplitude, graphics) {
     this.slot = slot;
     this.render_engine = render;
+ 
     this.origin = { ...origin };
     this.levels = levels || [];
     this.type = type || "";
@@ -26,15 +27,17 @@ class vi_Board {
 
   initializeContent() {
     switch (this.type) {
-      case "radial":
+      case "hipercircle":
         this.content = new vi_HiperCircle(this.amplitude, this.angle, this.origin);
         this.content.setGraphics(this.graphics);
         this.content.setLevels(this.levels);
+        this.content.setRenderEngine( this.render_engine,  this.geometry_factory);
         break;
-      case "linear":
+      case "hiperline":
           this.content = new vi_HiperLine(this.amplitude, this.angle, this.origin);
           this.content.setGraphics(this.graphics);
           this.content.setLevels(this.levels);
+          this.content.setRenderEngine( this.render_engine,  this.geometry_factory);
           break;
       default:
         console.error(`Unknown board type: ${this.type}`);
@@ -126,10 +129,39 @@ class vi_Board {
 }
 
 
+draw(){
+
+  if(this.graphics){
+
+       if(this.graphics.center){
+            //    this.drawCenter();
+       }
+
+       if(this.graphics.line){
+        // this.drawLine();
+       }
+
+       
+  }
+
+
+  let pos = {x:0,y:0,z:0};
+
+  for(let level=0; level<this.levels.length; level++){
+
+
+   this.content.draw(level);
 
 
 
-  draw(){
+  }
+
+
+ }
+
+
+
+  drawold(){
 
    if(this.graphics){
 
@@ -218,6 +250,9 @@ export class vi_HiperBoard {
     const newBoard = new vi_Board(slot, this.render_engine, origin, levels, type, angle, amplitude, graphics);
     this.boardContainer.set(slot, newBoard);
 
+
+
+
    
 
     if(content.board){ // si hay board dentro del board
@@ -234,7 +269,7 @@ export class vi_HiperBoard {
         content.board.angle = a;
 
         this.treeDepth = this.treeDepth + 1;
-        this.addBoard(content,slot+'.'+path); 
+        this.addBoard(content,slot+'.'+path); // llamada recursiva
         this.treeDepth = this.treeDepth - 1;        
 
 
@@ -268,114 +303,7 @@ export class vi_HiperBoard {
   }
 
 
-  /*
-  convertStringToArray(inputString) {
-    // Split the input string using the dot as a separator
-    let stringArray = inputString.split('.');
-
-    // Convert each element of the array to a number
-    let numberArray = stringArray.map(Number);
-
-  return numberArray;
-}
-
- multiplyArrayValues(numbersArray) {
-  if (numbersArray.length === 0) {
-      // Handle the case where the array is empty
-      return 0;
-  }
-
-  // Use the reduce function to calculate the product
-  let product = numbersArray.reduce((accumulator, currentValue) => accumulator * currentValue);
-
-  return product;
- }
-
- removeFirstNNumbers(path, n) {
-  // Split the input path using commas as separators
-  let pathArray = path.split('.');
-
-  // Remove the first n elements from the array
-  let newPathArray = pathArray.slice(n);
-
-  // Join the remaining elements to form the new path
-  let newPath = newPathArray.join('.');
-
-  return newPath;
-}
-
-getFirstElementAsNumber(path) {
-  // Split the input path using commas as separators
-  let pathArray = path.split(',');
-
-  // Get the first element and convert it to a number
-  let firstElement = parseFloat(pathArray[0]);
-
-  return firstElement;
-}
-
-removeFirstAndAddOne(inputArray) {
-  // Check if the input array is not empty
-  if (inputArray.length > 0) {
-      // Use slice to remove the first element
-      inputArray = inputArray.slice(1);
-  }
-
-  // Add 1 to the end of the array
-  inputArray.push(1);
-
-  return inputArray;
-}
-
-
-
-
-
-convertToDecimalFromArray(customNumberArray, _ranges) {
   
-  const ranges = this.removeFirstAndAddOne( _ranges);
-  const base = ranges.length;
-
-
-  // Calculate the decimal value
-  let decimalValue = 0;
-
-  for (let i = 0; i < customNumberArray.length; i++) {
-      decimalValue += customNumberArray[i] * Math.pow(ranges[i], customNumberArray.length - i - 1);
-  }
-
-  return decimalValue;
-}
-
- getFirstNElements(inputArray, n) {
-  return inputArray.slice(0, n);
- }
-
-  locateBoardByPath(bp){
-
-     let board = bp.board;
-     let path = bp.path;
-
-
-      let p = this.convertStringToArray(path);
-
-      if (p.length > this.boardContainer[board].levels.length){
-         
-          
-        let nextPath = this.removeFirstNNumbers(path,this.boardContainer[board].levels.length);
-
-        let nextBoard = this.convertToDecimalFromArray(this.getFirstNElements(p,this.boardContainer[board].levels.length ),this.boardContainer[board].levels)+1;
-          
-
-          bp = this.locateBoardByPath({board:nextBoard,path:nextPath})       // Llamada recursiva
-        }
-      
-      return bp;
-
-  }
-
-  */
-
   splitPath(path, n) {
     // Split the path into sections using commas
     const sections = path.split('.');
@@ -538,15 +466,27 @@ getPosition(absolutepath){
 
 
 
- return {board:root, point:point, angle:angle};
+ return {board:root, node:nodePath, point:point, angle:angle};
 
 }
+
+
+ drawLabels(path, labels, offset){
+
+  let {board, node, point, angle} = this.getPosition(path);
+
+    let level = parseInt(node, 10);
+
+    board.content.drawLabels(level, labels, offset);
+
+ }
+
 
 
   setLabel(absolutepath,label){
 
 
-    let {board, point, angle} = this.getPosition(absolutepath, label);
+    let {board, point, angle} = this.getPosition(absolutepath);
 
 
     angle = angle + Math.PI /2;
