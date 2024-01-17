@@ -14,7 +14,7 @@ windowFormater.formatWindow("#ventana","Tablero",700,600);
 const renderer = new vi_3DSceneRenderer('ventana');
 const geometry_factory = new vi_geometry_factory();
 
-renderer.focus(0,0,0,100);
+//renderer.focus(0,0,0,100);
 
 
 const centro = { x: 0, y: 0, z: 0 };
@@ -42,9 +42,9 @@ let point = hiperCircle.locatePointByPath('0.0.0');
 var color = 0x00ff00;
 
 var g = geometry_factory.createGeometry('Cylinder',[2,2, 10,64]);
-var m = geometry_factory.createObject(g,{x:point.x,y:point.y,z:5}, { color: color,transparent: false, opacity: 0.5 });
+var m = geometry_factory.createObject(g,{x:point.x,y:point.y+5,z:point.z}, { color: color,transparent: false, opacity: 0.5 });
 
-m.rotation.x = Math.PI / 2;
+
 
 var o = geometry_factory.createVisualObject(m,'hb');
 

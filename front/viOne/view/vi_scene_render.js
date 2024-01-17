@@ -13,6 +13,7 @@
 import * as THREE from 'three';
 import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
 import { MapControls } from 'three/addons/controls/MapControls.js';
+import { FlyControls } from 'three/addons/controls/FlyControls.js';
 
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { PerspectiveCamera, OrthographicCamera } from 'three';
@@ -37,9 +38,10 @@ export class vi_3DSceneRenderer {
         this.setupCamera();
         this.setupLights();
         this.setupRenderer();
-        this.setupControls();
+        this.setupMapControls();
         this.addResizeListener();
         this.addClickListener();
+        this.axis();
         this.animate();
     }
 
@@ -47,7 +49,12 @@ export class vi_3DSceneRenderer {
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color(0xffffff);
     }
+   
 
+    axis(){
+        const axesHelper = new THREE.AxesHelper( 5 );
+        this.scene.add( axesHelper );
+    } 
     
    
 
@@ -80,10 +87,19 @@ export class vi_3DSceneRenderer {
             );
         } else {
             this.camera = new PerspectiveCamera(60, aspect, 0.1, 1000);
-            this.camera.position.set(0.3570062481736582, 2.098977770789573, 0.8855386452745455);
-            this.camera.lookAt(0.03575237012985329, -0.8778986564012193, -0.47750991311074553);
+            //this.camera.position.set(0.3570062481736582, 2.098977770789573, 0.8855386452745455);
+            //this.camera.lookAt(0.03575237012985329, -0.8778986564012193, -0.47750991311074553);
+            
+            
+            this.camera.position.set(0, 0, 40);
+            this.camera.lookAt(0, 0, 0);
+            
+            
+            
             this.camera.near = 0.1; 
             this.camera.far = 30000; 
+
+         
         }
     
         this.camera.updateProjectionMatrix();
@@ -115,21 +131,23 @@ export class vi_3DSceneRenderer {
 
         
         this.controls = new TrackballControls(this.camera, this.renderer.domElement);
+      
+
         this.controls.rotateSpeed = 1.0;
         this.controls.zoomSpeed = 1.2;
         this.controls.panSpeed = 0.8;
         this.controls.keys = ['KeyA', 'KeyS', 'KeyD'];
 
-
-
+        
         /*
+        
         this.controls = new MapControls( this.camera, this.renderer.domElement );
 
 			
 				this.controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
 				this.controls.dampingFactor = 0.05;
 
-				this.controls.screenSpacePanning = false;
+				this.controls.screenSpacePanning = true;
 
 				this.controls.minDistance = 0;
 				this.controls.maxDistance = 1500;
@@ -140,6 +158,28 @@ export class vi_3DSceneRenderer {
 
     }
 
+    setupMapControls() {
+
+        
+        this.controls = new MapControls( this.camera, this.renderer.domElement );
+
+			
+				this.controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+				this.controls.dampingFactor = 0.05;
+
+				this.controls.screenSpacePanning = true;
+
+				this.controls.minDistance = 0;
+				this.controls.maxDistance = 1500;
+
+				this.controls.maxPolarAngle = Math.PI / 2;
+
+        
+
+    }
+
+
+
 
 
     addResizeListener() {
@@ -149,7 +189,7 @@ export class vi_3DSceneRenderer {
                 this.renderer.setSize(width, height);
                 this.camera.aspect = width / height;  // Update this line
                 this.camera.updateProjectionMatrix();
-                this.controls.handleResize();
+              //  this.controls.handleResize();
             }
         });
     
@@ -329,7 +369,7 @@ export class vi_3DSceneRenderer {
         this.camera.lookAt(x, y, z);
 
         // Update the controls to reflect the new camera position
-        this.controls.target.set(x, y, z);
+        //EOO this.controls.target.set(x, y, z);
         this.controls.update();
     }
 

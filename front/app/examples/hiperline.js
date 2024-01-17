@@ -14,12 +14,12 @@ windowFormater.formatWindow("#ventana","Tablero",700,600);
 const renderer = new vi_3DSceneRenderer('ventana');
 const geometry_factory = new vi_geometry_factory();
 
-renderer.focus(0,0,0,100);
+//renderer.focus(0,0,0,100);
 
 
 const lineOrigin = { x: 0, y: 0, z: 0 };
-//const lineAngle = Math.PI/4; //  radianes
-const lineAngle = 0; //  radianes
+const lineAngle = Math.PI/4; //  radianes
+//const lineAngle = 0; //  radianes
 const linelength = 200;
 const levelsArray = [10,3,2];
 
@@ -41,9 +41,9 @@ let point = hiperLine.locatePointByPath('1.0.1');
 var color = 0x00ff00;
 
 var g = geometry_factory.createGeometry('Cylinder',[1,1, 10,64]);
-var m = geometry_factory.createObject(g,{x:point.x,y:point.y,z:5}, { color: color,transparent: false, opacity: 0.5 });
+var m = geometry_factory.createObject(g,{x:point.x,y:5,z:point.z}, { color: color,transparent: false, opacity: 0.5 });
 
-m.rotation.x = Math.PI / 2;
+m.rotation.x = 0;
 
 var o = geometry_factory.createVisualObject(m,'hb');
 

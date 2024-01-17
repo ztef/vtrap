@@ -11,7 +11,7 @@ windowFormater.formatWindow("#ventana","Tablero",700,600);
 // PARTE GRAFICA
 
 const renderer = new vi_3DSceneRenderer('ventana');
-renderer.focus(0,0,0,100);
+//renderer.focus(0,0,0,100);
 
 var conf = {
     board:{
@@ -57,43 +57,6 @@ var conf = {
     }
 }
 
-
-var conf1 = {
-    
-
-       
-            board:{
-                type:"hiperline",
-                origin: {x:0,y:0,z:0},
-                amplitude: 300,
-                angle: 0,
-                levels:[5,2],
-                graphics:{
-                    line:{color:0x00ff00, transparent:true, opacity:0.5}
-                },
-                content:{
-
-                    board:{
-                        type:"hipercircle",
-                        origin: {x:0,y:0,z:0},
-                        amplitude: 10,
-                        angle: Math.PI/2,
-                        levels:[5],
-                        graphics:{
-                            center:{color:0x00ff00, amplitude:10, transparent:true, opacity:0.5}
-                        },
-                        content:{
-
-                           
-                        }
-                    }
-
-                }
-            }
-        
-
-    
-}
 
 
 var hb = new vi_HiperBoard(renderer);

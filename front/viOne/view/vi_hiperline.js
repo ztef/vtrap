@@ -13,8 +13,8 @@ class vi_Segment {
       for (let i = 0; i < numPoints; i++) {
         const t = (2 * i + 1) / (2 * numPoints); // Calculate the middle point within each subdivision
         const x = this.basePoint.x + this.length * Math.cos(this.angle) * t;
-        const y = this.basePoint.y + this.length * Math.sin(this.angle) * t;
-        const z = this.basePoint.z; // Assuming z-coordinate remains constant for simplicity
+        const z = this.basePoint.z - this.length * Math.sin(this.angle) * t;
+        const y = this.basePoint.y; // y permanece constante
         points.push({ x, y, z });
       }
   
@@ -85,7 +85,7 @@ class vi_Segment {
       var startLevel = 0;
 
       const separationX =  this.separation * Math.sin(this.angle);
-      const separationY =  this.separation * Math.cos(this.angle);
+      const separationZ =  this.separation * Math.cos(this.angle);
   
       const divideRecursive = (currentLevel, segment) => {
         if (currentLevel <= level) {
@@ -103,7 +103,7 @@ class vi_Segment {
             if(level>0){
             
             p.x -= separationX;
-            p.y += separationY;
+            p.z -= separationZ;
   
           }
   
@@ -175,8 +175,6 @@ class vi_Segment {
     getAngleForPoint(point){
   
       const angle =    Math.PI / 2 + this.angle;
-  
-     
       
       return angle;
   
@@ -187,17 +185,17 @@ class vi_Segment {
     getEndpoint(l) {
       
       var endX = this.origin.x + l * Math.cos(this.angle);
-      var endY = this.origin.y + l * Math.sin(this.angle);
+      var endZ = this.origin.z - l * Math.sin(this.angle);
   
       
-      return { x: endX, y: endY };
+      return { x: endX, y:0, z: endZ };
   }
 
 
 
   setMarker(){
 
-    this.marker = this.geometry_factory.createGeometry('Circle',[0.1,16]);
+    this.marker = this.geometry_factory.createGeometry('Circle',[0.8,16]);
 
 
   }
@@ -218,13 +216,17 @@ class vi_Segment {
             points.forEach((point)=>{
 
                 pos.x = point.x;
-                pos.y = point.y;
-                pos.z = 0;
+                pos.z = point.z;
+                pos.y = 0;
 
            
 
                  
                 var m = this.geometry_factory.createObject(this.marker,{x:pos.x,y:pos.y,z:pos.z}, { color: color,transparent: false, opacity: 0.5 });
+            
+                m.rotation.x = -Math.PI /2 ;
+            
+            
                 var o = this.geometry_factory.createVisualObject(m,'marker');
 
                 this.render.addGeometry(o); 
@@ -263,13 +265,14 @@ class vi_Segment {
 
 
                 const offsetX =  offset * Math.cos(this.angle+Math.PI/2);
-                const offsetY =  offset * Math.sin(this.angle+Math.PI/2);
+                const offsetZ =  offset * Math.sin(this.angle+Math.PI/2);
         
                 point.x = point.x + offsetX;
-                point.y = point.y + offsetY;
+                point.z = point.z + offsetZ;
+                point.y = 0;
 
 
-                let rotate = {x:0, y:0, z:this.angle+Math.PI/2};
+                let rotate = {x:0, z:0, y:this.angle+Math.PI/2};
 
                 this.render.addLabel(label,point,rotate,{size:1, height:0.3});
     

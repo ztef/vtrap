@@ -1,7 +1,7 @@
 
 class vi_mainCircle {
 
-    constructor(radius, initialAngle = 0, origin = { x: 0, y: 0 }) {
+    constructor(radius, initialAngle = 0, origin = { x: 0, y: 0 , z:0}) {
       this.radius = Math.max(0, radius);
       this.initialAngle = initialAngle;
       
@@ -21,10 +21,11 @@ class vi_mainCircle {
 
   
       for (let i = 0; i < totalMarkers; i++) {
-        const angle = (2 * Math.PI * i) / totalMarkers + this.initialAngle;
+        const angle = this.initialAngle - (2 * Math.PI * i) / totalMarkers ;
         const x = this.origin.x + (this.radius+delta) * Math.cos(angle);
-        const y = this.origin.y + (this.radius+delta) * Math.sin(angle);
-        points.push({ x, y });
+        const z = this.origin.z + (this.radius+delta) * Math.sin(angle);
+        const y = this.origin.y;
+        points.push({ x, y, z });
       }
   
       return points;
@@ -38,9 +39,10 @@ class vi_mainCircle {
   
       const angle = (2 * Math.PI * markerNumber) / totalMarkers + this.initialAngle;
       const x = this.origin.x + this.radius * Math.cos(angle);
-      const y = this.origin.y + this.radius * Math.sin(angle);
-  
-      return { x, y };
+      const z = this.origin.z + this.radius * Math.sin(angle);
+      const y = 0;
+
+      return { x, y, z };
     }
   
     getAngleForMarker(markerNumber, totalMarkers) {
@@ -61,10 +63,12 @@ class vi_mainCircle {
   
       const points = [];
       for (let i = 0; i < m; i++) {
-        const angle = startAngle + i * stepSize;
+        const angle = startAngle - i * stepSize;
         const x = this.origin.x + this.radius * Math.cos(angle);
-        const y = this.origin.y + this.radius * Math.sin(angle);
-        points.push({ x, y });
+        const z = this.origin.z - this.radius * Math.sin(angle);
+        const y = this.origin.y;
+
+        points.push({ x, y, z });
       }
   
       return points;
@@ -78,7 +82,7 @@ class vi_mainCircle {
   export class vi_HiperCircle {
   
   
-    constructor(centralCircleRadius, initialAngle = 0, origin = { x: 0, y: 0 }) {
+    constructor(centralCircleRadius, initialAngle = 0, origin = { x: 0, y: 0 , z:0}) {
       this.centralCircle = new vi_mainCircle(centralCircleRadius, initialAngle, origin);
       this.totalMarkers = 0;
       this.levels = [];
@@ -187,13 +191,17 @@ class vi_mainCircle {
       points.forEach((point)=>{
 
           pos.x = point.x;
+          pos.z = point.z;
           pos.y = point.y;
-          pos.z = 0;
 
      
 
            
           var m = this.geometry_factory.createObject(this.marker,{x:pos.x,y:pos.y,z:pos.z}, { color: color,transparent: false, opacity: 0.5 });
+         
+         
+          m.rotation.x = -Math.PI /2 ;
+         
           var o = this.geometry_factory.createVisualObject(m,'marker');
 
           this.render.addGeometry(o); 
@@ -232,14 +240,14 @@ class vi_mainCircle {
               const angle = this.getAngleForPoint(point);
 
               const offsetX =  offset * Math.cos(angle);
-              const offsetY =  offset * Math.sin(angle);
+              const offsetZ =  offset * Math.sin(angle);
       
               point.x = point.x + offsetX;
-              point.y = point.y + offsetY;
-              point.z = 0;
+              point.z = point.z + offsetZ;
+              point.y = point.y;
 
 
-              let rotate = {x:0, y:0, z:angle};
+              let rotate = {x:0, y:angle, z:0};
 
               this.render.addLabel(label,point,rotate,{size:1, height:0.3});
   
@@ -274,28 +282,27 @@ class vi_mainCircle {
   
         const directionVector = {
           x: p.x - this.centralCircle.origin.x,
-          y: p.y - this.centralCircle.origin.y
+          z: p.z - this.centralCircle.origin.z
         };
   
         // Normalize the direction vector
-        const length = Math.sqrt(directionVector.x ** 2 + directionVector.y ** 2);
+        const length = Math.sqrt(directionVector.x ** 2 + directionVector.z ** 2);
         const normalizedVector = {
           x: directionVector.x / length,
-          y: directionVector.y / length
+          z: directionVector.z / length
         };
   
         // Calculate the endpoint coordinates based on the lineLength
         const endpoint = {
           x: this.centralCircle.origin.x + normalizedVector.x * lineLength,
-          y: this.centralCircle.origin.y + normalizedVector.y * lineLength
+          z: this.centralCircle.origin.z + normalizedVector.z * lineLength
         };
   
         // Use the provided callback function for drawing/rendering
         lines.push({
-          start: { x: this.centralCircle.origin.x, y: this.centralCircle.origin.y },
-          end: { x: endpoint.x, y: endpoint.y }
+          start: { x: this.centralCircle.origin.x, z: this.centralCircle.origin.z },
+          end: { x: endpoint.x, z: endpoint.z }
         });
-  
   
        
   
@@ -355,8 +362,8 @@ class vi_mainCircle {
   
       // Return the coordinates for the line from the origin to the marker
       return [
-        { x: this.centralCircle.origin.x, y: this.centralCircle.origin.y },
-        { x: markerCoordinates.x, y: markerCoordinates.y }
+        { x: this.centralCircle.origin.x, z: this.centralCircle.origin.z },
+        { x: markerCoordinates.x, z: markerCoordinates.z }
       ];
     }
   
@@ -397,26 +404,26 @@ class vi_mainCircle {
             // Calculate the direction vector from the origin to the marker
             const directionVector = {
               x: markerCoordinates.x - this.centralCircle.origin.x,
-              y: markerCoordinates.y - this.centralCircle.origin.y
+              z: markerCoordinates.z - this.centralCircle.origin.z
             };
   
             // Normalize the direction vector
-            const length = Math.sqrt(directionVector.x ** 2 + directionVector.y ** 2);
+            const length = Math.sqrt(directionVector.x ** 2 + directionVector.z ** 2);
             const normalizedVector = {
               x: directionVector.x / length,
-              y: directionVector.y / length
+              z: directionVector.z / length
             };
   
             // Calculate the endpoint coordinates based on the lineLength
             const endpoint = {
               x: this.centralCircle.origin.x + normalizedVector.x * lineLength,
-              y: this.centralCircle.origin.y + normalizedVector.y * lineLength
+              z: this.centralCircle.origin.z + normalizedVector.z * lineLength
             };
   
             // Use the provided callback function for drawing/rendering
             drawCallback({
-              start: { x: this.centralCircle.origin.x, y: this.centralCircle.origin.y },
-              end: { x: endpoint.x, y: endpoint.y }
+              start: { x: this.centralCircle.origin.x, z: this.centralCircle.origin.z },
+              end: { x: endpoint.x, z: endpoint.z }
             });
   
           }
@@ -483,13 +490,13 @@ class vi_mainCircle {
       return currentPoints[index];
     }
   
-    calculateAngleFromOrigin(x, y, ox, oy) {
-      return Math.atan2(y - oy, x - ox);
+    calculateAngleFromOrigin(x, z, ox, oz) {
+      return Math.atan2(oz-z, x - ox);
     }
   
     getAngleForPoint(point){
   
-      const angle = this.calculateAngleFromOrigin(point.x, point.y, this.centralCircle.origin.x, this.centralCircle.origin.y);
+      const angle = this.calculateAngleFromOrigin(point.x, point.z, this.centralCircle.origin.x, this.centralCircle.origin.z);
       
       return angle;
   

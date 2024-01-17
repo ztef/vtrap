@@ -103,16 +103,16 @@ class vi_Board {
  }
 
 
- getEndpoint(startX, startY, angleInRadians, length) {
+ getEndpoint(startX, startZ, angleInRadians, length) {
   // Calculate the x and y components of the vector
   let deltaX = length * Math.cos(angleInRadians);
-  let deltaY = length * Math.sin(angleInRadians);
+  let deltaZ = length * Math.sin(angleInRadians);
 
   // Calculate the endpoint coordinates
   let endX = startX + deltaX;
-  let endY = startY + deltaY;
+  let endZ = startZ + deltaZ;
 
-  return { x: endX, y: endY, z:0 };
+  return { x: endX, z: endZ, y:0 };
  }
 
 
@@ -120,10 +120,10 @@ class vi_Board {
 
   var pos =this.origin;
   var color = this.graphics.line.color;
-  var endpoint = this.getEndpoint(pos.x,pos.y, this.angle, this.amplitude);
+  var endpoint = this.getEndpoint(pos.x,pos.z, this.angle, this.amplitude);
 
 
-  this.render_engine.addLine({ x: pos.x, y:pos.y, z: 0 },endpoint);
+  this.render_engine.addLine({ x: pos.x, y:pos.y, z: pos.z },endpoint);
 
 
 }
@@ -189,7 +189,7 @@ draw(){
 
               pos.x = point.x;
               pos.y = point.y;
-              pos.z = 0;
+              pos.z = point.z;
 
               let color = 0xff0000;
 
@@ -266,7 +266,7 @@ export class vi_HiperBoard {
         console.log(path,p,a);
 
         content.board.origin = p;
-        content.board.angle = a;
+        content.board.angle =   a;
 
         this.treeDepth = this.treeDepth + 1;
         this.addBoard(content,slot+'.'+path); // llamada recursiva
@@ -495,7 +495,7 @@ getPosition(absolutepath){
 
     pos.x = point.x;
     pos.y = point.y;
-    pos.z = 0;
+    pos.z = point.z;
 
 
     let color = 0x00ff00;
@@ -510,10 +510,10 @@ getPosition(absolutepath){
     color = 0x00ff00;
 
    
-    pos.y = pos.y - 8;
+    pos.z = pos.z - 8;
     
 
-    let rotate = {x:0, y:0, z:angle};
+    let rotate = {x:0, y:angle, z:0};
 
     this.render_engine.addLabel(label,pos,rotate,{size:1, height:0.3});
     
