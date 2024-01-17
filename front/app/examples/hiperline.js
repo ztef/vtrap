@@ -33,8 +33,14 @@ hiperLine.draw(0);
 hiperLine.draw(1);
 hiperLine.draw(2);
 
+
+// LABELS
+
 hiperLine.drawLabels(0,['cero','uno','dos','tres'], -3);
 
+
+
+// CILINDRO
 
 let point = hiperLine.locatePointByPath('1.0.1');
 
@@ -43,7 +49,7 @@ var color = 0x00ff00;
 var g = geometry_factory.createGeometry('Cylinder',[1,1, 10,64]);
 var m = geometry_factory.createObject(g,{x:point.x,y:5,z:point.z}, { color: color,transparent: false, opacity: 0.5 });
 
-m.rotation.x = 0;
+
 
 var o = geometry_factory.createVisualObject(m,'hb');
 

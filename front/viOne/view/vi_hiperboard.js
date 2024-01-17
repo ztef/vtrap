@@ -88,19 +88,7 @@ class vi_Board {
 
 
 
- drawCenter(){
-
-   var pos =this.origin;
-   var color = this.graphics.center.color;
-
-   var g = this.geometry_factory.createGeometry('Circle',[this.graphics.center.amplitude,64]);
-   var m = this.geometry_factory.createObject(g,{x:pos.x,y:pos.y,z:pos.z}, { color: color,transparent: this.graphics.center.transparent, opacity: this.graphics.center.opacity});
-   var o = this.geometry_factory.createVisualObject(m,'hb');
-
-   this.render_engine.addGeometry(o); 
-
-
- }
+ 
 
 
  getEndpoint(startX, startZ, angleInRadians, length) {
@@ -469,6 +457,16 @@ getPosition(absolutepath){
  return {board:root, node:nodePath, point:point, angle:angle};
 
 }
+
+
+locatePointByPath(path){
+
+  let {board, node, point, angle} = this.getPosition(path);
+
+  return point;
+
+}
+
 
 
  drawLabels(path, labels, offset){

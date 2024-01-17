@@ -32,7 +32,7 @@ class vi_Segment {
       this.length = length || 0;
       this.separation = 5;
       this.globalMap = new Map();
-      this.graphics = null;
+      this.graphics = {mainline:true};
       this.render = null;
       this.marker = null;
       this.markerColor = 0xff0000;
@@ -219,8 +219,6 @@ class vi_Segment {
                 pos.z = point.z;
                 pos.y = 0;
 
-           
-
                  
                 var m = this.geometry_factory.createObject(this.marker,{x:pos.x,y:pos.y,z:pos.z}, { color: color,transparent: false, opacity: 0.5 });
             
@@ -236,11 +234,14 @@ class vi_Segment {
 
             if(level==0){
 
-                let long = this.length + this.length / this.levels[0];
-                this.render.addLine(init,this.getEndpoint(long));
+                if(this.graphics.mainline){
+                  let long = this.length + this.length / this.levels[0];
+                  this.render.addLine(init,this.getEndpoint(long));
+                }
             } else {
-                
-              this.render.addLine(init,pos);
+                if(this.graphics.innerlines){
+                    this.render.addLine(init,pos);
+                }
 
             }
       }
@@ -267,14 +268,16 @@ class vi_Segment {
                 const offsetX =  offset * Math.cos(this.angle+Math.PI/2);
                 const offsetZ =  offset * Math.sin(this.angle+Math.PI/2);
         
-                point.x = point.x + offsetX;
-                point.z = point.z + offsetZ;
-                point.y = 0;
+
+                let plotPoint = {x:0, y:0, z:0};
+                plotPoint.x = point.x + offsetX;
+                plotPoint.z = point.z + offsetZ;
+                plotPoint.y = 0;
 
 
                 let rotate = {x:0, z:0, y:this.angle+Math.PI/2};
 
-                this.render.addLabel(label,point,rotate,{size:1, height:0.3});
+                this.render.addLabel(label,plotPoint,rotate,{size:1, height:0.3});
     
             }
       }   

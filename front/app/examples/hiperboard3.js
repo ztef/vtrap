@@ -14,6 +14,8 @@ const renderer = new vi_3DSceneRenderer('ventana');
 renderer.focus(0,0,0,100);
 
 
+
+
 var conf = {
     
 
@@ -21,24 +23,22 @@ var conf = {
             board:{
                 type:"hiperline",
                 origin: {x:0,y:0,z:0},
-                amplitude: 300,
+                amplitude: 100,
                 angle: 0,
-                levels:[5,2],
+                levels:[10],
                 graphics:{
-                    line:{color:0x00ff00, transparent:true, opacity:0.5},
-                    mainline:true,
-                    innerlines:false,
+                    line:{color:0x00ff00, transparent:true, opacity:0.5}
                 },
                 content:{
 
                     board:{
-                        type:"hipercircle",
+                        type:"hiperline",
                         origin: {x:0,y:0,z:0},
-                        amplitude: 10,
+                        amplitude: 100,
                         angle: Math.PI/2,
-                        levels:[5],
+                        levels:[10],
                         graphics:{
-                            center:{color:0x00ff00, amplitude:10, transparent:true, opacity:0.5}
+                            line:{color:0x00ff00, transparent:true, opacity:0.5}
                         },
                         content:{
 
@@ -63,10 +63,25 @@ hb.draw();
 
 
 
-hb.drawLabels('0.0.0',['uno','dos','tres'], -5);
+hb.drawLabels('.0',['uno','dos','tres'], 5);
+hb.drawLabels('0.0',['uno','dos','tres'], 15);
 
 
 
+// CILINDRO
+
+let point = hb.locatePointByPath('0.0');
+
+var color = 0x00ff00;
+
+var g = hb.geometry_factory.createGeometry('Cylinder',[1,1, 10,64]);
+var m = hb.geometry_factory.createObject(g,{x:point.x,y:point.y+5,z:point.z}, { color: color,transparent: false, opacity: 0.5 });
+
+
+
+var o = hb.geometry_factory.createVisualObject(m,'hb');
+
+renderer.addGeometry(o); 
 
 
 

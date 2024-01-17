@@ -3,6 +3,7 @@
 body {
     font-family: 'Arial', sans-serif;
     margin: 0;
+    
   }
   
 
@@ -14,7 +15,12 @@ body {
     overflow: hidden; /* Hide the overflow content when resized */
     resize: horizontal; /* Allow horizontal resizing */
     overflow-x: auto; /* Add horizontal scrollbar if needed */
+   
+    background-color: transparent;
+    margin-left: 30px;
+    
   }
+  
   
   .editor-textarea {
     font-family: 'Courier New', monospace;
@@ -25,7 +31,7 @@ body {
     box-sizing: border-box;
     margin-bottom: 10px;
     border: 1px solid #ccc;
-    background-color: #272822;
+    background-color: #000000;
     color: #eded0e;
   }
 
@@ -50,11 +56,16 @@ body {
   
   #result-container {
     flex: 1;
-    padding: 10px;
+    padding: 0px;
     box-sizing: border-box;
-    border: 1px solid #ccc;
-    background-color: #272822;
+    border: 0px solid #ccc;
+     
+    background-color: transparent;
     color: #f8f8f2;
+  
+    
+
+   
   }
   
   

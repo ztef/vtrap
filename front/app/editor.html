@@ -10,9 +10,51 @@
   <script type="text/javascript" src="javascripts/libs/jquery-3.1.1.min.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <link rel="stylesheet" href="../styles/jquery/ui/1.12.1/themes/base/jquery-ui.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+   
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
   <link rel="stylesheet" href="editor.css"> 
   <script defer="defer" src="/front/viOne/js/aws/main.b08e794a.js"></script>
+
+  <style>
+    /* Style to make the icon white */
+    #backgroundIcon {
+      color: white;
+    }
+
+    #backgroundIcon:hover {
+      color: yellow;
+    }
+
+    #toggleHIcon {
+      color: white;
+    }
+
+    #toggleHIcon:hover {
+      color: yellow;
+
+    }
+
+    #toggleJIcon {
+      color: white;
+    }
+
+    #toggleJIcon:hover {
+      color: yellow;
+    }
+    
+    #run {
+      color: white;
+    }
+
+    #run:hover {
+      color: yellow;
+    }
+  </style>
+
+
+
+
 </head>
 <body>
   <script type="importmap">
@@ -24,9 +66,21 @@
     }
   </script>
 
+  
+
   <div class="editor-container">
     <div class="editor-header">
       <img src="icon.png" alt="Logo" class="logo">
+      <h4 style="color: white;">Visual Applications Playground</h4><br>
+
+      <i id="backgroundIcon" class="fas fa-cogs"></i>
+      <i id="toggleHIcon" class="fas fa-code"></i>
+      <i id="toggleJIcon" class="fab fa-js"></i>
+      <br>
+     
+     
+
+
       <select id="example-dropdown" onchange="loadExample()">
         <option value="">Select an example</option>
         <option value="simple_map">Crear un Mapa</option>
@@ -42,6 +96,7 @@
         <option value="hipercircle">HiperCircle</option>
         <option value="hiperboard1">Hiperboard Circulo-Lineas</option>
         <option value="hiperboard2">Hiperboard Linea-Circulos</option>
+        <option value="hiperboard3">Hiperboard Cartessiano Linea-Linea</option>
         <option value="mobile_tracker">MQTT</option>
         <option value="map_tracker">Rastreo de Vehiculos</option>
         <option value="map_tracker_route">Rastreo de Vehiculos con opciones</option>
@@ -49,7 +104,8 @@
 
 
       </select>
-      <button onclick="runCode()"><i class="fas fa-play"></i></button>
+      <i id="run" class="fas fa-play"></i>
+     
     </div>
     <textarea class="editor-textarea" id="html-editor" placeholder="Enter HTML code..."></textarea>
     <textarea class="editor-textarea" id="js-editor" placeholder="Enter JavaScript code..."></textarea>
@@ -57,7 +113,58 @@
   </div>
 
   
-  <div id="result-container"></div>
+  <div id="result-container">
+
+    
+
+
+  </div>
+
+  <script>
+    
+
+    var isImageVisible = true;
+
+    document.getElementById('backgroundIcon').addEventListener('click', function() {
+       
+      var myDiv = document.body;
+      isImageVisible = !isImageVisible; // Toggle the state
+
+      if (isImageVisible) {
+        myDiv.style.backgroundImage = 'url("/front/app/assets/editor.jpg")'; // Replace with the path to your image
+      } else {
+        myDiv.style.backgroundImage = 'none';
+      }
+    
+    });
+
+    document.getElementById('toggleHIcon').addEventListener('click', function() {
+      var myDiv = document.getElementById('html-editor');
+      myDiv.style.display = (myDiv.style.display === 'none' || myDiv.style.display === '') ? 'block' : 'none';
+   
+    });
+    document.getElementById('toggleJIcon').addEventListener('click', function() {
+      var myDiv = document.getElementById('js-editor');
+      myDiv.style.display = (myDiv.style.display === 'none' || myDiv.style.display === '') ? 'block' : 'none';
+   
+    });
+
+    document.getElementById('run').addEventListener('click', function() {
+      runCode();
+   
+    });
+
+
+
+
+
+    
+  </script>
+
+
+
+
+
   <script src="../viOne/editor/editor.js"></script>
   <script>
     function loadExample() {
@@ -83,6 +190,22 @@
       }
     }
   </script>
+
+
+ 
+  <style>
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: #000000;
+    background-image: url('/front/app/assets/editor.jpg'); /* Replace with the path to your image */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100vh; /* Set the height to cover the entire viewport */
+  }
+</style>
+ 
   
  
 </body>

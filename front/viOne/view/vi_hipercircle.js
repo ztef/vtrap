@@ -87,7 +87,7 @@ class vi_mainCircle {
       this.totalMarkers = 0;
       this.levels = [];
       this.globalMap = new Map();
-      this.graphics = null;
+      this.graphics = {};
       this.render = null;
       this.geometry_factory = null;
       this.marker = null;
@@ -215,8 +215,35 @@ class vi_mainCircle {
       });
 
 
+
+      if(this.graphics.center){
+           this.drawCenter();
+      }
+
+
      
     }
+
+
+    drawCenter(){
+
+      var pos =this.centralCircle.origin;
+      var color = this.graphics.center.color;
+   
+      var g = this.geometry_factory.createGeometry('Circle',[this.graphics.center.amplitude,64]);
+      var m = this.geometry_factory.createObject(g,{x:pos.x,y:pos.y,z:pos.z}, { color: color,transparent: this.graphics.center.transparent, opacity: this.graphics.center.opacity});
+      m.rotation.x = -Math.PI /2 ;
+      
+      var o = this.geometry_factory.createVisualObject(m,'hb');
+   
+      this.render.addGeometry(o); 
+   
+   
+    }
+
+
+
+
 
     drawLabels(level, labels, offset){
       var points = this.getSegments(level);
