@@ -34,7 +34,7 @@ hiperCircle.draw(0);
 hiperCircle.draw(1);
 hiperCircle.draw(2);
  
-hiperCircle.drawLabels(0,['uno','dos','tres'], -10);
+hiperCircle.drawLabels(0,['uno','dos','tres'], -5);
 
 
 let point = hiperCircle.locatePointByPath('0.0.0');

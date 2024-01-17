@@ -260,7 +260,7 @@ class vi_mainCircle {
       
           for (let i = 0; i < numPoints; i++) {
               const point = points[i];
-              const label = labels[i] || ''; // Use an empty label if there are fewer labels than points.y -
+              const label = labels[i] || ''; 
 
 
 
@@ -269,14 +269,17 @@ class vi_mainCircle {
               const offsetX =  offset * Math.cos(angle);
               const offsetZ =  offset * Math.sin(angle);
       
-              point.x = point.x + offsetX;
-              point.z = point.z + offsetZ;
-              point.y = point.y;
+
+              let plotPoint ={x:0, y:0, z:0}
+
+              plotPoint.x = point.x+offsetX;
+              plotPoint.z = point.z-offsetZ;
+              plotPoint.y = point.y;
 
 
               let rotate = {x:0, y:angle, z:0};
 
-              this.render.addLabel(label,point,rotate,{size:1, height:0.3});
+              this.render.addLabel(label,plotPoint,rotate,{size:1, height:0.3});
   
           }
     }   
