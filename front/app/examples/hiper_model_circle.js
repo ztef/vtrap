@@ -59,7 +59,7 @@ const config = {
  windowFormater.formatWindow("#graphics","Grafica",500,350);
 
 
- const renderer = new vi_3DSceneRenderer('graphics',null,[]);
+ const renderer = new vi_3DSceneRenderer('graphics',controller,['municipios']);
  const geometry_factory = new vi_geometry_factory();
  
  //renderer.focus(0,0,0,100);

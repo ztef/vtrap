@@ -49,8 +49,6 @@ var color = 0x00ff00;
 var g = geometry_factory.createGeometry('Cylinder',[1,1, 10,64]);
 var m = geometry_factory.createObject(g,{x:point.x,y:5,z:point.z}, { color: color,transparent: false, opacity: 0.5 });
 
-
-
 var o = geometry_factory.createVisualObject(m,'hb');
 
 renderer.addGeometry(o); 

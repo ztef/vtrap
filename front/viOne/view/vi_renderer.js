@@ -26,7 +26,7 @@ class vi_Renderer {
     
         
   
-        this.objectEntities = [];
+        this.objectEntities = new Map();
         
         
       }

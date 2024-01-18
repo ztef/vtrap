@@ -245,52 +245,7 @@ export class vi_3DSceneRenderer extends vi_Renderer {
         return intersects.length > 0 ? intersects[0].object : null;
     }
 
-    handleObjectSelection(object) {
-       
-        const customObject = this.objects.get(object);
-        if (customObject) {
-            console.log('Selected custom object ID:', customObject.id);
-            this.selectedObject = object;
-            // Change the color of the selected object (assuming it has a material)
-            const material = object.material;
-            if (material) {
-                material.color.set(0xff0000); // Change to red (adjust the color as needed)
-            }
-            // Transform the selected object (for example, scale it on the z-axis)
-            object.scale.z += 0.1;
-        } else {
-            console.log('Selected  x object ID:', object);
-            if (object.name === 'Plane_17' && object.isMesh) {
-                // Create a cylinder
-                const cylinderGeometry = new THREE.CylinderGeometry(1, 1, 5, 32);
-                const cylinderMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 }); // Green color, adjust as needed
-                const cylinder = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
-    
-                // Set the position of the cylinder on the top-left corner of the plane
-                const planeBoundingBox = new THREE.Box3().setFromObject(object);
-                const planeSize = new THREE.Vector3();
-                planeBoundingBox.getSize(planeSize);
-    
-                const planePosition = new THREE.Vector3();
-                object.getWorldPosition(planePosition);
-    
-                // Adjust the position to the top-left corner
-                    cylinder.position.x = planePosition.x;
-                    cylinder.position.y = planePosition.y + planeSize.y / 2;
-                    cylinder.position.z = planePosition.z;
-
-                // Add the cylinder to the scene
-                this.scene.add(cylinder);
-                const material = object.material;
-                if (material) {
-                    material.color.set(0xff0000); 
-                }
-        }
-
-    }
-
-    }
-
+   
     loadGLTFModel(gltfUrl) {
         const loader = new GLTFLoader();
     
@@ -322,6 +277,7 @@ export class vi_3DSceneRenderer extends vi_Renderer {
 
     addGeometry(visualObject) {    
         this.objects.set(visualObject.mesh, visualObject);
+        this.objectEntities.set(visualObject.id,visualObject.mesh );
         this.scene.add(visualObject.mesh);
     }
 
@@ -368,17 +324,7 @@ export class vi_3DSceneRenderer extends vi_Renderer {
         });
     }
 
-    focus(x, y, z, distance) {
-        // Set the position of the camera to be at a certain distance from the target point
-        this.camera.position.set(x, y, z + distance);
-
-        // Set the camera's look-at point to the target point
-        this.camera.lookAt(x, y, z);
-
-        // Update the controls to reflect the new camera position
-        //EOO this.controls.target.set(x, y, z);
-        this.controls.update();
-    }
+    
 
 
     loadOBJModel(objUrl, mtlUrl,  scale) {
@@ -478,8 +424,53 @@ export class vi_3DSceneRenderer extends vi_Renderer {
 
 
 
+
+    focus(x, y, z, distance) {
+        // Set the position of the camera to be at a certain distance from the target point
+        this.camera.position.set(x, y, z + distance);
+
+        // Set the camera's look-at point to the target point
+        this.camera.lookAt(x, y, z);
+
+        // Update the controls to reflect the new camera position
+        //EOO this.controls.target.set(x, y, z);
+        this.controls.update();
+    }
+
+    focusCameraOnObject(object) {
+        // Set the camera position to the target object position
+        this.camera.position.copy(object.position);
+      
+        // Optionally, you can add an offset to the camera position
+        // For example, to position the camera slightly above the target object
+        this.camera.position.z += 50; // adjust the value as needed
+      
+       
+        //this.camera.lookAt(100, 0, 0);
+
+        this.controls.target = new THREE.Vector3(object.position.x, object.position.y, object.position.z);
+
+        
+
+        this.controls.update();
+      
+        // Update the camera's matrices
+      // this.camera.updateProjectionMatrix();
+    }
+
+
+
     handleObjectSelectedOutside(domain, event, payload){
         console.log('Objeto seleccionado afuera', domain, payload);
+
+        let id=domain+'.'+payload.id;  
+        let o = this.objectEntities.get(id);
+
+        this.focusCameraOnObject(o);
+
+         
+
+
     }
 
 
@@ -495,6 +486,56 @@ export class vi_3DSceneRenderer extends vi_Renderer {
     removeObject(domain, event, newObject){
 
     }
+
+    handleObjectSelection(object) {
+       
+        const customObject = this.objects.get(object);
+        if (customObject) {
+            console.log('Selected custom object ID:', customObject.id);
+            this.selectedObject = object;
+            // Change the color of the selected object (assuming it has a material)
+            const material = object.material;
+            if (material) {
+                material.color.set(0xff0000); // Change to red (adjust the color as needed)
+            }
+            // Transform the selected object (for example, scale it on the z-axis)
+            object.scale.z += 0.1;
+
+            this.focusCameraOnObject(object);
+            
+        } else {
+            console.log('Selected  x object ID:', object);
+            if (object.name === 'Plane_17' && object.isMesh) {
+                // Create a cylinder
+                const cylinderGeometry = new THREE.CylinderGeometry(1, 1, 5, 32);
+                const cylinderMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 }); // Green color, adjust as needed
+                const cylinder = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
+    
+                // Set the position of the cylinder on the top-left corner of the plane
+                const planeBoundingBox = new THREE.Box3().setFromObject(object);
+                const planeSize = new THREE.Vector3();
+                planeBoundingBox.getSize(planeSize);
+    
+                const planePosition = new THREE.Vector3();
+                object.getWorldPosition(planePosition);
+    
+                // Adjust the position to the top-left corner
+                    cylinder.position.x = planePosition.x;
+                    cylinder.position.y = planePosition.y + planeSize.y / 2;
+                    cylinder.position.z = planePosition.z;
+
+                // Add the cylinder to the scene
+                this.scene.add(cylinder);
+                const material = object.material;
+                if (material) {
+                    material.color.set(0xff0000); 
+                }
+        }
+
+    }
+
+    }
+
 
 
 
