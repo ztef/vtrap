@@ -10,6 +10,8 @@
 
 */
 
+import vi_Renderer from './vi_renderer.js'; 
+
 import * as THREE from 'three';
 import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
 import { MapControls } from 'three/addons/controls/MapControls.js';
@@ -23,8 +25,13 @@ import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 
-export class vi_3DSceneRenderer {
-    constructor(containerId, useOrthographicCamera = false) {
+export class vi_3DSceneRenderer extends vi_Renderer {
+    constructor(containerId, controller, domains, useOrthographicCamera = false) {
+
+
+        super(controller, domains);
+
+
         this.container = document.getElementById(containerId);
         this.objects = new Map();
         this.useOrthographicCamera = useOrthographicCamera; // Determine camera type
@@ -471,6 +478,29 @@ export class vi_3DSceneRenderer {
 
 
 
+    handleObjectSelectedOutside(domain, event, payload){
+        console.log('Objeto seleccionado afuera', domain, payload);
+    }
+
+
+    addObject(domain, event, newObject) {
+
+
+    }
+
+    updateObject(domain, event, newObject){
+
+    }
+
+    removeObject(domain, event, newObject){
+
+    }
+
+
+
+
+
+
 
 
     animate() {
@@ -482,6 +512,17 @@ export class vi_3DSceneRenderer {
         this.controls.update();
         this.renderer.render(this.scene, this.camera);
     }
+
+
+
+
+
+
+
+
+
+
+
 }
 
 

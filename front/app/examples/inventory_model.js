@@ -5,7 +5,7 @@ const windowFormater = new vi_WindowFormater();
 windowFormater.formatWindow("#almacenes","Detalles",500,350);
 windowFormater.positionDiv("almacenes",70,60);  
 
-const almacenes3D = new vi_3DSceneRenderer('almacenes');
+const almacenes3D = new vi_3DSceneRenderer('almacenes',null,[]);
 almacenes3D.loadOBJModel('./assets/sundek_inventory.obj','./assets/sundek_inventory.mtl',1);
 
  

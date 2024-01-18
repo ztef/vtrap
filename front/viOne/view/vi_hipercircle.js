@@ -254,6 +254,15 @@ class vi_mainCircle {
     }
 
 
+    drawLabel(path, label, offset){
+
+      let point = this.locatePointByPath(path);
+
+      this.plotLabel(point, label, offset);
+
+    }
+
+
 
     plotLabelsOnPoints(points, labels, offset) {
           const numPoints = points.length;
@@ -263,26 +272,31 @@ class vi_mainCircle {
               const label = labels[i] || ''; 
 
 
-
-              const angle = this.getAngleForPoint(point);
-
-              const offsetX =  offset * Math.cos(angle);
-              const offsetZ =  offset * Math.sin(angle);
-      
-
-              let plotPoint ={x:0, y:0, z:0}
-
-              plotPoint.x = point.x+offsetX;
-              plotPoint.z = point.z-offsetZ;
-              plotPoint.y = point.y;
-
-
-              let rotate = {x:0, y:angle, z:0};
-
-              this.render.addLabel(label,plotPoint,rotate,{size:1, height:0.3});
+              this.plotLabel(point, label, offset);
+             
   
           }
     }   
+
+    plotLabel(point, label, offset){
+
+      const angle = this.getAngleForPoint(point);
+
+      const offsetX =  offset * Math.cos(angle);
+      const offsetZ =  offset * Math.sin(angle);
+
+
+      let plotPoint ={x:0, y:0, z:0}
+
+      plotPoint.x = point.x+offsetX;
+      plotPoint.z = point.z-offsetZ;
+      plotPoint.y = point.y;
+
+
+      let rotate = {x:0, y:angle, z:0};
+
+      this.render.addLabel(label,plotPoint,rotate,{size:1, height:0.3});
+    }
   
   
   

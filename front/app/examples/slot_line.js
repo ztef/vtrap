@@ -12,7 +12,7 @@ windowFormater.formatWindow("#ventana","Tablero",700,600);
 
 // PARTE GRAFICA
 
-const renderer = new vi_3DSceneRenderer('ventana');
+const renderer = new vi_3DSceneRenderer('ventana',null,[]);
 const geometry_factory = new vi_geometry_factory();
 
 //renderer.focus(0,0,0,100);
@@ -41,25 +41,21 @@ hiperLine.drawLabels(0,['cero','uno','dos','tres'], -3);
 
 
 
-// CILINDRO
-
-
-
-
 
 // SLOTS
 
 let object = {};
 
 const sc = new vi_slot_controller(hiperLine);
-//sc.setAxis('y');
+
+sc.setDirection('out');  // up o out 
 //sc.setGraphics();
 
-sc.addSlot('1.0.1', object);
-sc.addSlot('1.0.1', object);
-sc.addSlot('1.0.1', object);
+sc.addSlot('1.0.1',1, object);
+sc.addSlot('1.0.1',2, object);
+sc.addSlot('1.0.1',3, object);
 
-sc.addSlot('2.1.1', object);
+sc.addSlot('2.1.1',4, object);
 
 
 

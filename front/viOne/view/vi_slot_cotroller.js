@@ -13,8 +13,20 @@ export class vi_slot_controller {
     }
 
 
+    setDirection(direction){
 
-    addSlot(path, object){
+        if(direction == 'up'){
+            this.axis = 'y';
+        }
+        if(direction == 'out'){
+            this.axis = 'z';
+        }
+        
+    }
+
+
+
+    addSlot(path, id, object){
 
 
         var slot;
@@ -22,8 +34,9 @@ export class vi_slot_controller {
         if (!this.slots.has(path)) {
 
             let point = this.board.locatePointByPath(path);
+            let angle = this.board.getAngleForPoint(point);
 
-            slot = new vi_slot(point, this.delta, this.axis);
+            slot = new vi_slot(point, this.delta, this.axis, angle);
             this.slots.set(path, slot );
            
           
@@ -44,7 +57,7 @@ export class vi_slot_controller {
 
 
 
-        var o = this.geometry_factory.createVisualObject(m,'hb');
+        var o = this.geometry_factory.createVisualObject(m,id);
 
         this.board.render.addGeometry(o); 
 

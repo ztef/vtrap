@@ -11,7 +11,7 @@ windowFormater.formatWindow("#ventana","Tablero",700,600);
 
 // PARTE GRAFICA
 
-const renderer = new vi_3DSceneRenderer('ventana');
+const renderer = new vi_3DSceneRenderer('ventana',null,[]);
 const geometry_factory = new vi_geometry_factory();
 
 //renderer.focus(0,0,0,100);

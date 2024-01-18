@@ -256,6 +256,14 @@ class vi_Segment {
       }
 
 
+      drawLabel(path, label, offset){
+
+        let point = this.locatePointByPath(path);
+        this.plotLabel(point, label, offset);
+
+      }
+
+
 
       plotLabelsOnPoints(points, labels, offset) {
             const numPoints = points.length;
@@ -264,6 +272,14 @@ class vi_Segment {
                 const point = points[i];
                 const label = labels[i] || ''; // Use an empty label if there are fewer labels than points.y -
 
+
+                this.plotLabel(point, label, offset );
+    
+            }
+      }   
+    
+
+      plotLabel(point, label, offset){
 
                 const offsetX =  offset * Math.cos(this.angle+Math.PI/2);
                 const offsetZ =  offset * Math.sin(this.angle+Math.PI/2);
@@ -278,9 +294,6 @@ class vi_Segment {
                 let rotate = {x:0, z:0, y:this.angle+Math.PI/2};
 
                 this.render.addLabel(label,plotPoint,rotate,{size:1, height:0.3});
-    
-            }
-      }   
-    
+      }
     
   }

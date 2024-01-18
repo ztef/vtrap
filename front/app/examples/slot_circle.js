@@ -1,6 +1,7 @@
 import { vi_HiperCircle} from '../viOne/view/vi_hipercircle.js';
 import { vi_3DSceneRenderer, vi_WindowFormater,} from '../viOne/all.js';
 import { vi_geometry_factory } from '../viOne/view/vi_geometry_factory.js';
+import { vi_slot_controller } from '../viOne/view/vi_slot_cotroller.js';
  
 const windowFormater = new vi_WindowFormater();
 
@@ -37,17 +38,21 @@ hiperCircle.draw(2);
 hiperCircle.drawLabels(0,['uno','dos','tres'], -5);
 
 
-let point = hiperCircle.locatePointByPath('0.0.0');
 
-var color = 0x00ff00;
+// SLOTS
 
-var g = geometry_factory.createGeometry('Cylinder',[2,2, 10,64]);
-var m = geometry_factory.createObject(g,{x:point.x,y:point.y+5,z:point.z}, { color: color,transparent: false, opacity: 0.5 });
+let object = {};
+
+const sc = new vi_slot_controller(hiperCircle);
+sc.setDirection('out');      // La direccion del stackeo up/out
+//sc.setGraphics();
+
+sc.addSlot('1.0.1', 1,object);
+sc.addSlot('1.0.1', 2,object);
+sc.addSlot('1.0.1', 3,object);
+
+sc.addSlot('2.1.1', 4,object);
 
 
-
-var o = geometry_factory.createVisualObject(m,'hb');
-
-renderer.addGeometry(o); 
 
 
