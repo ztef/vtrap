@@ -38,6 +38,18 @@ export class vi_3DSceneRenderer extends vi_Renderer {
         this.init();
         this.selectedObject = null;
         this.font = null;
+
+
+
+
+        this.startPosition = null;
+        this.targetPosition = null;
+        this.startLookAt = null;
+        this.targetLookAt = null;
+        this.duration = null;
+    
+        this.startTime = Date.now();
+        this.endTime = this.startTime + 5;
     }
 
     init() {
@@ -436,27 +448,129 @@ export class vi_3DSceneRenderer extends vi_Renderer {
         //EOO this.controls.target.set(x, y, z);
         this.controls.update();
     }
+    
+    
+    
+    
+    setupInfoWindow() {
+        // Set up a div for the info window
+        const infoWindow = document.createElement('div');
+        infoWindow.style.position = 'absolute';
+        infoWindow.style.top = '10px';
+        infoWindow.style.left = '10px';
+        infoWindow.style.padding = '10px';
+        infoWindow.style.background = 'rgba(255, 255, 255, 0.8)';
+        infoWindow.innerHTML = 'Info Window';
+        this.container.appendChild(infoWindow);
+    
+        return infoWindow;
+    }
 
-    focusCameraOnObject(object) {
-        // Set the camera position to the target object position
-        this.camera.position.copy(object.position);
-      
-        // Optionally, you can add an offset to the camera position
-        // For example, to position the camera slightly above the target object
-        this.camera.position.z += 50; // adjust the value as needed
-      
+
+
+
+
+
+
+
+
+    async focusCameraOnObject(object) {
+
+              this.setupInfoWindow();
+    }
+
+
+    flyCameraToObject(object) {
        
-        //this.camera.lookAt(100, 0, 0);
-
-        this.controls.target = new THREE.Vector3(object.position.x, object.position.y, object.position.z);
-
         
+        // FLY TO
+      
+        const targetPosition = new THREE.Vector3(object.position.x+40, object.position.y+40, object.position.z+40);
+        const targetLookAt = new THREE.Vector3(object.position.x, object.position.y, object.position.z);
+        const duration1 = 3000; // Animation duration in milliseconds
+        const duration2 = 3000; 
+
+        const farPosition = new THREE.Vector3(object.position.x+100, object.position.y+50, object.position.z);
+        const farLookAt = new THREE.Vector3(0, 0, 0);
+
 
         this.controls.update();
+
+        this.flyTo(this.camera.position.clone(),farPosition, farLookAt, duration1,()=>{
+
+
+
+           
+           
+
+            this.flyTo(this.camera.position.clone(), targetPosition, targetLookAt, duration2,()=>{
+
+                this.controls.target = targetLookAt;
+                this.controls.update();
+            });
+
+
+
+        });
+
+         
+
+       
       
-        // Update the camera's matrices
-      // this.camera.updateProjectionMatrix();
+       
+      
+       
+
     }
+
+
+    flyTo(initPosition, targetPosition, targetLookAt, duration, callback) {
+
+        
+        
+            const startPosition = initPosition;
+            //const startLookAt = new THREE.Vector3().copy(targetLookAt);
+            const startLookAt = this.camera.getWorldDirection(new THREE.Vector3()).clone();
+
+            const camera = this.camera;
+            const scene = this.scene;
+            const renderer = this.renderer;
+    
+            const startTime = Date.now();
+            const endTime = startTime + duration;
+    
+            function updateCamera() {
+                const now = Date.now();
+                const progress = Math.min((now - startTime) / duration, 1);
+        
+                // Interpolate camera position
+                const newPosition = startPosition.clone().lerp(targetPosition, progress);
+                camera.position.copy(newPosition);
+        
+                // Interpolate camera look-at target
+                const newLookAt = startLookAt.clone().lerp(targetLookAt, progress);
+                camera.lookAt(newLookAt);
+        
+                // Render the scene
+                renderer.render(scene, camera);
+        
+                // Check if the animation is still in progress
+                if (progress < 1) {
+                    requestAnimationFrame(updateCamera);
+                } else if (callback) {
+                    // Call the callback function when the animation completes
+                    callback();
+                }
+            }
+    
+            // Start the animation
+            updateCamera();
+        
+    }
+    
+    
+
+
 
 
 
@@ -466,7 +580,7 @@ export class vi_3DSceneRenderer extends vi_Renderer {
         let id=domain+'.'+payload.id;  
         let o = this.objectEntities.get(id);
 
-        this.focusCameraOnObject(o);
+        this.flyCameraToObject(o);
 
          
 
