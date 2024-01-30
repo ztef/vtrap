@@ -25,6 +25,9 @@ import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 
+
+import SelectionIndicator from './vi_selector_indicator.js';
+
 export class vi_3DSceneRenderer extends vi_Renderer {
     constructor(containerId, controller, domains, useOrthographicCamera = false) {
 
@@ -38,6 +41,7 @@ export class vi_3DSceneRenderer extends vi_Renderer {
         this.init();
         this.selectedObject = null;
         this.font = null;
+        this.infoWindow = null;
 
 
 
@@ -50,6 +54,14 @@ export class vi_3DSceneRenderer extends vi_Renderer {
     
         this.startTime = Date.now();
         this.endTime = this.startTime + 5;
+
+
+        this.selectedObject = null;
+        this.selectedID = null;
+        this.infoWindow = null;
+        this.infoWindowContent = null;
+        this.infoCallBack = null;
+        
     }
 
     init() {
@@ -61,14 +73,22 @@ export class vi_3DSceneRenderer extends vi_Renderer {
         this.addResizeListener();
         this.addClickListener();
         this.axis();
+        this.setupIndicator();
         this.animate();
     }
 
     setupScene() {
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color(0xffffff);
+       
     }
    
+
+
+    setupIndicator(){
+        this.selectionIndicator = new SelectionIndicator(this.scene,this.container);
+    }
+
 
     axis(){
         const axesHelper = new THREE.AxesHelper( 5 );
@@ -193,11 +213,48 @@ export class vi_3DSceneRenderer extends vi_Renderer {
 
 				this.controls.maxPolarAngle = Math.PI / 2;
 
+
+                this.controls.addEventListener('change', ()=>{
+
+
+                    this.updateIndicatorPosition();
+
+
+                });        
+
         
 
     }
 
 
+    updateIndicatorPosition() {
+        if (this.selectedObject) {
+            // Get selected object's position in world space
+            const worldPosition = new THREE.Vector3();
+            this.selectedObject.getWorldPosition(worldPosition);
+    
+            // Convert world space position to screen space coordinates
+            const screenPosition = worldPosition.clone().project(this.camera);
+    
+            // Convert screen space coordinates to pixel values
+            const screenWidth = this.container.clientWidth;
+            const screenHeight = this.container.clientHeight;
+    
+            // Calculate the center of the square relative to the screen coordinates
+            const squareWidth = 68;
+            const squareHeight = 68;
+            const squareCenterX = (screenPosition.x + 1) * screenWidth / 2;
+            const squareCenterY = (-screenPosition.y + 1) * screenHeight / 2;
+    
+            // Offset the screen coordinates to center the square
+            const screenX = squareCenterX - squareWidth / 2;
+            const screenY = squareCenterY - squareHeight / 2;
+    
+            // Update selection indicator position
+            this.selectionIndicator.updatePosition(screenX, screenY);
+        }
+    }
+    
 
 
 
@@ -208,12 +265,22 @@ export class vi_3DSceneRenderer extends vi_Renderer {
                 this.renderer.setSize(width, height);
                 this.camera.aspect = width / height;  // Update this line
                 this.camera.updateProjectionMatrix();
-              //  this.controls.handleResize();
+                this.repositionInfoWindow(); 
+                this.updateIndicatorPosition();  
             }
         });
     
         resizeObserver.observe(this.container);
+
+      
+
+
+
     }
+
+
+   
+
 
     addClickListener() {
         this.container.addEventListener('click', (event) => {
@@ -221,6 +288,8 @@ export class vi_3DSceneRenderer extends vi_Renderer {
             const clickedObject = this.selectObject(event.clientX, event.clientY);
             if (clickedObject) {
                 this.handleObjectSelection(clickedObject);
+            }else {
+                this.unFocus();
             }
         });
     }
@@ -450,33 +519,100 @@ export class vi_3DSceneRenderer extends vi_Renderer {
     }
     
     
-    
+    updateSelectionIndicatorPosition(object) {
+
+        this.updateIndicatorPosition();
+       
+    }
     
     setupInfoWindow() {
-        // Set up a div for the info window
-        const infoWindow = document.createElement('div');
-        infoWindow.style.position = 'absolute';
-        infoWindow.style.top = '10px';
-        infoWindow.style.left = '10px';
-        infoWindow.style.padding = '10px';
-        infoWindow.style.background = 'rgba(255, 255, 255, 0.8)';
-        infoWindow.innerHTML = 'Info Window';
-        this.container.appendChild(infoWindow);
+
+
+
+        if (this.infoWindow == null) {
+            this.infoWindow = document.createElement('div');
+            this.infoWindow.classList.add('info-window');
     
-        return infoWindow;
+            const header = document.createElement('div');
+            header.classList.add('info-window-header');
+            this.infoWindow.appendChild(header);
+    
+            const icon1 = document.createElement('img');
+            icon1.src = 'icon1.png';
+            header.appendChild(icon1);
+    
+            const closeButton = document.createElement('button');
+            closeButton.classList.add('close-btn');
+            closeButton.textContent = 'Close';
+            closeButton.addEventListener('click', () => {
+                this.hideInfoWindow();
+            });
+            header.appendChild(closeButton);
+    
+            this.infoWindowContent = document.createElement('div');
+            this.infoWindowContent.classList.add('info-window-content');
+            this.infoWindowContent.innerHTML = 'Info Window content...';
+            this.infoWindow.appendChild(this.infoWindowContent);
+    
+            this.container.appendChild(this.infoWindow);
+        }
+    
+
+
+        this.showInfoWindow();
+        return this.infoWindow;
+        
+        
     }
 
 
+    setInfoWindow(f){
+        this.infoCallBack = f;
+    }
 
 
+    repositionInfoWindow() {
+    }
+    
+     
 
+    hideInfoWindow() {
+        if (this.infoWindow) {
+            this.infoWindow.style.display = 'none'; // Hide the info window
+        }
+    }
+    
+    showInfoWindow() {
+        if (this.infoWindow) {
+            this.infoWindow.style.display = 'block'; // Show the info window
 
+            if(this.infoCallBack){
 
+                this.infoWindowContent.innerHTML = this.infoCallBack(this.selectedID);
 
+            } else {
+                this.infoWindowContent.innerHTML = 'ID:' + this.selectedID;
+            }
 
-    async focusCameraOnObject(object) {
+        }
+    }
+    
+
+    focusCameraOnObject(object) {
+
+              this.selectedObject = object;
 
               this.setupInfoWindow();
+              this.selectionIndicator.show();
+              this.updateSelectionIndicatorPosition(object);
+             
+    }
+
+
+    unFocus(){
+        this.selectedObject = null;
+        this.selectionIndicator.hide();
+        this.hideInfoWindow();
     }
 
 
@@ -487,8 +623,8 @@ export class vi_3DSceneRenderer extends vi_Renderer {
       
         const targetPosition = new THREE.Vector3(object.position.x+40, object.position.y+40, object.position.z+40);
         const targetLookAt = new THREE.Vector3(object.position.x, object.position.y, object.position.z);
-        const duration1 = 3000; // Animation duration in milliseconds
-        const duration2 = 3000; 
+        const duration1 = 2000; // Animation duration in milliseconds
+        const duration2 = 2000; 
 
         const farPosition = new THREE.Vector3(object.position.x+100, object.position.y+50, object.position.z);
         const farLookAt = new THREE.Vector3(0, 0, 0);
@@ -507,6 +643,7 @@ export class vi_3DSceneRenderer extends vi_Renderer {
 
                 this.controls.target = targetLookAt;
                 this.controls.update();
+                this.focusCameraOnObject(object);
             });
 
 
@@ -578,12 +715,17 @@ export class vi_3DSceneRenderer extends vi_Renderer {
         console.log('Objeto seleccionado afuera', domain, payload);
 
         let id=domain+'.'+payload.id;  
+
+        this.selectedID = id;
+
         let o = this.objectEntities.get(id);
+
+        this.unFocus();
 
         this.flyCameraToObject(o);
 
          
-
+        //this.focusCameraOnObject(o);
 
     }
 
@@ -606,7 +748,12 @@ export class vi_3DSceneRenderer extends vi_Renderer {
         const customObject = this.objects.get(object);
         if (customObject) {
             console.log('Selected custom object ID:', customObject.id);
+
+            this.selectedID = customObject.id;
             this.selectedObject = object;
+           
+            
+            /*
             // Change the color of the selected object (assuming it has a material)
             const material = object.material;
             if (material) {
@@ -614,37 +761,14 @@ export class vi_3DSceneRenderer extends vi_Renderer {
             }
             // Transform the selected object (for example, scale it on the z-axis)
             object.scale.z += 0.1;
+            */
+
 
             this.focusCameraOnObject(object);
             
         } else {
-            console.log('Selected  x object ID:', object);
-            if (object.name === 'Plane_17' && object.isMesh) {
-                // Create a cylinder
-                const cylinderGeometry = new THREE.CylinderGeometry(1, 1, 5, 32);
-                const cylinderMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 }); // Green color, adjust as needed
-                const cylinder = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
-    
-                // Set the position of the cylinder on the top-left corner of the plane
-                const planeBoundingBox = new THREE.Box3().setFromObject(object);
-                const planeSize = new THREE.Vector3();
-                planeBoundingBox.getSize(planeSize);
-    
-                const planePosition = new THREE.Vector3();
-                object.getWorldPosition(planePosition);
-    
-                // Adjust the position to the top-left corner
-                    cylinder.position.x = planePosition.x;
-                    cylinder.position.y = planePosition.y + planeSize.y / 2;
-                    cylinder.position.z = planePosition.z;
-
-                // Add the cylinder to the scene
-                this.scene.add(cylinder);
-                const material = object.material;
-                if (material) {
-                    material.color.set(0xff0000); 
-                }
-        }
+            this.unFocus();
+            
 
     }
 

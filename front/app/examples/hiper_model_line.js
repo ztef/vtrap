@@ -61,6 +61,13 @@ const windowFormater = new vi_WindowFormater();
  const renderer = new vi_3DSceneRenderer('graphics',controller,['municipios']);
 
 
+ renderer.setInfoWindow((object_id)=>{
+   return "OBJETO "+object_id;
+ });
+
+
+
+
  const geometry_factory = new vi_geometry_factory();
  
  //renderer.focus(0,0,0,100);

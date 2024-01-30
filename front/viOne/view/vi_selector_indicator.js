@@ -23,7 +23,7 @@ class SelectionIndicator {
         // Create the path element
         this._path = document.createElementNS(this._svgNS, 'path');
         
-        this._path.setAttribute('d', "M 0 0 L 0 22.75 L 4 18.75 L 4 3.75 L 18.75 3.75 L 22.75 0 L 0 0 z M 45.25 0 L 49.25 3.75 L 64 3.75 L 64 18.75 L 68 22.75 L 68 0 L 45.25 0 z M 0 45.25 L 0 68 L 22.75 68 L 18.75 64 L 3.75 64 L 3.75 49.25 L 0 45.25 z M 45.25 45.25 L 64 45.25 L 64 64 L 49.25 64 L 45.25 68 L 68 68 L 68 45.25 z");
+        this._path.setAttribute('d', "M 0 0 L 0 22.75 L 4 18.75 L 4 3.75 L 18.75 3.75 L 22.75 0 L 0 0 z M 45.25 0 L 49.25 3.75 L 64 3.75 L 64 18.75 L 68 22.75 L 68 0 L 45.25 0 z M 0 45.25 L 0 68 L 22.75 68 L 18.75 64 L 3.75 64 L 3.75 49.25 L 0 45.25 z M  64 45.25 L 64 64 L 49.25 64 L 45.25 68 L 68 68 L 68 45.25 z");
         this._svg.appendChild(this._path);
 
         this._scene = scene;
