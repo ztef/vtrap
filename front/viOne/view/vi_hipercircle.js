@@ -12,19 +12,26 @@ class vi_mainCircle {
     divideCircle(level, totalMarkers) {
       const points = [];
       let delta = 0;
+      let deltaAngle = 0;
 
+      let angle = this.initialAngle;
 
-      if(level > 0){
+     
         delta = this.separation*level;
-        this.initialAngle = ((2 * Math.PI) / (totalMarkers))/2;
-      }
+        deltaAngle = ((2 * Math.PI) / (totalMarkers));
 
-  
+        if(level > 0){
+            angle = angle - (deltaAngle/2);  // Desfase
+        
+        }
+
+      
       for (let i = 0; i < totalMarkers; i++) {
-        const angle = this.initialAngle - (2 * Math.PI * i) / totalMarkers ;
+       
         const x = this.origin.x + (this.radius+delta) * Math.cos(angle);
         const z = this.origin.z + (this.radius+delta) * Math.sin(angle);
         const y = this.origin.y;
+        angle = angle - deltaAngle;
         points.push({ x, y, z });
       }
   
@@ -177,6 +184,23 @@ class vi_mainCircle {
     }
 
 
+    getPathFromIndex(absoluteIndex, levels, level) {
+      const path = [];
+      let remainder = absoluteIndex;
+      
+      for (let i = level; i >= 0; i--) {
+          const numsegments = levels[i];
+          const division = Math.floor(remainder / numsegments);
+          remainder %= numsegments;
+          path.push(remainder); 
+          remainder = division;
+      }
+      
+      return path.reverse().join('.');
+  }
+
+
+
     draw(level){
         
       var points = this.getSegments(level);
@@ -187,6 +211,8 @@ class vi_mainCircle {
       
 
       let color = this.markerColor;
+
+      let pointN = 0;
 
       points.forEach((point)=>{
 
@@ -202,7 +228,9 @@ class vi_mainCircle {
          
           m.rotation.x = -Math.PI /2 ;
          
-          var o = this.geometry_factory.createVisualObject(m,'marker');
+          var o = this.geometry_factory.createVisualObject(m,'marker.'+this.getPathFromIndex(pointN,this.levels,level));
+
+          pointN = pointN + 1;
 
           this.render.addGeometry(o); 
 

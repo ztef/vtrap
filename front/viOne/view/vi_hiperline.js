@@ -200,7 +200,20 @@ class vi_Segment {
 
   }
 
-
+  getPathFromIndex(absoluteIndex, levels, level) {
+    const path = [];
+    let remainder = absoluteIndex;
+    
+    for (let i = level; i >= 0; i--) {
+        const numsegments = levels[i];
+        const division = Math.floor(remainder / numsegments);
+        remainder %= numsegments;
+        path.push(remainder); 
+        remainder = division;
+    }
+    
+    return path.reverse().join('.');
+}
 
     draw(level){
         
@@ -212,6 +225,8 @@ class vi_Segment {
             
 
             let color = this.markerColor;
+
+            let pointN = 0;
 
             points.forEach((point)=>{
 
@@ -225,7 +240,9 @@ class vi_Segment {
                 m.rotation.x = -Math.PI /2 ;
             
             
-                var o = this.geometry_factory.createVisualObject(m,'marker');
+                var o = this.geometry_factory.createVisualObject(m,'marker.'+this.getPathFromIndex(pointN,this.levels,level));
+
+                pointN = pointN + 1;
 
                 this.render.addGeometry(o); 
 

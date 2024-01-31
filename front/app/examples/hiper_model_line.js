@@ -58,12 +58,14 @@ const windowFormater = new vi_WindowFormater();
  windowFormater.formatWindow("#graphics","Grafica",500,350);
 
 
- const renderer = new vi_3DSceneRenderer('graphics',controller,['municipios']);
+ const renderer = new vi_3DSceneRenderer('graphics',controller,['municipios','estados']);
 
+
+ // Ventana Informativa :
 
  renderer.setInfoWindow((object_id)=>{
-   return "OBJETO "+object_id;
- });
+  return "OBJETO "+object_id;
+});
 
 
 
@@ -145,8 +147,6 @@ sc.setDirection('up');  // up o out
 
 
 
-
-  
 
    
    

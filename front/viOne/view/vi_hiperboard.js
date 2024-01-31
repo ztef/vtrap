@@ -241,8 +241,6 @@ export class vi_HiperBoard {
 
 
 
-   
-
     if(content.board){ // si hay board dentro del board
 
      
