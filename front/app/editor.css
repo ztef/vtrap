@@ -126,3 +126,48 @@ body {
 .info-window-content {
     padding: 10px;
 }
+
+.toolbox {
+  position: absolute;
+  top: 60px; /* Adjust this as needed */
+  left: 5px; /* Adjust this value to set the distance from the right edge */
+  width: 30px;
+  height: 200px;
+  border: none;
+  background-color: transparent;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  overflow: visible;
+}
+
+.toolbox-option {
+  position: relative;
+  cursor: pointer;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  z-index: 1;
+}
+.toolbox-option img {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+}
+
+.ttooltip {
+  
+  background-color: #333;
+  color: #fff; /* Adjust the text color for better visibility */
+  padding: 5px;
+  border-radius: 3px;
+  display: none;
+  z-index: 2; /* Ensure tooltip is above toolbox option */
+  white-space: nowrap;
+}
+
+.toolbox-option:hover .ttooltip {
+  display: block;
+}
+

@@ -36,10 +36,14 @@ class vi_Segment {
       this.render = null;
       this.marker = null;
       this.markerColor = 0xff0000;
+      this.tree = '';
+      this.levelsDef = null;
 
     }
   
-    
+    defineLevels(levelsDef){
+      this.levelsDef = levelsDef;
+    }
 
     setRenderEngine(re,gf){
         this.render = re;
@@ -212,8 +216,21 @@ class vi_Segment {
         remainder = division;
     }
     
-    return path.reverse().join('.');
-}
+    let prefix = this.tree;
+    if (prefix != ''){prefix = prefix + '.'}
+
+    if(this.levelsDef){
+      prefix = this.levelsDef[level] + '.' + prefix;
+    } else {
+      prefix = 'marker.' + prefix;
+    }
+
+    return prefix + path.reverse().join('.');
+  }
+
+  setTree(tree){
+    this.tree = tree;
+  }
 
     draw(level){
         
@@ -240,7 +257,7 @@ class vi_Segment {
                 m.rotation.x = -Math.PI /2 ;
             
             
-                var o = this.geometry_factory.createVisualObject(m,'marker.'+this.getPathFromIndex(pointN,this.levels,level));
+                var o = this.geometry_factory.createVisualObject(m,this.getPathFromIndex(pointN,this.levels,level));
 
                 pointN = pointN + 1;
 

@@ -5,12 +5,12 @@ export class vi_slot {
         this.delta = delta;
         this.axis = axis;
         this.angle = angle;
-        this.objects = [];
+        this.elements = [];
     }
 
-    add(object){
+    addElement(element){
 
-        this.objects.push(object);
+        this.elements.push(element);
 
     }
 
@@ -26,7 +26,7 @@ export class vi_slot {
     getTopPoint(){
 
         let topPoint = {...this.point};
-        let distance = this.objects.length * this.delta;
+        let distance = this.elements.length * this.delta + this.delta;
 
         if(this.axis == 'y'){
             topPoint[this.axis] = distance;
@@ -38,7 +38,6 @@ export class vi_slot {
             topPoint.z = p.z;
 
         }
-
 
         return topPoint;
 

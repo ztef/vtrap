@@ -69,14 +69,24 @@ export class vi_geometry_factory {
 
 
 
-      createObject(geometry, pos , color) {
+      createObject(geometry, pos , color, phong = false) {
 
         const position = new THREE.Vector3(pos.x, pos.y, pos.z);
         
+        let material = null;
 
+        if(phong){
 
-        const material = new THREE.MeshBasicMaterial(color);
-        
+          material = new THREE.MeshPhongMaterial({
+            color: 0xff0000, // Set the base color
+            specular: 0xffffff, // Set the color of the specular highlight
+            shininess: 100 // Set the shininess of the material
+        });
+
+        } else {
+              material = new THREE.MeshBasicMaterial(color);
+        }
+          
         const mesh = new THREE.Mesh(geometry, material);
        
         mesh.position.copy(position);

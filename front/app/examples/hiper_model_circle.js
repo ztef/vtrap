@@ -59,7 +59,32 @@ const config = {
  windowFormater.formatWindow("#graphics","Grafica",500,350);
 
 
- const renderer = new vi_3DSceneRenderer('graphics',controller,['municipios']);
+ const renderer = new vi_3DSceneRenderer('graphics',controller,['municipios','estados']);
+
+ renderer.setInfoWindow((domain, object_id)=>{
+
+  let object = objectModel.readObject(domain, object_id);
+  let html = '';
+
+  if(domain == 'municipios'){
+    html = object.data.fields.municipio + ' poblacion :' + object.data.fields.poblacion;
+  }
+
+  if(domain == 'estados'){
+    html = object.data.fields.estado;
+  }
+
+
+  return html;
+
+});
+
+
+
+
+
+
+
  const geometry_factory = new vi_geometry_factory();
  
  //renderer.focus(0,0,0,100);
@@ -75,6 +100,7 @@ const config = {
   
  
  hiperCircle.setLevels(levelsArray);
+ hiperCircle.defineLevels(['estados']);
  
  hiperCircle.setRenderEngine(renderer, geometry_factory);
 

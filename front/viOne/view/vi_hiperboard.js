@@ -8,8 +8,8 @@ import { vi_HiperCircle } from './vi_hipercircle.js';
 
 
 class vi_Board {
-  constructor(slot, render,  origin, levels, type, angle, amplitude, graphics) {
-    this.slot = slot;
+  constructor(tree, render,  origin, levels, type, angle, amplitude, graphics) {
+    this.tree = tree;
     this.render_engine = render;
  
     this.origin = { ...origin };
@@ -29,12 +29,14 @@ class vi_Board {
     switch (this.type) {
       case "hipercircle":
         this.content = new vi_HiperCircle(this.amplitude, this.angle, this.origin);
+        this.content.setTree(this.tree);
         this.content.setGraphics(this.graphics);
         this.content.setLevels(this.levels);
         this.content.setRenderEngine( this.render_engine,  this.geometry_factory);
         break;
       case "hiperline":
           this.content = new vi_HiperLine(this.amplitude, this.angle, this.origin);
+          this.content.setTree(this.tree);
           this.content.setGraphics(this.graphics);
           this.content.setLevels(this.levels);
           this.content.setRenderEngine( this.render_engine,  this.geometry_factory);
@@ -213,13 +215,13 @@ export class vi_HiperBoard {
     this.maxTreeDepth = 0;
   }
 
-  addBoard(conf, slot) {
+  addBoard(conf, tree) {
     const { type, origin, levels, content, angle, amplitude, graphics } = conf.board;
 
     
 
-    if(!slot){
-      slot = 'root';
+    if(!tree){
+      tree = 'root';
     }
 
     if(this.depth < levels.length){
@@ -235,8 +237,8 @@ export class vi_HiperBoard {
 
     
 
-    const newBoard = new vi_Board(slot, this.render_engine, origin, levels, type, angle, amplitude, graphics);
-    this.boardContainer.set(slot, newBoard);
+    const newBoard = new vi_Board(tree, this.render_engine, origin, levels, type, angle, amplitude, graphics);
+    this.boardContainer.set(tree, newBoard);
 
 
 
@@ -255,7 +257,7 @@ export class vi_HiperBoard {
         content.board.angle =   a;
 
         this.treeDepth = this.treeDepth + 1;
-        this.addBoard(content,slot+'.'+path); // llamada recursiva
+        this.addBoard(content,tree+'.'+path); // llamada recursiva
         this.treeDepth = this.treeDepth - 1;        
 
 

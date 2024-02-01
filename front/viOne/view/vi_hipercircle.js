@@ -101,10 +101,24 @@ class vi_mainCircle {
       this.markerColor = 0xff0000;
       this.separation = 5;
       this.centralCircle.separation = this.separation; // delta de radio entre circulos (niveles)
+      this.tree = '';
+      this.levelsDef = null;
     }
   
   
+   
+
   
+
+  defineLevels(levelsDef){
+    this.levelsDef = levelsDef;
+  }
+
+
+
+    setTree(tree){
+      this.tree = tree;
+    }
   
     setGraphics(graphics){
   
@@ -195,8 +209,16 @@ class vi_mainCircle {
           path.push(remainder); 
           remainder = division;
       }
-      
-      return path.reverse().join('.');
+      let prefix = this.tree;
+      if (prefix != ''){prefix = prefix + '.'}
+
+      if(this.levelsDef){
+        prefix = this.levelsDef[level] + '.' + prefix;
+      } else {
+        prefix = 'marker.' + prefix;
+      }
+  
+      return prefix + path.reverse().join('.');
   }
 
 
@@ -228,7 +250,7 @@ class vi_mainCircle {
          
           m.rotation.x = -Math.PI /2 ;
          
-          var o = this.geometry_factory.createVisualObject(m,'marker.'+this.getPathFromIndex(pointN,this.levels,level));
+          var o = this.geometry_factory.createVisualObject(m,this.getPathFromIndex(pointN,this.levels,level));
 
           pointN = pointN + 1;
 

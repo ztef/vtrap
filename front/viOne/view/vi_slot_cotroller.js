@@ -1,5 +1,8 @@
+import { vi_element } from "./vi_element.js";
 import { vi_geometry_factory } from "./vi_geometry_factory.js";
 import { vi_slot } from "./vi_slot.js";
+
+
 
 export class vi_slot_controller {
 
@@ -46,7 +49,7 @@ export class vi_slot_controller {
           
         }
 
-        slot.add(object);
+        
 
         let point = slot.getTopPoint(this.axis);
         
@@ -61,10 +64,28 @@ export class vi_slot_controller {
 
         this.board.render.addGeometry(o); 
 
+        const element = new vi_element(path, id, o, object);
 
+        slot.addElement(element);
+
+
+        //const material = o.mesh.material;
+        //    if (material) {
+        //        material.color.set(0xff0000); // Change to red (adjust the color as needed)
+        //    }
 
 
     }
+
+
+    acceptVisitor(visitor) {
+        this.slots.forEach(slot => {
+            slot.elements.forEach(element =>{
+                visitor(element);
+            });          
+        });
+    }
+
 
 
 }

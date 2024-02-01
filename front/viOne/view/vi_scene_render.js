@@ -74,6 +74,7 @@ export class vi_3DSceneRenderer extends vi_Renderer {
         this.addClickListener();
         this.axis();
         this.setupIndicator();
+        
         this.animate();
     }
 
@@ -524,6 +525,48 @@ export class vi_3DSceneRenderer extends vi_Renderer {
         this.updateIndicatorPosition();
        
     }
+
+
+    setupToolBox(toolbox){
+        this.container.appendChild(toolbox.getToolboxElement());
+    }
+
+    setupToolBox1(callback) {
+
+
+            this.callback_toolbox = callback;
+       
+            this.toolBox = document.createElement('div');
+            this.toolBox.classList.add('tool-box');
+    
+            const header = document.createElement('div');
+            header.classList.add('tool-box-header');
+            this.toolBox.appendChild(header);
+    
+            const icon1 = document.createElement('img');
+            icon1.src = '/front/app/assets/icon.png';
+            header.appendChild(icon1);
+            icon1.addEventListener('click', () => {
+                this.callback_toolbox();
+            });
+            
+    
+             
+            this.toolBoxContent = document.createElement('div');
+            this.toolBoxContent.classList.add('tool-box-content');
+            this.toolBoxContent.innerHTML = 'Tool Box content...';
+            this.toolBox.appendChild(this.toolBoxContent);
+    
+            this.container.appendChild(this.toolBox);
+        
+               
+    }
+
+
+
+
+
+
     
     setupInfoWindow() {
 
@@ -557,12 +600,9 @@ export class vi_3DSceneRenderer extends vi_Renderer {
             this.container.appendChild(this.infoWindow);
         }
     
-
-
         this.showInfoWindow();
         return this.infoWindow;
-        
-        
+               
     }
 
 
@@ -588,7 +628,8 @@ export class vi_3DSceneRenderer extends vi_Renderer {
 
             if(this.infoCallBack){
 
-                this.infoWindowContent.innerHTML = this.infoCallBack(this.selectedID);
+                let dID = this.selectedID.split('.');  // divide: domain + id
+                this.infoWindowContent.innerHTML = this.infoCallBack(dID[0],dID[1]);
 
             } else {
                 this.infoWindowContent.innerHTML = 'ID:' + this.selectedID;

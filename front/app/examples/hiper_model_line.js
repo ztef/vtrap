@@ -1,4 +1,5 @@
 import { vi_HiperLine } from '../viOne/view/vi_hiperline.js';
+import { vi_toolbox } from '../viOne/view/vi_toolbox.js';
 import { vi_3DSceneRenderer} from '../viOne/all.js';
 import { vi_geometry_factory } from '../viOne/view/vi_geometry_factory.js';
 import { vi_slot_controller } from '../viOne/view/vi_slot_cotroller.js';
@@ -61,10 +62,59 @@ const windowFormater = new vi_WindowFormater();
  const renderer = new vi_3DSceneRenderer('graphics',controller,['municipios','estados']);
 
 
+ var toolBoxConfig = {
+        "options":[
+          {"option1" : {"icon":"/front/app/assets/icon.png","tooltip":"Marcar Capitales"}},
+          {"option2" : {"icon":"/front/app/assets/icon.png","tooltip":"Estados"}},       
+        ]
+ }
+
+ const toolbox = new vi_toolbox(toolBoxConfig,(opcion)=>{
+
+          if(opcion == 'option1'){
+           
+            sc.acceptVisitor((element)=>{
+              if(element.object.data.fields.capital == 'si'){
+                 element.visual_object.mesh.material.color.set(0xff0000);
+              } 
+          });
+
+          }
+
+
+
+ });
+
+ 
+ renderer.setupToolBox(toolbox);
+
+/*
+ renderer.setupToolBox(()=>{
+   
+ });
+
+*/
+
+
+
  // Ventana Informativa :
 
- renderer.setInfoWindow((object_id)=>{
-  return "OBJETO "+object_id;
+ renderer.setInfoWindow((domain, object_id)=>{
+
+  let object = objectModel.readObject(domain, object_id);
+  let html = '';
+
+  if(domain == 'municipios'){
+    html = object.data.fields.municipio + ' poblacion :' + object.data.fields.poblacion;
+  }
+
+  if(domain == 'estados'){
+    html = object.data.fields.estado;
+  }
+
+
+  return html;
+
 });
 
 
@@ -83,14 +133,13 @@ const windowFormater = new vi_WindowFormater();
  const hiperLine = new vi_HiperLine( linelength,lineAngle ,lineOrigin,);
  
  hiperLine.setLevels(levelsArray);
+ hiperLine.defineLevels(['estados']);
  
  hiperLine.setRenderEngine(renderer, geometry_factory);
  
  hiperLine.draw(0);
 
  
-
-
 
  
  // Al llegar los datos resuelve LABELS
