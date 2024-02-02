@@ -1,6 +1,7 @@
 import { vi_HiperLine } from '../viOne/view/vi_hiperline.js';
 import { vi_3DSceneRenderer, vi_WindowFormater,} from '../viOne/all.js';
 import { vi_geometry_factory } from '../viOne/view/vi_geometry_factory.js';
+import { vi_hipergeometry_factory } from '../viOne/view/vi_hipergeometry_factory.js';
  
 const windowFormater = new vi_WindowFormater();
 
@@ -53,6 +54,15 @@ var o = geometry_factory.createVisualObject(m,'hb');
 
 renderer.addGeometry(o); 
 
+
+let hgf= new vi_hipergeometry_factory(geometry_factory);
+
+
+let point1 = hiperLine.locatePointByPath('2.0.1');
+let hg = hgf.getHiperGeometry(point1);
+
+
+renderer.addGeometry(hg);
 
 
 

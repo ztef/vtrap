@@ -161,7 +161,7 @@ sc.setDirection('out');  // up o out
            let object = objectModel.readObject(domain, data.id);
            
              
-           sc.addSlot(object.data.fields.estado, domain+'.'+data.id, object);
+           sc.addObject2Slot(object.data.fields.estado, domain+'.'+data.id, object);
 
 
         break;

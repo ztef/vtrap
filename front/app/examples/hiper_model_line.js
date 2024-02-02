@@ -2,6 +2,7 @@ import { vi_HiperLine } from '../viOne/view/vi_hiperline.js';
 import { vi_toolbox } from '../viOne/view/vi_toolbox.js';
 import { vi_3DSceneRenderer} from '../viOne/all.js';
 import { vi_geometry_factory } from '../viOne/view/vi_geometry_factory.js';
+import { vi_hipergeometry_factory } from '../viOne/view/vi_hipergeometry_factory.js';
 import { vi_slot_controller } from '../viOne/view/vi_slot_cotroller.js';
 
 import { vi_WindowFormater, vi_ObjectModel, vi_RemoteListenerFactory, vi_ObjectGridView, vi_Controller, vi_DataSource} from '../viOne/all.js';
@@ -65,7 +66,7 @@ const windowFormater = new vi_WindowFormater();
  var toolBoxConfig = {
         "options":[
           {"option1" : {"icon":"/front/app/assets/icon.png","tooltip":"Marcar Capitales"}},
-          {"option2" : {"icon":"/front/app/assets/icon.png","tooltip":"Estados"}},       
+          {"option2" : {"icon":"/front/app/assets/icon.png","tooltip":"Toogle Damping"}},       
         ]
  }
 
@@ -75,25 +76,28 @@ const windowFormater = new vi_WindowFormater();
            
             sc.acceptVisitor((element)=>{
               if(element.object.data.fields.capital == 'si'){
-                 element.visual_object.mesh.material.color.set(0xff0000);
+                 if(element.visual_object.isGroup){
+                  let base = element.visual_object.mesh.getObjectByName("base");
+                  base.material.color.set(0xff0000);
+                 }else {
+                  element.visual_object.mesh.material.color.set(0xff0000);
+                 }
+                 
               } 
           });
 
           }
 
-
+          if(opcion == 'option2'){
+            renderer.toggleDamping();
+          }
 
  });
 
  
  renderer.setupToolBox(toolbox);
 
-/*
- renderer.setupToolBox(()=>{
-   
- });
 
-*/
 
 
 
@@ -152,7 +156,7 @@ const windowFormater = new vi_WindowFormater();
       case 'objectAdded':
     
            let object = objectModel.readObject(domain, data.id);
-           let point = hiperLine.drawLabel(''+data.id,  object.data.fields.estado, -4 );
+           let point = hiperLine.drawLabel(''+data.id,  object.data.fields.estado, 15 );
                      
         break;
   
@@ -169,10 +173,14 @@ let object = {};
  
 const sc = new vi_slot_controller(hiperLine);
 
-sc.setDirection('up');  // up o out 
+sc.setDirection('out');  // up o out 
 
 
 
+let hgf= new vi_hipergeometry_factory(geometry_factory);
+
+
+ 
 
 
  controller.addObserver('municipios',"objectAdded",(domain, _event, data)=>{
@@ -183,8 +191,8 @@ sc.setDirection('up');  // up o out
     
            let object = objectModel.readObject(domain, data.id);
            
-             
-           sc.addSlot(object.data.fields.estado, domain+'.'+data.id, object);
+           let hg = hgf.getHiperGeometry({x:0,y:0,z:0});
+           sc.addObject2Slot(object.data.fields.estado, domain+'.'+data.id, object,hg);
 
 
         break;

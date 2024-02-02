@@ -51,11 +51,11 @@ const sc = new vi_slot_controller(hiperLine);
 sc.setDirection('out');  // up o out 
 //sc.setGraphics();
 
-sc.addSlot('1.0.1',1, object);
-sc.addSlot('1.0.1',2, object);
-sc.addSlot('1.0.1',3, object);
+sc.addObject2Slot('1.0.1',1, object);
+sc.addObject2Slot('1.0.1',2, object);
+sc.addObject2Slot('1.0.1',3, object);
 
-sc.addSlot('2.1.1',4, object);
+sc.addObject2Slot('2.1.1',4, object);
 
 
 

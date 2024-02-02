@@ -198,6 +198,14 @@ export class vi_3DSceneRenderer extends vi_Renderer {
 
     }
 
+
+    toggleDamping(){
+       
+            this.controls.enableDamping =  ! this.controls.enableDamping;
+        
+
+    }
+
     setupMapControls() {
 
         
@@ -205,7 +213,7 @@ export class vi_3DSceneRenderer extends vi_Renderer {
 
 			
 				this.controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
-				this.controls.dampingFactor = 0.05;
+				this.controls.dampingFactor = 0.08;
 
 				this.controls.screenSpacePanning = true;
 
@@ -358,9 +366,18 @@ export class vi_3DSceneRenderer extends vi_Renderer {
     }
 
     addGeometry(visualObject) {    
-        this.objects.set(visualObject.mesh, visualObject);
-        this.objectEntities.set(visualObject.id,visualObject.mesh );
-        this.scene.add(visualObject.mesh);
+        if(visualObject.isGroup){
+            this.objects.set(visualObject.wmesh, visualObject);
+            this.objectEntities.set(visualObject.id,visualObject.wmesh);
+            this.scene.add(visualObject.mesh);
+            this.scene.add(visualObject.wmesh);
+
+
+        } else {
+            this.objects.set(visualObject.mesh, visualObject);
+            this.objectEntities.set(visualObject.id,visualObject.mesh );
+            this.scene.add(visualObject.mesh);
+        }
     }
 
 
@@ -531,41 +548,7 @@ export class vi_3DSceneRenderer extends vi_Renderer {
         this.container.appendChild(toolbox.getToolboxElement());
     }
 
-    setupToolBox1(callback) {
-
-
-            this.callback_toolbox = callback;
-       
-            this.toolBox = document.createElement('div');
-            this.toolBox.classList.add('tool-box');
     
-            const header = document.createElement('div');
-            header.classList.add('tool-box-header');
-            this.toolBox.appendChild(header);
-    
-            const icon1 = document.createElement('img');
-            icon1.src = '/front/app/assets/icon.png';
-            header.appendChild(icon1);
-            icon1.addEventListener('click', () => {
-                this.callback_toolbox();
-            });
-            
-    
-             
-            this.toolBoxContent = document.createElement('div');
-            this.toolBoxContent.classList.add('tool-box-content');
-            this.toolBoxContent.innerHTML = 'Tool Box content...';
-            this.toolBox.appendChild(this.toolBoxContent);
-    
-            this.container.appendChild(this.toolBox);
-        
-               
-    }
-
-
-
-
-
 
     
     setupInfoWindow() {

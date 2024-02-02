@@ -29,7 +29,7 @@ export class vi_slot_controller {
 
 
 
-    addSlot(path, id, object){
+    addObject2Slot(path, id, object, hg = null){   // hipergeometria = null
 
 
         var slot;
@@ -50,29 +50,32 @@ export class vi_slot_controller {
         }
 
         
-
         let point = slot.getTopPoint(this.axis);
         
-        var color = 0x00ff00;
 
-        var g = this.geometry_factory.createGeometry('Sphere',[1,10, 10]);
-        var m = this.geometry_factory.createObject(g,{x:point.x,y:point.y,z:point.z}, { color: color,transparent: false, opacity: 0.5 });
+        var vo;   // visual object
+
+        if(hg == null){
+        
+                var color = 0x00ff00;
+
+                var g = this.geometry_factory.createGeometry('Sphere',[1,10, 10]);
+                var m = this.geometry_factory.createObject(g,{x:point.x,y:point.y,z:point.z}, { color: color,transparent: false, opacity: 0.5, side: THREE.DoubleSide });
+                vo = this.geometry_factory.createVisualObject(m,id);
+
+        } else {
+            vo = hg;
+            vo.setPosition({x:point.x,y:point.y,z:point.z});
+            vo.id = id;
+        }
 
 
-
-        var o = this.geometry_factory.createVisualObject(m,id);
-
-        this.board.render.addGeometry(o); 
-
-        const element = new vi_element(path, id, o, object);
-
+        this.board.render.addGeometry(vo); 
+        const element = new vi_element(path, id, vo, object);
         slot.addElement(element);
 
 
-        //const material = o.mesh.material;
-        //    if (material) {
-        //        material.color.set(0xff0000); // Change to red (adjust the color as needed)
-        //    }
+        
 
 
     }
