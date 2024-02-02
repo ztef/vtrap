@@ -1,6 +1,7 @@
 import { vi_HiperCircle} from '../viOne/view/vi_hipercircle.js';
 import { vi_3DSceneRenderer, vi_WindowFormater,} from '../viOne/all.js';
 import { vi_geometry_factory } from '../viOne/view/vi_geometry_factory.js';
+
  
 const windowFormater = new vi_WindowFormater();
 
@@ -10,6 +11,8 @@ windowFormater.formatWindow("#ventana","Tablero",700,600);
 
 
 // PARTE GRAFICA
+
+  
 
 const renderer = new vi_3DSceneRenderer('ventana',null,[]);
 const geometry_factory = new vi_geometry_factory();

@@ -22,14 +22,16 @@ import { PerspectiveCamera, OrthographicCamera } from 'three';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
-import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+ 
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+ 
+import {vi_Font } from "./vi_font.js";
 
 
 import SelectionIndicator from './vi_selector_indicator.js';
 
 export class vi_3DSceneRenderer extends vi_Renderer {
-    constructor(containerId, controller, domains, useOrthographicCamera = false) {
+    constructor(containerId, controller, domains,  useOrthographicCamera = false) {
 
 
         super(controller, domains);
@@ -38,9 +40,12 @@ export class vi_3DSceneRenderer extends vi_Renderer {
         this.container = document.getElementById(containerId);
         this.objects = new Map();
         this.useOrthographicCamera = useOrthographicCamera; // Determine camera type
-        this.init();
+       
         this.selectedObject = null;
-        this.font = null;
+
+       
+        this.font = vi_Font.getFont();
+
         this.infoWindow = null;
 
 
@@ -61,7 +66,10 @@ export class vi_3DSceneRenderer extends vi_Renderer {
         this.infoWindow = null;
         this.infoWindowContent = null;
         this.infoCallBack = null;
-        
+
+         
+
+        this.init();
     }
 
     init() {
@@ -97,19 +105,7 @@ export class vi_3DSceneRenderer extends vi_Renderer {
     } 
     
    
-
-    setupFont() {
-        const loader = new FontLoader();
     
-        return new Promise((resolve, reject) => {
-            loader.load('/front/app/assets/gentilis_bold.typeface.json', (font) => {
-                this.font = font;
-                resolve();
-            }, undefined, reject);
-        });
-    }
-
-
 
 
     setupCamera() {
@@ -395,8 +391,7 @@ export class vi_3DSceneRenderer extends vi_Renderer {
     }
 
     addLabel(label, position = { x: 0, y: 0, z: 0 }, rotation = { x: 0, y: 0, z: 0 }, size = {size:2, height:0.1}) {
-        // Load the font
-        this.setupFont().then(() => {
+         
             // Create text geometry
             const textGeometry = new TextGeometry(label, {
                 font: this.font,
@@ -418,9 +413,7 @@ export class vi_3DSceneRenderer extends vi_Renderer {
     
             // Add the text mesh to the scene
             this.scene.add(textMesh);
-        }).catch((error) => {
-            console.error('Error loading font:', error);
-        });
+         
     }
 
     

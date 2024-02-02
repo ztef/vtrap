@@ -35,7 +35,7 @@ class vi_GoogleSheetListener extends vi_RemoteListener {
   }
 
 
-  async loadData(sheetnumber, collection) {
+  async loadData(sheetnumber, _collection) {
     try {
       console.log("Fetch de datos de google");
       // Make an HTTP GET request to your Node.js route
@@ -43,33 +43,33 @@ class vi_GoogleSheetListener extends vi_RemoteListener {
   
       if (response.ok) {
         // Parse the response as JSON
-        const data = await response.json();
+        const _sheetdata = await response.json();
   
         // Process the data from the Google Spreadsheet
         console.log("DATOS DE LA HOJA DE CALCULO");
-        console.log(data);
+        console.log(_sheetdata);
   
         // TODOS LOS REGISTROS DEBEN TENER :
             // id
             // type (opcional)
             // position (_lat, _long) (opcional)
 
-        for (const key in data) {
-          if (data.hasOwnProperty(key)) {
-            const element = data[key];
+        for (const _key in _sheetdata) {
+          if (_sheetdata.hasOwnProperty(_key)) {
+            const _element = _sheetdata[_key];
             
-            const record = {
-                id:element.id,
-                type: element.type,
+            const _record = {
+                id:_element.id,
+                type: _element.type,
                 position:{
-                    _lat: element._lat,
-                    _long: element._long
+                    _lat: _element._lat,
+                    _long: _element._long
                 },
-                fields:element
+                fields:_element
 
             };
-            console.log(record);
-            this.objectModel.updateOrAddObject(record.id,  collection, record);
+            console.log(_record);
+            this.objectModel.updateOrAddObject(_record.id,  _collection, _record);
           }
         }
   

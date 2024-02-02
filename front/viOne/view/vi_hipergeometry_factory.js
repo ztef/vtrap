@@ -1,6 +1,8 @@
 import { vi_geometry_factory } from "./vi_geometry_factory.js";
 import * as THREE from 'three';
 import { vi_visualObject } from './vi_visual_object.js';
+import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+import {vi_Font } from "./vi_font.js";
 
 
 
@@ -11,20 +13,11 @@ export class vi_hipergeometry_factory {
         this.graphics = {};
         this.geometry_factory = geometry_factory;
 
-
-        var config = {
-            "base":{"shape":"Circle", "radius":10},
-            "columns":[
-                {"indicator1":{shape:"cylinder", x:3, y:3, height:30, color:0xff0000}},
-                {"indicator2":{shape:"cylinder", height:10, color:0x0000ff00}},
-
-
-            ]
-        }
-
-
+        this.font = vi_Font.getFont();
 
     }
+
+   
 
 
     getHiperGeometry(point){
@@ -110,6 +103,104 @@ export class vi_hipergeometry_factory {
 
 
     }
+
+
+    createGeometriesFromConfig(_config,_point) {
+        const _group = new THREE.Group();
+    
+        // Helper function to create geometries based on the configuration
+        function createGeometry(_shape, _properties) {
+            let geometry;
+            switch (_shape) {
+                case 'Circle':
+                    geometry = new THREE.CircleGeometry(_properties.radius, 32);
+                    break;
+                case 'Cylinder':
+                    geometry = new THREE.CylinderGeometry(_properties.radiusTop, _properties.radiusBottom, _properties.height, 32);
+                    break;
+                case 'Box':
+                    geometry = new THREE.BoxGeometry(_properties.width, _properties.height, _properties.depth);
+                    break;
+                // Add more cases for other shapes as needed
+                default:
+                    console.error('Invalid shape:', _shape);
+                    return null;
+            }
+            return geometry;
+        }
+    
+        // Create base geometry
+        if (_config.base && _config.base.shape) {
+            const baseGeometry = createGeometry(_config.base.shape, _config.base);
+            const baseMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+            const base = new THREE.Mesh(baseGeometry, baseMaterial);
+
+            base.rotation.x = -Math.PI / 2;
+
+            base.name = "base";
+
+            _group.add(base);
+
+             
+        }
+    
+        // Create label geometry
+        
+        
+        if (_config.label && _config.label.value) {
+            const labelGeometry = new TextGeometry(_config.label.value, { font:this.font, size:_config.label.size,
+                height: 0.01 });
+            const labelMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+            const labelMesh = new THREE.Mesh(labelGeometry, labelMaterial);
+            labelMesh.position.set(_config.label.x || 0, _config.label.y || 0, _config.label.z || 0);
+            _group.add(labelMesh);
+
+            
+        }
+        
+        
+    
+        // Create column geometries
+        if (_config.columns && Array.isArray(_config.columns)) {
+            _config.columns.forEach(column => {
+                const columnName = Object.keys(column)[0];
+                const columnConfig = column[columnName];
+                if (columnConfig.shape) {
+                    const columnGeometry = createGeometry(columnConfig.shape, columnConfig);
+                    const columnMaterial = new THREE.MeshBasicMaterial({ color: columnConfig.color });
+                    const column = new THREE.Mesh(columnGeometry, columnMaterial);
+                    column.position.set(columnConfig.x || 0, columnConfig.height / 2 , columnConfig.z || 0);
+                    _group.add(column);
+                }
+            });
+        }
+    
+        _group.position.set(_point.x, _point.y+0.2, _point.z);
+
+        var _vo = this.geometry_factory.createVisualObject(_group,'hg');
+
+        // Create a bounding box helper for the group
+        const bbox = new THREE.Box3().setFromObject(_group);
+        const bboxSize = new THREE.Vector3();
+        bbox.getSize(bboxSize);
+
+        // Create a transparent helper mesh that surrounds the group
+        const geometry = new THREE.BoxGeometry(bboxSize.x, bboxSize.y, bboxSize.z);
+        const material = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0 });
+        const helperMesh = new THREE.Mesh(geometry, material);
+
+        // Center the helper mesh on the group
+        helperMesh.position.set(_point.x, _point.y+0.2, _point.z);
+
+        _vo.setWrapper(helperMesh);
+
+
+
+       return _vo;
+    }
+    
+    
+    
 
 
 }

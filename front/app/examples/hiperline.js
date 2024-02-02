@@ -55,6 +55,9 @@ var o = geometry_factory.createVisualObject(m,'hb');
 renderer.addGeometry(o); 
 
 
+// GEOMETRIA COMPLEJA EJEMPLO
+
+
 let hgf= new vi_hipergeometry_factory(geometry_factory);
 
 
@@ -65,4 +68,23 @@ let hg = hgf.getHiperGeometry(point1);
 renderer.addGeometry(hg);
 
 
+// GEOMETRIA COMPLEJA BASADA EN CONFIGURACION
+
+
+
+var config = {
+    "base": { "shape": "Circle", "radius": 1 },
+    "label": { "value": "record number one", "x": 0, "y": 0, size:0.1 },
+    "columns": [
+        { "variable1": { "shape": "Cylinder", x:0,y:0, z:0, "radiusTop": 0.1, "radiusBottom": 0.1, "height": 10, "color": 0xff0000 } },
+        { "variable2": { "shape": "Box", x:0.4,y:0, z:0.4, "width": 0.1, "height": 5, "depth": 0.1, "color": 0x0000ff } }
+    ]
+};
+
+let point2 = hiperLine.locatePointByPath('3.0.1');
+// Create geometries from configuration
+const hg1 = hgf.createGeometriesFromConfig(config,point2);
+
+// Add the group to the scene
+renderer.addGeometry(hg1);
 

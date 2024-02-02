@@ -190,8 +190,30 @@ let hgf= new vi_hipergeometry_factory(geometry_factory);
       case 'objectAdded':
     
            let object = objectModel.readObject(domain, data.id);
+
+          let geomcfg = {};
+           if(object.data.fields.capital == 'si'){
+                geomcfg = {
+                  "base": { "shape": "Circle", "radius": 1 },
+                  "label": { "value": object.data.fields.municipio, "x": 0, "y": 0, size:0.1 },
+                  "columns": [
+                      { "variable1": { "shape": "Cylinder", x:0,y:0, z:0, "radiusTop": 0.1, "radiusBottom": 0.1, "height": 10, "color": 0xff0000 } },
+                      { "variable2": { "shape": "Box", x:0.4,y:0, z:0.4, "width": 0.1, "height": 5, "depth": 0.1, "color": 0x0000ff } }
+                  ]
+                };
+          } else {
+                geomcfg = {
+                  "base": { "shape": "Circle", "radius": 1 },
+                  
+                  "columns": [
+                      { "variable1": { "shape": "Cylinder", x:0,y:0, z:0, "radiusTop": 0.1, "radiusBottom": 0.1, "height": 10, "color": 0xff0000 } },
+                      { "variable2": { "shape": "Box", x:0.4,y:0, z:0.4, "width": 0.1, "height": 5, "depth": 0.1, "color": 0x0000ff } }
+                  ]
+                };
+
+          }
            
-           let hg = hgf.getHiperGeometry({x:0,y:0,z:0});
+           let hg = hgf.createGeometriesFromConfig(geomcfg,{x:0,y:0,z:0});
            sc.addObject2Slot(object.data.fields.estado, domain+'.'+data.id, object,hg);
 
 
@@ -205,8 +227,9 @@ let hgf= new vi_hipergeometry_factory(geometry_factory);
 
 
 
-   
-   
+ 
+
+ 
 
    
  
