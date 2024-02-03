@@ -74,7 +74,7 @@ renderer.addGeometry(hg);
 
 var config = {
     "base": { "shape": "Circle", "radius": 1 },
-    "label": { "value": "record number one", "x": 0, "y": 0, size:0.1 },
+    "label": { "value": "record number one", "x": 0, "y": 0, "z": 0, size:0.1 },
     "columns": [
         { "variable1": { "shape": "Cylinder", x:0,y:0, z:0, "radiusTop": 0.1, "radiusBottom": 0.1, "height": 10, "color": 0xff0000 } },
         { "variable2": { "shape": "Box", x:0.4,y:0, z:0.4, "width": 0.1, "height": 5, "depth": 0.1, "color": 0x0000ff } }
@@ -87,4 +87,6 @@ const hg1 = hgf.createGeometriesFromConfig(config,point2);
 
 // Add the group to the scene
 renderer.addGeometry(hg1);
+
+renderer.addLOD();
 

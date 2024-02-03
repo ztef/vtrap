@@ -2,6 +2,8 @@ import { vi_geometry_factory } from "./vi_geometry_factory.js";
 import * as THREE from 'three';
 import { vi_visualObject } from './vi_visual_object.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+import {  CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+ 
 import {vi_Font } from "./vi_font.js";
 
 
@@ -107,6 +109,11 @@ export class vi_hipergeometry_factory {
 
     createGeometriesFromConfig(_config,_point) {
         const _group = new THREE.Group();
+
+        const nullMesh = new THREE.Mesh(
+            new THREE.BoxGeometry(0.01, 0.01, 0.01),
+            new THREE.MeshBasicMaterial({color: 0xff0000})
+        );
     
         // Helper function to create geometries based on the configuration
         function createGeometry(_shape, _properties) {
@@ -146,18 +153,44 @@ export class vi_hipergeometry_factory {
     
         // Create label geometry
         
-        
+        /*
         if (_config.label && _config.label.value) {
             const labelGeometry = new TextGeometry(_config.label.value, { font:this.font, size:_config.label.size,
-                height: 0.01 });
+                height: 0 });
             const labelMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
             const labelMesh = new THREE.Mesh(labelGeometry, labelMaterial);
             labelMesh.position.set(_config.label.x || 0, _config.label.y || 0, _config.label.z || 0);
-            _group.add(labelMesh);
+      
+            const lod = new THREE.LOD();
 
+            lod.addLevel(labelMesh, 2);
+			lod.addLevel(nullMesh, 10);
+
+            _group.add(lod);   
+        } 
+        */  
+
+        if (_config.label && _config.label.value) {
+            var element = document.createElement('div');
+            element.textContent = _config.label.value;
+            element.style.color = 'black';
+            element.style.fontFamily = 'Arial';
+            element.style.fontSize = '15px';
+
+            var cssObject = new CSS2DObject(element);
+            cssObject.position.set(_config.label.x || 0, _config.label.y || 0, _config.label.z || 0);
+      
+            const lod = new THREE.LOD();
+
+            lod.addLevel(cssObject, 2);
+			lod.addLevel(nullMesh, 10);
+
+            lod.position.set(0,0,0);
+
+            _group.add(lod);   
+      
             
         }
-        
         
     
         // Create column geometries
@@ -177,9 +210,11 @@ export class vi_hipergeometry_factory {
     
         _group.position.set(_point.x, _point.y+0.2, _point.z);
 
+         
+
         var _vo = this.geometry_factory.createVisualObject(_group,'hg');
 
-        // Create a bounding box helper for the group
+        // Create a bounding box helper for the group5
         const bbox = new THREE.Box3().setFromObject(_group);
         const bboxSize = new THREE.Vector3();
         bbox.getSize(bboxSize);
@@ -190,7 +225,7 @@ export class vi_hipergeometry_factory {
         const helperMesh = new THREE.Mesh(geometry, material);
 
         // Center the helper mesh on the group
-        helperMesh.position.set(_point.x, _point.y+0.2, _point.z);
+        helperMesh.position.set(_point.x, _point.y, _point.z);
 
         _vo.setWrapper(helperMesh);
 

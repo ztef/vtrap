@@ -18,12 +18,13 @@ import { MapControls } from 'three/addons/controls/MapControls.js';
 import { FlyControls } from 'three/addons/controls/FlyControls.js';
 
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { PerspectiveCamera, OrthographicCamera } from 'three';
+import { PerspectiveCamera, OrthographicCamera, LOD } from 'three';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
  
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+import { CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
  
 import {vi_Font } from "./vi_font.js";
 
@@ -67,6 +68,10 @@ export class vi_3DSceneRenderer extends vi_Renderer {
         this.infoWindowContent = null;
         this.infoCallBack = null;
 
+        this.lod = new THREE.LOD();
+
+        this.cssRenderer = null;
+
          
 
         this.init();
@@ -82,6 +87,9 @@ export class vi_3DSceneRenderer extends vi_Renderer {
         this.addClickListener();
         this.axis();
         this.setupIndicator();
+        this.setupCSSNDRenderer();
+
+
         
         this.animate();
     }
@@ -162,6 +170,17 @@ export class vi_3DSceneRenderer extends vi_Renderer {
         this.container.appendChild(this.renderer.domElement);
     }
 
+    setupCSSNDRenderer(){
+        
+        this.cssRenderer = new CSS2DRenderer();
+        this.cssRenderer.setSize(this.container.clientWidth, this.container.clientHeight);
+        this.cssRenderer.domElement.style.position = 'absolute';
+        this.cssRenderer.domElement.style.top = 0;
+        this.cssRenderer.domElement.style.pointerEvents = 'none';
+
+        this.container.appendChild(this.cssRenderer.domElement);
+    }
+
     
     setupControls() {
 
@@ -212,6 +231,7 @@ export class vi_3DSceneRenderer extends vi_Renderer {
 				this.controls.dampingFactor = 0.08;
 
 				this.controls.screenSpacePanning = true;
+                this.controls.zoomSpeed = 1.2;
 
 				this.controls.minDistance = 0;
 				this.controls.maxDistance = 1500;
@@ -225,7 +245,19 @@ export class vi_3DSceneRenderer extends vi_Renderer {
                     this.updateIndicatorPosition();
 
 
-                });        
+                });  
+                
+                this.controls.addEventListener('zoom', function(event) {
+                    var currentZoom = event.target.object.position.distanceTo(event.target.target);
+                
+                    // Adjust zoom speed based on current zoom level
+                    if (currentZoom < 100) {
+                        controls.zoomSpeed = 1.8; // Adjust this value as needed
+                    } else {
+                        controls.zoomSpeed = 0.5; // Adjust this value as needed
+                    }
+                });
+
 
         
 
@@ -268,6 +300,7 @@ export class vi_3DSceneRenderer extends vi_Renderer {
             for (const entry of entries) {
                 const { width, height } = entry.contentRect;
                 this.renderer.setSize(width, height);
+                this.CSS2DRenderer.setSize(width,height);
                 this.camera.aspect = width / height;  // Update this line
                 this.camera.updateProjectionMatrix();
                 this.repositionInfoWindow(); 
@@ -374,6 +407,36 @@ export class vi_3DSceneRenderer extends vi_Renderer {
             this.objectEntities.set(visualObject.id,visualObject.mesh );
             this.scene.add(visualObject.mesh);
         }
+    }
+
+    
+
+    addLOD(){
+        // box geometry
+			const box = new THREE.Mesh(
+				new THREE.BoxGeometry(5, 5, 5),
+				new THREE.MeshBasicMaterial({color: 0xff0000})
+			);
+
+			// sphere geometry
+			const sphere = new THREE.Mesh(
+				new THREE.SphereGeometry(3, 16, 16),
+				new THREE.MeshBasicMaterial({color: 0xff0000})
+			);
+
+            let gg = new THREE.Group();
+           
+        
+
+			this.lod.addLevel(sphere, 14);
+			this.lod.addLevel(box, 21);
+
+             gg.add(this.lod);
+
+
+            this.scene.add(gg);
+
+
     }
 
 
@@ -804,12 +867,15 @@ export class vi_3DSceneRenderer extends vi_Renderer {
 
        // console.log('Camera Position:', this.camera.position);
        // console.log('Camera Direction:', this.camera.getWorldDirection(new THREE.Vector3()));
-    
+        if(this.controls.getDistance()<2){
+
+            var currentLookAt = this.camera.getWorldDirection(new THREE.Vector3()).clone();
+            this.controls.target.add(currentLookAt.multiplyScalar(0.4));
+        }   
         this.controls.update();
         this.renderer.render(this.scene, this.camera);
+        this.cssRenderer.render(this.scene, this.camera);
     }
-
-
 
 
 
