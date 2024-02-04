@@ -375,6 +375,22 @@ export class vi_3DSceneRenderer extends vi_Renderer {
     }
 
 
+    setSkyBox(){
+        this.scene.background = new THREE.CubeTextureLoader()
+            .setPath( '/front/app/assets/' )
+            .load( [
+                        'Daylight Box_Back.bmp',
+                        'Daylight Box_Front.bmp',
+                        'Daylight Box_Top.bmp',
+                        'Daylight Box_Bottom.bmp',
+                        'Daylight Box_Right.bmp',
+                        'Daylight Box_Left.bmp'
+                    ] );
+    }
+
+
+
+
     loadGLTFModelc(gltfUrl) {
         const loader = new GLTFLoader();
     

@@ -66,7 +66,8 @@ const windowFormater = new vi_WindowFormater();
  var toolBoxConfig = {
         "options":[
           {"option1" : {"icon":"/front/app/assets/icon.png","tooltip":"Marcar Capitales"}},
-          {"option2" : {"icon":"/front/app/assets/icon.png","tooltip":"Toogle Damping"}},       
+          {"option2" : {"icon":"/front/app/assets/icon.png","tooltip":"Toogle Damping"}},  
+          {"option3" : {"icon":"/front/app/assets/icon.png","tooltip":"Sky Box"}},       
         ]
  }
 
@@ -90,6 +91,10 @@ const windowFormater = new vi_WindowFormater();
 
           if(opcion == 'option2'){
             renderer.toggleDamping();
+          }
+
+          if(opcion == 'option3'){
+            renderer.setSkyBox();
           }
 
  });
