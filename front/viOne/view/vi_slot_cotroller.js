@@ -50,7 +50,7 @@ export class vi_slot_controller {
         }
 
         
-        let point = slot.getTopPoint(this.axis);
+        const _point = slot.getTopPoint(this.axis);
         
 
         var vo;   // visual object
@@ -60,12 +60,12 @@ export class vi_slot_controller {
                 var color = 0x00ff00;
 
                 var g = this.geometry_factory.createGeometry('Sphere',[1,10, 10]);
-                var m = this.geometry_factory.createObject(g,{x:point.x,y:point.y,z:point.z}, { color: color,transparent: false, opacity: 0.5, side: THREE.DoubleSide });
+                var m = this.geometry_factory.createObject(g,{x:_point.x,y:_point.y,z:_point.z}, { color: color,transparent: false, opacity: 0.5, side: THREE.DoubleSide });
                 vo = this.geometry_factory.createVisualObject(m,id);
 
         } else {
             vo = hg;
-            vo.setPosition({x:point.x,y:point.y,z:point.z});
+            vo.setPosition({x:_point.x,y:_point.y,z:_point.z});
             vo.id = id;
         }
 

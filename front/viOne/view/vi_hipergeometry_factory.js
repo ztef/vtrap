@@ -173,12 +173,17 @@ export class vi_hipergeometry_factory {
         if (_config.label && _config.label.value) {
             var element = document.createElement('div');
             element.textContent = _config.label.value;
+            element.style.position = 'absolute';
+            element.style.left = '0px';
+            element.style.top = '0px';
+            
             element.style.color = 'black';
             element.style.fontFamily = 'Arial';
             element.style.fontSize = '15px';
 
             var cssObject = new CSS2DObject(element);
-            cssObject.position.set(_config.label.x || 0, _config.label.y || 0, _config.label.z || 0);
+            cssObject.position.set(0,0,0);
+            cssObject.center.set( 0, 0 );
       
             const lod = new THREE.LOD();
 

@@ -1,7 +1,7 @@
 export class vi_slot {
 
     constructor(point, delta, axis, angle){
-        this.point = point;
+        this.point =  {...point};
         this.delta = delta;
         this.axis = axis;
         this.angle = angle;

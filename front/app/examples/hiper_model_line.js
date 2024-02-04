@@ -132,7 +132,7 @@ const windowFormater = new vi_WindowFormater();
  const lineOrigin = { x: 0, y: 0, z: 0 };
  const lineAngle = 0; //  radianes
  const linelength = 200;
- const levelsArray = [32];
+ const levelsArray = [33];
  
  const hiperLine = new vi_HiperLine( linelength,lineAngle ,lineOrigin,);
  
@@ -195,10 +195,10 @@ let hgf= new vi_hipergeometry_factory(geometry_factory);
            if(true){
                 geomcfg = {
                   "base": { "shape": "Circle", "radius": 1 },
-                  "label": { "value": object.data.fields.municipio, "x": 0, "y": 0, "z":0, "size":0.1 },
+                  "label": { "value": object.data.fields.municipio, "x": 0, "y": 0, "z":0, size:0.1 },
                   "columns": [
-                      { "variable1": { "shape": "Cylinder", x:0,y:0, z:0, "radiusTop": 0.1, "radiusBottom": 0.1, "height": 10, "color": 0xff0000 } },
-                      { "variable2": { "shape": "Box", x:0.4,y:0, z:0.4, "width": 0.1, "height": 5, "depth": 0.1, "color": 0x0000ff } }
+                      { "variable1": { "shape": "Cylinder", x:0,y:0, z:0, "radiusTop": 0.1, "radiusBottom": 0.1, "height": 1, "color": 0xff0000 } },
+                      { "variable2": { "shape": "Box", x:0.4,y:0, z:0.4, "width": 0.1, "height": 0.5, "depth": 0.1, "color": 0x0000ff } }
                   ]
                 };
           } else {
@@ -215,8 +215,7 @@ let hgf= new vi_hipergeometry_factory(geometry_factory);
            
            let hg = hgf.createGeometriesFromConfig(geomcfg,{x:0,y:0,z:0});
            sc.addObject2Slot(object.data.fields.estado, domain+'.'+data.id, object,hg);
-
-
+           
         break;
   
       default:

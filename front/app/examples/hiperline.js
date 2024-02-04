@@ -19,7 +19,7 @@ const geometry_factory = new vi_geometry_factory();
 
 
 const lineOrigin = { x: 0, y: 0, z: 0 };
-const lineAngle = Math.PI/4; //  radianes
+const lineAngle = 0; //Math.PI/4;   radianes
 //const lineAngle = 0; //  radianes
 const linelength = 200;
 const levelsArray = [10,3,2];
@@ -83,7 +83,9 @@ var config = {
 
 let point2 = hiperLine.locatePointByPath('3.0.1');
 // Create geometries from configuration
-const hg1 = hgf.createGeometriesFromConfig(config,point2);
+const hg1 = hgf.createGeometriesFromConfig(config,{x:0,y:0,z:0});
+
+hg1.setPosition({x:point2.x,y:point2.y+0.2,z:point2.z});
 
 // Add the group to the scene
 renderer.addGeometry(hg1);

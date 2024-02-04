@@ -300,7 +300,7 @@ export class vi_3DSceneRenderer extends vi_Renderer {
             for (const entry of entries) {
                 const { width, height } = entry.contentRect;
                 this.renderer.setSize(width, height);
-                this.CSS2DRenderer.setSize(width,height);
+                this.cssRenderer.setSize(width, height);
                 this.camera.aspect = width / height;  // Update this line
                 this.camera.updateProjectionMatrix();
                 this.repositionInfoWindow(); 
@@ -310,9 +310,7 @@ export class vi_3DSceneRenderer extends vi_Renderer {
     
         resizeObserver.observe(this.container);
 
-      
-
-
+        
 
     }
 
