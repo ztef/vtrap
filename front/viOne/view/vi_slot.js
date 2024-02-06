@@ -5,15 +5,19 @@ export class vi_slot {
         this.delta = delta;
         this.axis = axis;
         this.angle = angle;
-        this.elements = [];
+        this.elements = new Map();
     }
 
-    addElement(element){
+    addElement(id, element){
 
-        this.elements.push(element);
+        this.elements.set(id, element);
 
     }
 
+
+    getElement(e){
+        return this.elements.get(e);
+    }
 
     getVectorEndpoint(x,z, angle, distance) {
       
@@ -26,7 +30,7 @@ export class vi_slot {
     getTopPoint(){
 
         let topPoint = {...this.point};
-        let distance = this.elements.length * this.delta + this.delta;
+        let distance = this.elements.size * this.delta + this.delta;
 
         if(this.axis == 'y'){
             topPoint[this.axis] = distance;

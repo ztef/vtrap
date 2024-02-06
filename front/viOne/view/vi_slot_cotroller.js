@@ -27,8 +27,26 @@ export class vi_slot_controller {
         
     }
 
+    getSlotandElement(s,e){
+
+        var slot = null;
+        var element = null;
+
+        if(this.slots.has(s)){
+
+            slot = this.slots.get(s);
+            element = slot.getElement(e);
+
+        }
+
+        return element;
+
+    }
 
 
+    // agrega un elemento a un slot, si el slot no existe lo crea previamente.
+
+    //addSlot2Board()
     addObject2Slot(path, id, object, hg = null){   // hipergeometria = null
 
 
@@ -72,11 +90,17 @@ export class vi_slot_controller {
 
         this.board.render.addGeometry(vo); 
         const element = new vi_element(path, id, vo, object);
-        slot.addElement(element);
+        slot.addElement(id, element);
 
 
         
 
+
+    }
+
+
+    // addSlot2Element
+    addObject2Element(){
 
     }
 
