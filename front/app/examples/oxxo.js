@@ -76,7 +76,7 @@ const windowFormater = new vi_WindowFormater();
  windowFormater.formatWindow("#graphics","Grafica",500,350);
 
 
- const renderer = new vi_3DSceneRenderer('graphics',controller,['municipios','estados']);
+ const renderer = new vi_3DSceneRenderer('graphics',controller,['municipios','estados','oxxos']);
 
 
  var toolBoxConfig = {
@@ -135,6 +135,9 @@ const windowFormater = new vi_WindowFormater();
 
   if(domain == 'estados'){
     html = object.data.fields.estado;
+  }
+  if(domain == 'oxxos'){
+    html = object.data.fields["Nombre de la vialidad"];
   }
 
 
@@ -212,7 +215,7 @@ let hgf= new vi_hipergeometry_factory(geometry_factory);
     
            let object = objectModel.readObject(domain, data.id);
            
-           
+           //addSlot2Board()
            sc.addObject2Slot(object.data.fields.estado, domain+'.'+data.id, object);
            
         break;
@@ -233,6 +236,9 @@ let hgf= new vi_hipergeometry_factory(geometry_factory);
   return paddedNumber;
 }
 
+
+  var numoxxos =0;
+
  controller.addObserver('oxxos',"objectAdded",(domain, _event, data)=>{
 
   switch (_event) {
@@ -241,13 +247,14 @@ let hgf= new vi_hipergeometry_factory(geometry_factory);
    
           let object = objectModel.readObject(domain, data.id);
  
-          let mpo = 'municipios.'+object.data.fields["Clave entidad"] + '' + padWithZeros(object.data.fields["Clave municipio"] ,3);
+          let mpo = 'municipios.'+padWithZeros(object.data.fields["Clave entidad"],2) + '' + padWithZeros(object.data.fields["Clave municipio"] ,3);
  
-          let slot_element = sc.getSlotandElement(object.data.fields["Clave entidad"],mpo);
-          console.log("OXXO", slot_element);
-          //sc.addObject2Slot(object.data.fields.estado, domain+'.'+data.id, object);get  
+          
+          
 
-           // sc.addObject2Element();
+           sc.addSlot2Element(object.data.fields["Clave entidad"],mpo,'oxxos.'+object.data.fields.id,object);
+           numoxxos = numoxxos + 1;
+           console.log(numoxxos);
 
           
        break;

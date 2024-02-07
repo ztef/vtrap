@@ -19,5 +19,9 @@ export class vi_visualObject {
         }
     }
 
+    getPosition(){
+        return {x:this.mesh.position.x, y:this.mesh.position.y, z:this.mesh.position.z}
+    }
+
 
 }

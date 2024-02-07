@@ -19,4 +19,8 @@ export class vi_element {
     }
 
 
+    getPosition(){
+        return this.visual_object.getPosition();
+    }
+
 }

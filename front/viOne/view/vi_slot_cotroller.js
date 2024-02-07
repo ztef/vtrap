@@ -46,7 +46,7 @@ export class vi_slot_controller {
 
     // agrega un elemento a un slot, si el slot no existe lo crea previamente.
 
-    //addSlot2Board()
+    //addSlotElement2Board()
     addObject2Slot(path, id, object, hg = null){   // hipergeometria = null
 
 
@@ -99,8 +99,71 @@ export class vi_slot_controller {
     }
 
 
-    // addSlot2Element
-    addObject2Element(){
+    // Agrega un slot a un elemento :
+    addSlot2Element(s,e,id, object){
+        let slot_element = this.getSlotandElement(s,e);
+
+       
+        let hg = null;
+
+
+        if(slot_element){
+
+            var slot;
+            if (!this.slots.has(e)) {
+
+                let point = slot_element.getPosition();
+                let angle = 0;
+    
+                slot = new vi_slot(point, 2, 'y', 0);
+                this.slots.set(e, slot );
+               
+              
+              } else {
+               
+                slot = this.slots.get(e);
+              
+            }
+
+
+            const _point = slot.getTopPoint('y');
+        
+
+            var vo;   // visual object
+    
+            if(hg == null){
+            
+                    var color = 0xff0000;
+    
+                    var g = this.geometry_factory.createGeometry('Sphere',[0.3,10, 10]);
+                    var m = this.geometry_factory.createObject(g,{x:_point.x,y:_point.y,z:_point.z}, { color: color,transparent: false, opacity: 0.5, side: THREE.DoubleSide });
+                    vo = this.geometry_factory.createVisualObject(m,id);
+    
+            } else {
+                vo = hg;
+                vo.setPosition({x:_point.x,y:_point.y,z:_point.z});
+                vo.id = id;
+            }
+    
+    
+            this.board.render.addGeometry(vo); 
+            const element = new vi_element(e, id, vo, object);
+            slot.addElement(id, element);
+    
+
+
+
+
+
+
+        } else {
+            console.log('No Slot');
+        }
+
+    }
+
+
+    addSlot2Position(){
 
     }
 
