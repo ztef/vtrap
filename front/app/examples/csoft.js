@@ -255,18 +255,26 @@ let hgf= new vi_hipergeometry_factory(geometry_factory);
    
      case 'objectAdded':
    
-          let object = objectModel.readObject(domain, data.id);
 
-          let empresa = objectModel.readObjectbyField('empresas', 'nombre', object.data.fields.empresa);
+          // lee la participacion
+          let participacion = objectModel.readObject(domain, data.id);
+
+          // lee la empresa
+          let empresa = objectModel.readObjectbyField('empresas', 'nombre', participacion.data.fields.empresa);
           
+
+          // lee el evento
+          let evento = objectModel.readObjectbyField('eventos', 'evento', participacion.data.fields.evento);
+
+
           var color = 0x808080;
     
           var g = geometry_factory.createGeometry('Sphere',[0.2,10, 10]);
           var m = geometry_factory.createObject(g,{x:0,y:0,z:0}, { color: color,transparent: false, opacity: 0.5, side: THREE.DoubleSide });
-          let geom = geometry_factory.createVisualObject(m,'participacion.'+object.data.fields.id);
+          let geom = geometry_factory.createVisualObject(m,'participacion.'+participacion.data.fields.id);
           
            // slot, element, id, object, geometry
-           sc.addSlot2Element(empresa.data.fields.tipo,'empresas.'+empresa.id,'participaciones.'+object.data.fields.id,object,geom);
+           sc.addSlot2Element(empresa.data.fields.tipo,'empresas.'+empresa.id,'participaciones.'+participacion.data.fields.id,participacion,geom);
 
           
           
