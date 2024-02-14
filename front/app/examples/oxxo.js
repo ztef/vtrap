@@ -81,9 +81,9 @@ const windowFormater = new vi_WindowFormater();
 
  var toolBoxConfig = {
         "options":[
-          {"option1" : {"icon":"/front/app/assets/icon.png","tooltip":"Marcar Capitales"}},
-          {"option2" : {"icon":"/front/app/assets/icon.png","tooltip":"Toogle Damping"}},  
-          {"option3" : {"icon":"/front/app/assets/icon.png","tooltip":"Sky Box"}},       
+          {"option1" : {"icon":"/front/app/assets/metro.png","tooltip":"Marcar Zonas Metropolitanas"}},
+          {"option2" : {"icon":"/front/app/assets/damp.png","tooltip":"Cambiar Damping"}},  
+          {"option3" : {"icon":"/front/app/assets/sky.png","tooltip":"Sky Box"}},       
         ]
  }
 
@@ -249,10 +249,14 @@ let hgf= new vi_hipergeometry_factory(geometry_factory);
  
           let mpo = 'municipios.'+padWithZeros(object.data.fields["Clave entidad"],2) + '' + padWithZeros(object.data.fields["Clave municipio"] ,3);
  
+          var color = 0x808080;
+    
+          var g = geometry_factory.createGeometry('Sphere',[0.3,10, 10]);
+          var m = geometry_factory.createObject(g,{x:0,y:0,z:0}, { color: color,transparent: false, opacity: 0.5, side: THREE.DoubleSide });
+          let geom = geometry_factory.createVisualObject(m,'oxxos.'+object.data.fields.id);
           
-          
-
-           sc.addSlot2Element(object.data.fields["Clave entidad"],mpo,'oxxos.'+object.data.fields.id,object);
+           // slot, element, id, object, geometry
+           sc.addSlot2Element(object.data.fields["Clave entidad"],mpo,'oxxos.'+object.data.fields.id,object,geom);
            numoxxos = numoxxos + 1;
            console.log(numoxxos);
 

@@ -31,7 +31,7 @@ export class vi_toolbox {
         option.classList.add('toolbox-option');
         // <img src="${iconUrl}" alt="Icon">
         option.innerHTML = `
-            <i class="fa-solid fa-crown" style="color: gold;"></i>
+            <img src="${iconUrl}" alt="Icon">
             <span class="ttooltip">${tooltipText}</span>
         `;
     

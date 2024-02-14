@@ -20,6 +20,8 @@ import { FlyControls } from 'three/addons/controls/FlyControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { PerspectiveCamera, OrthographicCamera, LOD } from 'three';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import { HDRCubeTextureLoader } from 'three/addons/loaders/HDRCubeTextureLoader.js';
+import {RGBELoader} from 'three/addons/loaders/RGBELoader.js';
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
  
@@ -389,6 +391,27 @@ export class vi_3DSceneRenderer extends vi_Renderer {
     }
 
 
+    setSkyBox2(){
+        this.scene.background = new HDRCubeTextureLoader()
+            .setPath( '/front/app/assets/' )
+            .load( [
+                        'DH001HC.hdr'
+                    ] );
+    }
+t
+    setSkyBox1(){
+        var loader = new RGBELoader();
+        loader.setDataType(THREE.UnsignedByteType);
+        loader.load('/front/app/assets/DH001HC.hdr', function(texture) {
+            var pmremGenerator = new THREE.PMREMGenerator(this.renderer);
+            var envMap = pmremGenerator.fromEquirectangular(texture).texture;
+            this.scene.background = envMap;
+            this.scene.environment = envMap;
+            pmremGenerator.dispose();
+            this.renderer.render(this.scene, this.camera);
+        });
+    }
+
 
 
     loadGLTFModelc(gltfUrl) {
@@ -634,7 +657,7 @@ export class vi_3DSceneRenderer extends vi_Renderer {
             this.infoWindow.appendChild(header);
     
             const icon1 = document.createElement('img');
-            icon1.src = 'icon1.png';
+            icon1.src = '/front/app/assets/info.png';
             header.appendChild(icon1);
     
             const closeButton = document.createElement('button');

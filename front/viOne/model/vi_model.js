@@ -72,6 +72,10 @@ class vi_ObjectModel  {
     readObject(collection, id) {
       return this.objects.find((object) => object.id === id && object.collection === collection);
     }
+
+    readObjectbyField(collection, field, value) {
+      return this.objects.find((object) => object.data.fields[field] === value && object.collection === collection);
+    }
     
   
     /* 

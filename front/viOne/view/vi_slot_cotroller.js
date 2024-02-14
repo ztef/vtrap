@@ -13,6 +13,7 @@ export class vi_slot_controller {
         this.delta = 3;
         this.slots = new Map();
         this.geometry_factory = new vi_geometry_factory();
+        
     }
 
 
@@ -100,11 +101,11 @@ export class vi_slot_controller {
 
 
     // Agrega un slot a un elemento :
-    addSlot2Element(s,e,id, object){
+    addSlot2Element(s,e,id, object, geom = null){
         let slot_element = this.getSlotandElement(s,e);
 
        
-        let hg = null;
+        
 
 
         if(slot_element){
@@ -131,7 +132,7 @@ export class vi_slot_controller {
 
             var vo;   // visual object
     
-            if(hg == null){
+            if(geom == null){
             
                     var color = 0xff0000;
     
@@ -140,7 +141,7 @@ export class vi_slot_controller {
                     vo = this.geometry_factory.createVisualObject(m,id);
     
             } else {
-                vo = hg;
+                vo = geom;
                 vo.setPosition({x:_point.x,y:_point.y,z:_point.z});
                 vo.id = id;
             }
