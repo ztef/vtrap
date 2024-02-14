@@ -390,6 +390,19 @@ export class vi_3DSceneRenderer extends vi_Renderer {
                     ] );
     }
 
+    setSkyBoxNight(){
+        this.scene.background = new THREE.CubeTextureLoader()
+            .setPath( '/front/app/assets/' )
+            .load( [
+                        'rainbow_bk.png',
+                        'rainbow_ft.png',
+                        'top.png',
+                        'rainbow_dn.png',
+                        'rainbow_rt.png',
+                        'rainbow_lf.png'
+                    ] );
+    }
+
 
     setSkyBox2(){
         this.scene.background = new HDRCubeTextureLoader()

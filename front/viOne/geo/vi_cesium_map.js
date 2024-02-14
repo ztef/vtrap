@@ -69,7 +69,7 @@ class vi_CesiumMap extends vi_Map {
   
   
             // Add Cesium OSM Buildings, a global 3D buildings layer.
-            const buildingTileset = await Cesium.createOsmBuildingsAsync();
+           const buildingTileset = await Cesium.createOsmBuildingsAsync();
             this.viewer.scene.primitives.add(buildingTileset);
 
            
