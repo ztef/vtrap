@@ -59,4 +59,4 @@ jobs:
           app-name: 'vtrap'
           slot-name: 'Production'
           package: .
-          publish-profile: ${{  secrets.AZUREAPPSERVICE_PUBLISHPROFILE_6916E31E5C0340AD9915E9FCD6C290F1 }}
+          publish-profile: ${{  secrets.AZUREAPPSERVICE_PUBLISHPROFILE_68C87036381E435E8CCFC468A93B3381 }}
