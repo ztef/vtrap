@@ -59,4 +59,4 @@ jobs:
           app-name: 'visualtracker'
           slot-name: 'Production'
           package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_68C87036381E435E8CCFC468A93B3381 }}
+          publish-profile: ${{  secrets.AZUREAPPSERVICE_PUBLISHPROFILE_68C87036381E435E8CCFC468A93B3381 }}
