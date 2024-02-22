@@ -47,26 +47,27 @@ class vi_FirebaseListener extends vi_RemoteListener {
           id:docId,
           type: docType,
           position:{
-              _lat: docData.positionCurrent._lat,
-              _long: docData.positionCurrent._long
+              _lat: 0,
+              _long: 0
           },
           fields:docData
 
          };
 
-        if (change.type === "added" && docData.status === "active") {
+         // && docData.status === "active"
+        if (change.type === "added" ) {
           console.log("New Document Added:", docId, record);
           this.objectModel.updateOrAddObject(docId, collection, record);
         }
 
         if (change.type === "modified") {
           console.log("Document Modified:", docId, record);
-          if (docData.status === "active") {
+          //if (docData.status === "active") {
             this.objectModel.updateOrAddObject(docId, collection, record);
-          } else {
-            console.log("Document Removed", docId);
-            this.objectModel.deleteObject(docId);
-          }
+          //} else {
+          //  console.log("Document Removed", docId);
+          //  this.objectModel.deleteObject(docId);
+          //}
         }
 
         if (change.type === "removed") {

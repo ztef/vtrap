@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Online Editor</title>
+  <link rel="stylesheet" href="../viOne/editor/style.css">
+  <script src="head-content.js" defer></script>
+  <script src="../viOne/js/jquery/jquery.min.js"></script>    
+  <script type="text/javascript" src="javascripts/libs/jquery-3.1.1.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <link rel="stylesheet" href="../styles/jquery/ui/1.12.1/themes/base/jquery-ui.css">
+   
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+  <link rel="stylesheet" href="editor.css"> 
+  <script defer="defer" src="/front/viOne/js/aws/main.b08e794a.js"></script>
+
+  <style>
+    /* Style to make the icon white */
+    #backgroundIcon {
+      color: white;
+    }
+
+    #backgroundIcon:hover {
+      color: yellow;
+    }
+
+    #toggleHIcon {
+      color: white;
+    }
+
+    #toggleHIcon:hover {
+      color: yellow;
+
+    }
+
+    #toggleJIcon {
+      color: white;
+    }
+
+    #toggleJIcon:hover {
+      color: yellow;
+    }
+    
+    #run {
+      color: white;
+    }
+
+    #run:hover {
+      color: yellow;
+    }
+  </style>
+
+
+
+
+</head>
+<body>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "/front/app/build/three.module.js",
+        "three/addons/": "/front/app/build/jsm/"
+      }
+    }
+  </script>
+
+
+  <textarea style="display: none;" class="editor-textarea" id="html-editor" placeholder="Enter HTML code..."></textarea>
+  <textarea style="display: none;" class="editor-textarea" id="js-editor" placeholder="Enter JavaScript code..."></textarea>
+  
+
+  
+  <div id="result-container">
+  </div>
+
+   
+    
+
+  <script src="../viOne/editor/editor.js"></script>
+  <script>
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    
+    
+      
+    
+    function loadExample(selectedExample) {
+      
+        // Fetch the HTML content
+        fetch(`examples/${selectedExample}.html`)
+          .then(response => response.text())
+          .then(htmlContent => {
+            document.getElementById('html-editor').value = htmlContent;
+          }).then(()=>{
+
+            fetch(`examples/${selectedExample}.js`)
+            .then(response => response.text())
+            .then(jsContent => {
+               document.getElementById('js-editor').value = jsContent;
+            }).then(()=>{
+              
+              runCode();
+
+            });
+
+          });
+
+        
+        
+      
+    }
+
+    loadExample(code);
+  </script>
+
+
+ 
+  <style>
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: #000000;
+     background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100vh; /* Set the height to cover the entire viewport */
+  }
+</style>
+ 
+  
+ 
+</body>
+</html>

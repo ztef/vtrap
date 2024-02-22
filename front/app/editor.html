@@ -50,6 +50,14 @@
     #run:hover {
       color: yellow;
     }
+
+    #runrun {
+      color: rgb(248, 8, 8);
+    }
+
+    #runrun:hover {
+      color: yellow;
+    }
   </style>
 
 
@@ -107,10 +115,13 @@
         <option value="telco">Red de Telecomunicaciones</option>
         <option value="oxxo">INEGI : OXXOs</option>
         <option value="csoft">CSOFT : Socios</option>
+        <option value="inventory">Inventory</option>
+
 
 
       </select>
       <i id="run" class="fas fa-play"></i>
+      <i id="runrun" class="fas fa-play"></i>
      
     </div>
     <textarea class="editor-textarea" id="html-editor" placeholder="Enter HTML code..."></textarea>
@@ -128,7 +139,7 @@
 
   <script>
     
-
+    var selectedExample = "";
     var isImageVisible = true;
 
     document.getElementById('backgroundIcon').addEventListener('click', function() {
@@ -160,14 +171,13 @@
    
     });
 
-
-
+    document.getElementById('runrun').addEventListener('click', function() {
+      window.location.href = './exec.html?code='+selectedExample;
+    });
 
 
     
   </script>
-
-
 
 
 
@@ -177,7 +187,7 @@
 
       console.log("Cargando ejemplo");
       const exampleDropdown = document.getElementById('example-dropdown');
-      const selectedExample = exampleDropdown.value;
+      selectedExample = exampleDropdown.value;
 
       if (selectedExample) {
         // Fetch the HTML content
