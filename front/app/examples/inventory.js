@@ -23,26 +23,50 @@ const windowFormater = new vi_WindowFormater();
         "messagingSenderId": "505209625267",
         "appId": "1:505209625267:web:9193f409272639bc91eec6",
         "measurementId": "G-V4MG6QSJZH"
-      },
-      "collection":"families",
-      "collectionName":"Families"
+      },"collections" : [
+         {
+         "collection":"families",
+         "collectionName" : "FAMILIES"
+        },
+      
+        {
+         "collection":"warehouses",
+         "collectionName" : "WAREHOUSES"
+        },
+   
+        {
+         "collection":"products",
+         "collectionName" : "PRODUCTS"
+        }
+      ]
     }
 
    const dbDataSource = new vi_DataSource('Firebase', config);
 
 
  // Formatea div de objetos para que sea una ventana :
- windowFormater.formatWindow("#objects_menu","Families of Products",500,350);
- windowFormater.positionDiv("objects_menu",10,50);
+ windowFormater.formatWindow("#families_div","Families of Products",500,350);
+ windowFormater.positionDiv("families_div",10,50);
+
+ windowFormater.formatWindow("#warehouses_div","Warehouses",500,350);
+ windowFormater.positionDiv("warehouses_div",10,50);
 
   
 
- const gridView = new vi_ObjectGridView('families','objects_menu',controller,
+ const familiesView = new vi_ObjectGridView('families','families_div',controller,
  ()=>{
     return "<th>ID</th><th>Family</th>";
  },
  (id,collection,data)=>{
     return `<td>${data.fields.id}</td><td>${data.fields.family}</td>`;
+ });
+
+ const whView = new vi_ObjectGridView('warehouses','warehouses_div',controller,
+ ()=>{
+    return "<th>ID</th><th>Warehouse</th>";
+ },
+ (id,collection,data)=>{
+    return `<td>${data.fields.id}</td><td>${data.fields.name}</td>`;
  });
      
  const dbRemoteListener = remoteListenerFactory.createRemoteListener(dbDataSource,objectModel);

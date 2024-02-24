@@ -106,6 +106,25 @@ export class vi_hipergeometry_factory {
 
     }
 
+    getIcon(iconPath){
+        const textureLoader = new THREE.TextureLoader();
+        const texture = textureLoader.load('/front/app/assets/gps.svg');
+
+        // Create a shape from SVG data
+        const svgData = parseSVGData('/front/app/assets/gps.svg');
+        const shape = new THREE.Shape(svgData);
+
+        // Extrude the shape to give it depth
+        const extrudeSettings = { depth: 10, bevelEnabled: false };
+        const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+
+        // Create a mesh using the custom geometry
+        const material = new THREE.MeshBasicMaterial({ map: texture });
+        const mesh = new THREE.Mesh(geometry, material);
+
+        return mesh;
+    }
+
 
     createGeometriesFromConfig(_config,_point) {
         const _group = new THREE.Group();
@@ -151,24 +170,7 @@ export class vi_hipergeometry_factory {
              
         }
     
-        // Create label geometry
         
-        /*
-        if (_config.label && _config.label.value) {
-            const labelGeometry = new TextGeometry(_config.label.value, { font:this.font, size:_config.label.size,
-                height: 0 });
-            const labelMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
-            const labelMesh = new THREE.Mesh(labelGeometry, labelMaterial);
-            labelMesh.position.set(_config.label.x || 0, _config.label.y || 0, _config.label.z || 0);
-      
-            const lod = new THREE.LOD();
-
-            lod.addLevel(labelMesh, 2);
-			lod.addLevel(nullMesh, 10);
-
-            _group.add(lod);   
-        } 
-        */  
 
         if (_config.label && _config.label.value) {
             var element = document.createElement('div');
@@ -212,8 +214,15 @@ export class vi_hipergeometry_factory {
                 }
             });
         }
+
+
+        // Crea Iconos
+
+        //var icono = this.getIcon('');
+        //icono.position.set(0,0,0)
+        //_group.add(icono);
     
-        _group.position.set(_point.x, _point.y+0.2, _point.z);
+        //_group.position.set(_point.x, _point.y+0.2, _point.z);
 
          
 

@@ -59,6 +59,11 @@ class vi_ObjectModel  {
         return newObject;
       }
     }
+
+    setCollectionLoaded(collection){
+      this.controller.triggerCollectionLoaded(collection);
+    }
+
   
     /*
     
@@ -67,15 +72,40 @@ class vi_ObjectModel  {
     */
 
    
-
+    //lectura de un objeto dentro de una coleccion
 
     readObject(collection, id) {
       return this.objects.find((object) => object.id === id && object.collection === collection);
     }
 
+    // lectura de un objeto cuyo campo sea igual a un valor determinado (regresa el primero si hay varios)
     readObjectbyField(collection, field, value) {
       return this.objects.find((object) => object.data.fields[field] === value && object.collection === collection);
     }
+
+    // Lectura de varios objetos que cumplan con que un campo sea igual a un valor (regresa todos)
+    getObjectsByField(collection, field, value) {
+      return this.objects.filter((object) => object.data.fields[field] === value && object.collection === collection);
+    }
+
+    getObjectsByCollection(collection) {
+      return this.objects.filter((object) =>  object.collection === collection);
+    }
+  
+   // Regresa un arreglo con valores unicos de un campo
+  getUniqueFieldValues(collection, field) {
+    
+    const filteredObjects = this.objects.filter(object => object.collection === collection);
+
+    // Extract the values of the specified field from filtered objects
+    const fieldValues = filteredObjects.map(object => object.data.fields[field]);
+
+    // Use Set to remove duplicates and convert back to an array
+    const uniqueFieldValues = [...new Set(fieldValues)];
+
+    return uniqueFieldValues;
+}
+
     
   
     /* 

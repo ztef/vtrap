@@ -38,6 +38,7 @@ class vi_Segment {
       this.markerColor = 0xff0000;
       this.tree = '';
       this.levelsDef = null;
+    
 
     }
   
@@ -305,7 +306,6 @@ class vi_Segment {
             for (let i = 0; i < numPoints; i++) {
                 const point = points[i];
                 const label = labels[i] || ''; // Use an empty label if there are fewer labels than points.y -
-
 
                 this.plotLabel(point, label, offset );
     

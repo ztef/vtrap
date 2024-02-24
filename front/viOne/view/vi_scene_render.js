@@ -24,11 +24,13 @@ import { HDRCubeTextureLoader } from 'three/addons/loaders/HDRCubeTextureLoader.
 import {RGBELoader} from 'three/addons/loaders/RGBELoader.js';
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
+import {SVGLoader} from 'three/addons/loaders/SVGLoader.js';
  
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 import { CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
  
 import {vi_Font } from "./vi_font.js";
+import {vi_Icon } from "./vi_icon.js";
 
 
 import SelectionIndicator from './vi_selector_indicator.js';
@@ -50,8 +52,6 @@ export class vi_3DSceneRenderer extends vi_Renderer {
         this.font = vi_Font.getFont();
 
         this.infoWindow = null;
-
-
 
 
         this.startPosition = null;
@@ -295,6 +295,51 @@ export class vi_3DSceneRenderer extends vi_Renderer {
     }
     
 
+    addIcon(){
+            // Use SVGLoader to parse SVG data
+                const data = vi_Icon.getIcon();
+        
+                // Convert paths to shape
+                const paths = data.paths;
+                const shapes = paths.map(function (path) {
+                    const shape = path.toShapes(true);
+                    return shape;
+                });
+
+                // Ensure shapes array is not empty
+                if (shapes.length === 0) {
+                    console.error('No shapes found in SVG data');
+                    return;
+                }
+
+                // If shapes contains only one shape, use it directly
+                let combinedShape;
+                if (shapes.length === 1) {
+                    combinedShape = shapes[0];
+                } else {
+                    // Combine shapes into a single shape
+                    combinedShape = new THREE.Shape();
+                    shapes.forEach(function (shape) {
+                        combinedShape.holes = combinedShape.holes.concat(shape.holes);
+                        combinedShape.curves = combinedShape.curves.concat(shape.curves);
+                    });
+                }
+
+                 
+                    // Extrude the shape to give it depth
+                    const extrudeSettings = { depth: 10, bevelEnabled: false };
+                    const geometry = new THREE.ExtrudeGeometry(combinedShape, extrudeSettings);
+
+                    geometry.scale(0.1, 0.1, 0.1);
+
+                    // Create a mesh using the custom geometry
+                    const material = new THREE.MeshBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide });
+                    const mesh = new THREE.Mesh(geometry, material);
+                    this.scene.add(mesh);
+                 
+     
+
+    }
 
 
     addResizeListener() {

@@ -16,7 +16,7 @@ class vi_FirebaseListener extends vi_RemoteListener {
 
     super();
     this.dataSource = dataSource;
-    this.collection = dataSource.config.collection;
+    this.collections = dataSource.config.collections;
 
     this.objectModel = mobileObjectModel;
 
@@ -31,16 +31,23 @@ class vi_FirebaseListener extends vi_RemoteListener {
 
   start() {
     
-    console.log("Iniciando Firebase ")
+    console.log("Suscribiendo a Firebase events");
+    for (let collectionNumber = 0; collectionNumber < this.collections.length; collectionNumber++) {
+      this.suscribeToCollection(this.collections[collectionNumber].collection);
+   }
+  }
 
+
+
+  suscribeToCollection(_collection){
    
-    this.myCollection = collection(this.db, this.collection);
+    const myCollection = collection(this.db, _collection);
 
-    onSnapshot(this.myCollection, (snapshot) => {
+    onSnapshot(myCollection, (snapshot) => {
       snapshot.docChanges().forEach((change) => {
         const docData = change.doc.data();
         const docId = change.doc.id;
-        const collection = this.collection;
+        const collection = _collection;
         const docType = change.doc.type;
 
         const record = {
@@ -56,18 +63,15 @@ class vi_FirebaseListener extends vi_RemoteListener {
 
          // && docData.status === "active"
         if (change.type === "added" ) {
-          console.log("New Document Added:", docId, record);
+          console.log("New Document Added:", docId, record, collection);
           this.objectModel.updateOrAddObject(docId, collection, record);
         }
 
         if (change.type === "modified") {
           console.log("Document Modified:", docId, record);
-          //if (docData.status === "active") {
+          
             this.objectModel.updateOrAddObject(docId, collection, record);
-          //} else {
-          //  console.log("Document Removed", docId);
-          //  this.objectModel.deleteObject(docId);
-          //}
+         
         }
 
         if (change.type === "removed") {

@@ -18,22 +18,7 @@ class vi_GoogleSheetListener extends vi_RemoteListener {
    
   }
 
-  /*
-  async loadSheets(){
-
-    var sheetnumber = 0;
-
-    this.collections.forEach(collection => {
-       
-        this.loadData(sheetnumber,collection.collection);
-
-        sheetnumber = sheetnumber + 1;
-
-    });
-
-
-  }
-  */
+  
 
   async loadSheets() {
     try {
@@ -83,6 +68,9 @@ class vi_GoogleSheetListener extends vi_RemoteListener {
             this.objectModel.updateOrAddObject(_record.id,  _collection, _record);
           }
         }
+
+        //avisa al modelo que la coleccion ha sido cargada en su totalidad
+        this.objectModel.setCollectionLoaded(_collection);
   
        
       } else {
