@@ -5,7 +5,7 @@ import { vi_geometry_factory } from '../viOne/view/vi_geometry_factory.js';
 import { vi_hipergeometry_factory } from '../viOne/view/vi_hipergeometry_factory.js';
 import { vi_slot_controller } from '../viOne/view/vi_slot_cotroller.js';
 
-import { vi_WindowFormater, vi_ObjectModel, vi_RemoteListenerFactory, vi_ObjectGridView, vi_Controller, vi_DataSource} from '../viOne/all.js';
+import { vi_MapFactory, vi_WindowFormater, vi_ObjectModel, vi_RemoteListenerFactory, vi_ObjectGridView, vi_Controller, vi_DataSource} from '../viOne/all.js';
  
 const windowFormater = new vi_WindowFormater();
 
@@ -50,6 +50,24 @@ const windowFormater = new vi_WindowFormater();
 // SECCION GRAFICA 
 
 
+//MAPA
+
+// Crea un Factory de Mapas
+const mapFactory = new vi_MapFactory();
+
+// Crea un mapa 
+
+const map = mapFactory.createMap("Cesium", controller,[]);
+
+
+// Formatea el contendor de mapa como ventana
+ windowFormater.formatWindow("#mapa","Mapa",500,350);
+
+// Carga el mapa en su contenedor
+map.loadMap('mapa');
+
+
+
 
 windowFormater.formatWindow("#graphics","Grafica",500,350);
 
@@ -59,9 +77,9 @@ const renderer = new vi_3DSceneRenderer('graphics',controller,['unidades']);
 
 var toolBoxConfig = {
        "options":[
-         {"option1" : {"icon":"/front/app/assets/icon.png","tooltip":"Marcar Capitales"}},
-         {"option2" : {"icon":"/front/app/assets/icon.png","tooltip":"Toogle Damping"}},  
-         {"option3" : {"icon":"/front/app/assets/icon.png","tooltip":"Sky Box"}},       
+         {"option1" : {"icon":"/front/app/assets/accident.svg","tooltip":"Unidades sin seguro"}},
+         {"option2" : {"icon":"/front/app/assets/damp.png","tooltip":"Toogle Damping"}},  
+         {"option3" : {"icon":"/front/app/assets/sky.png","tooltip":"Sky Box"}},       
        ]
 }
 
@@ -70,7 +88,7 @@ const toolbox = new vi_toolbox(toolBoxConfig,(opcion)=>{
          if(opcion == 'option1'){
           
            sc.acceptVisitor((element)=>{
-             if(element.object.data.fields.capital == 'si'){
+             if(element.object.data.fields.poliza == 'SIN SEGURO' || element.object.data.fields.poliza == ''){
                 if(element.visual_object.isGroup){
                  let base = element.visual_object.mesh.getObjectByName("base");
                  base.material.color.set(0xff0000);
@@ -96,7 +114,7 @@ const toolbox = new vi_toolbox(toolBoxConfig,(opcion)=>{
 
 renderer.setupToolBox(toolbox);
 
-renderer.addIcon();
+ 
 
 
 
@@ -110,7 +128,7 @@ renderer.setInfoWindow((domain, object_id)=>{
  let html = '';
 
  if(domain == 'unidades'){
-   html = object.data.fields.unidad + ' marca modelo :' + object.data.fields.marca + object.data.fields.modelo;
+   html = object.data.fields.unidad + ':' + object.data.fields.unidad + ' marca modelo :' + object.data.fields.marca + object.data.fields.modelo;
  }
 
  return html;
@@ -165,14 +183,25 @@ controller.addObserver('unidades','collectionLoaded',(col)=>{
 
                  let geomcfg = {};
              
+
+               let capacidad = unidad.data.fields.capacidad/2;
+
+               let en_uso = unidad.data.fields.en_uso == 'SI';
+               let color = 0xffff00;
+               if(en_uso){color = 0x808080}
+
                  geomcfg = {
-                   "base": { "shape": "Circle", "radius": 1 },
+                   "base": { "shape": "Circle", "radius": 1, "color":color },
                    "label": { "value": unidad.data.fields.unidad, "x": 0, "y": 0, "z":0, size:0.1 },
                    "columns": [
-                       { "variable1": { "shape": "Cylinder", x:0,y:0, z:0, "radiusTop": 0.1, "radiusBottom": 0.1, "height": 1, "color": 0xff0000 } },
+                       { "capacidad": { "shape": "Cylinder", x:0,y:0, z:0, "radiusTop": 0.1, "radiusBottom": 0.1, "height": capacidad, "color": 0xff0000 } },
                        { "variable2": { "shape": "Box", x:0.4,y:0, z:0.4, "width": 0.1, "height": 0.5, "depth": 0.1, "color": 0x0000ff } }
                    ]
                  };
+
+                 if(unidad.data.fields.gps == 'SI'){
+                  geomcfg.icons = {'icon':'gps'}
+                 }
              
             
                   let hg = hgf.createGeometriesFromConfig(geomcfg,{x:0,y:0,z:0});

@@ -5,6 +5,7 @@ import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 import {  CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
  
 import {vi_Font } from "./vi_font.js";
+import {vi_Icon } from "./vi_icon.js";
 
 
 
@@ -20,8 +21,6 @@ export class vi_hipergeometry_factory {
     }
 
    
-
-
     getHiperGeometry(point){
 
 
@@ -106,24 +105,52 @@ export class vi_hipergeometry_factory {
 
     }
 
-    getIcon(iconPath){
-        const textureLoader = new THREE.TextureLoader();
-        const texture = textureLoader.load('/front/app/assets/gps.svg');
+    getIcon(){
+        // Use SVGLoader to parse SVG data
+        const data = vi_Icon.getIcon();
+      
+        // Convert paths to shape
+        const paths = data.paths;
+        const shapes = paths.map(function (path) {
+            const shape = path.toShapes(true);
+            return shape;
+        });
 
-        // Create a shape from SVG data
-        const svgData = parseSVGData('/front/app/assets/gps.svg');
-        const shape = new THREE.Shape(svgData);
+        // Ensure shapes array is not empty
+        if (shapes.length === 0) {
+            console.error('No shapes found in SVG data');
+            return;
+        }
 
-        // Extrude the shape to give it depth
-        const extrudeSettings = { depth: 10, bevelEnabled: false };
-        const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+        // If shapes contains only one shape, use it directly
+        let combinedShape;
+        if (shapes.length === 1) {
+            combinedShape = shapes[0];
+        } else {
+            // Combine shapes into a single shape
+            combinedShape = new THREE.Shape();
+            shapes.forEach(function (shape) {
+                combinedShape.holes = combinedShape.holes.concat(shape.holes);
+                combinedShape.curves = combinedShape.curves.concat(shape.curves);
+            });
+        }
+   
+            // Extrude the shape to give it depth
+            const extrudeSettings = { depth: 10, bevelEnabled: false };
+            const geometry = new THREE.ExtrudeGeometry(combinedShape, extrudeSettings);
 
-        // Create a mesh using the custom geometry
-        const material = new THREE.MeshBasicMaterial({ map: texture });
-        const mesh = new THREE.Mesh(geometry, material);
+            geometry.scale(0.01, 0.01, 0.01);
+            //geometry.rotateX(Math.PI/2);
 
-        return mesh;
-    }
+            // Create a mesh using the custom geometry
+            const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, side: THREE.DoubleSide });
+            const mesh = new THREE.Mesh(geometry, material);
+
+
+            return mesh;
+         
+
+  }
 
 
     createGeometriesFromConfig(_config,_point) {
@@ -158,7 +185,9 @@ export class vi_hipergeometry_factory {
         // Create base geometry
         if (_config.base && _config.base.shape) {
             const baseGeometry = createGeometry(_config.base.shape, _config.base);
-            const baseMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+            let _color = 0xffff00;
+            if(_config.base.color){_color = _config.base.color}
+            const baseMaterial = new THREE.MeshBasicMaterial({ color: _color });
             const base = new THREE.Mesh(baseGeometry, baseMaterial);
 
             base.rotation.x = -Math.PI / 2;
@@ -218,11 +247,15 @@ export class vi_hipergeometry_factory {
 
         // Crea Iconos
 
-        //var icono = this.getIcon('');
-        //icono.position.set(0,0,0)
-        //_group.add(icono);
+        if(_config.icons){
+
+            var icono = this.getIcon('');
+            icono.position.set(1.1,0.5,0);
+           _group.add(icono);
+
+        }
     
-        //_group.position.set(_point.x, _point.y+0.2, _point.z);
+        _group.position.set(_point.x, _point.y+0.2, _point.z);
 
          
 
