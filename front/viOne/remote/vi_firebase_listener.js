@@ -6,7 +6,7 @@ import vi_RemoteListener from "./vi_remote_listener.js"
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-analytics.js";
-import { getFirestore, collection, onSnapshot, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, doc, getDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
 
 
@@ -17,6 +17,7 @@ class vi_FirebaseListener extends vi_RemoteListener {
     super();
     this.dataSource = dataSource;
     this.collections = dataSource.config.collections;
+    this.collectionsLoaded = 0;
 
     this.objectModel = mobileObjectModel;
 
@@ -33,7 +34,11 @@ class vi_FirebaseListener extends vi_RemoteListener {
     
     console.log("Suscribiendo a Firebase events");
     for (let collectionNumber = 0; collectionNumber < this.collections.length; collectionNumber++) {
-      this.suscribeToCollection(this.collections[collectionNumber].collection);
+      if(this.collections[collectionNumber].loadMode == "suscription"){
+          this.suscribeToCollection(this.collections[collectionNumber].collection);
+      } else {
+          this.addCollection(this.collections[collectionNumber].collection);
+      }
    }
   }
 
@@ -104,6 +109,67 @@ class vi_FirebaseListener extends vi_RemoteListener {
       throw error;
     }
   }
+
+  addCollection(collectionName){
+    this.getCollection(collectionName).then((collection)=>{
+      collection.forEach((record)=>{
+
+        const _record = {
+          id:record.id,
+          type: "",
+          position:{
+              _lat: 0,
+              _long: 0
+          },
+          fields:record.data
+
+         };
+
+        this.objectModel.updateOrAddObject(record.id, collectionName, _record);
+      });
+      this.objectModel.setCollectionLoaded(collectionName);
+      this.collectionsLoaded = this.collectionsLoaded + 1;
+      if(this.collectionsLoaded == this.collections.length){
+        this.objectModel.setAllCollectionsLoaded();
+      }
+    })
+  }
+
+
+
+  async getCollection(collectionName) {
+    try {
+        // Reference to the collection
+        const collectionRef = collection(this.db, collectionName);
+
+        // Get all documents in the collection
+        const querySnapshot = await getDocs(collectionRef);
+
+        // Initialize an array to store the documents
+        const documents = [];
+
+        // Iterate through each document snapshot
+        querySnapshot.forEach((doc) => {
+            // Get the document data
+            const documentData = doc.data();
+            
+            // Construct a document object containing id and fields
+            const document = {
+                id: doc.id,
+                data: documentData
+            };
+
+            // Add the document to the array
+            documents.push(document);
+        });
+
+        return documents;
+    } catch (error) {
+        console.error("Error getting collection:", error);
+        throw error;
+    }
+}
+
 
   
 }

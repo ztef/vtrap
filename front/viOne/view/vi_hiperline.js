@@ -69,6 +69,9 @@ class vi_Segment {
   
     setGraphics(graphics){
       this.graphics = graphics;
+      if(!this.graphics.labels){
+        this.graphics.labels = {size:1, height:0.3};
+      }
     }
   
   
@@ -303,11 +306,15 @@ class vi_Segment {
       plotLabelsOnPoints(points, labels, offset) {
             const numPoints = points.length;
         
+            let j = 0;
             for (let i = 0; i < numPoints; i++) {
                 const point = points[i];
-                const label = labels[i] || ''; // Use an empty label if there are fewer labels than points.y -
-
+                const label = labels[j] || ''; 
                 this.plotLabel(point, label, offset );
+                j = j + 1;
+                if(j >= labels.length){
+                  j = 0;
+                }
     
             }
       }   
@@ -327,7 +334,7 @@ class vi_Segment {
 
                 let rotate = {x:0, z:0, y:this.angle+Math.PI/2};
 
-                this.render.addLabel(label,plotPoint,rotate,{size:1, height:0.3});
+                this.render.addLabel(label,plotPoint,rotate,this.graphics.labels);
       }
     
   }

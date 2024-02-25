@@ -64,6 +64,10 @@ class vi_ObjectModel  {
       this.controller.triggerCollectionLoaded(collection);
     }
 
+    setAllCollectionsLoaded(){
+      this.controller.triggerAllCollectionsLoaded();
+    }
+
   
     /*
     

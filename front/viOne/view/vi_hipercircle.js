@@ -123,6 +123,9 @@ class vi_mainCircle {
     setGraphics(graphics){
   
       this.graphics = graphics;
+      if(!this.graphics.labels){
+        this.graphics.labels = {size:1, height:0.3};
+      }
   
     }
 
@@ -312,22 +315,23 @@ class vi_mainCircle {
 
     }
 
-
-
     plotLabelsOnPoints(points, labels, offset) {
-          const numPoints = points.length;
-      
-          for (let i = 0; i < numPoints; i++) {
-              const point = points[i];
-              const label = labels[i] || ''; 
-
-
-              this.plotLabel(point, label, offset);
-             
+      const numPoints = points.length;
   
+      let j = 0;
+      for (let i = 0; i < numPoints; i++) {
+          const point = points[i];
+          const label = labels[j] || ''; 
+          this.plotLabel(point, label, offset );
+          j = j + 1;
+          if(j >= labels.length){
+            j = 0;
           }
+
+      }
     }   
 
+   
     plotLabel(point, label, offset){
 
       const angle = this.getAngleForPoint(point);
@@ -345,7 +349,7 @@ class vi_mainCircle {
 
       let rotate = {x:0, y:angle, z:0};
 
-      this.render.addLabel(label,plotPoint,rotate,{size:1, height:0.3});
+      this.render.addLabel(label,plotPoint,rotate,this.graphics.labels);
     }
   
   

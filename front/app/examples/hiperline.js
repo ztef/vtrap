@@ -22,7 +22,7 @@ const lineOrigin = { x: 0, y: 0, z: 0 };
 const lineAngle = 0; //Math.PI/4;   radianes
 //const lineAngle = 0; //  radianes
 const linelength = 200;
-const levelsArray = [10,3,2];
+const levelsArray = [5,3,2];
 
 const hiperLine = new vi_HiperLine( linelength,lineAngle ,lineOrigin,);
 
@@ -37,7 +37,10 @@ hiperLine.draw(2);
 
 // LABELS
 
-hiperLine.drawLabels(0,['cero','uno','dos','tres'], -3);
+hiperLine.drawLabels(0,['cero','uno','dos','tres','cuatro'], -3);
+hiperLine.drawLabels(1,['A','B','C'], -0);
+hiperLine.drawLabels(2,['0','1'], -0);
+
 
 
 

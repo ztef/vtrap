@@ -241,8 +241,6 @@ export class vi_HiperBoard {
     this.boardContainer.set(tree, newBoard);
 
 
-
-
     if(content.board){ // si hay board dentro del board
 
      
@@ -263,11 +261,7 @@ export class vi_HiperBoard {
 
       });
 
-    } else {
-
-     
-
-    }
+    } 
 
     return true;
   }
@@ -477,6 +471,11 @@ locatePointByPath(path){
 
     board.content.drawLabels(level, labels, offset);
 
+ }
+
+
+ drawLabeslbyLevel(level, labels, offset){
+  
  }
 
 

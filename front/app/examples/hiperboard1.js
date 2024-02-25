@@ -69,6 +69,8 @@ hb.draw();
 
 
 hb.drawLabels('0',['uno','dos','tres'], -10);
+hb.drawLabels('1',['A','B'], -10);
+
 
 
 

@@ -188,7 +188,7 @@ controller.addObserver('unidades','collectionLoaded',(col)=>{
 
                let en_uso = unidad.data.fields.en_uso == 'SI';
                let color = 0xffff00;
-               if(en_uso){color = 0x808080}
+               if(!en_uso){color = 0x808080}
 
                  geomcfg = {
                    "base": { "shape": "Circle", "radius": 1, "color":color },

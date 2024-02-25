@@ -44,6 +44,10 @@ class vi_Controller {
       this.actionObserver.notify(collection, 'collectionLoaded', {});
     }
 
+    triggerAllCollectionsLoaded(){
+      this.actionObserver.notify('', 'allCollectionsLoaded', {});
+    }
+
     triggerObjectSelected(domain, data) {
         this.actionObserver.notify(domain, 'objectSelected', data);
     }
