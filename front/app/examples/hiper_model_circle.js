@@ -144,7 +144,7 @@ const config = {
  
 let object = {};
  
-const sc = new vi_slot_controller(hiperCircle);
+const sc = new vi_slot_controller(hiperCircle,renderer);
 
 sc.setDirection('out');  // up o out 
 

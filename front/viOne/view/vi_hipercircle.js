@@ -107,7 +107,9 @@ class vi_mainCircle {
   
   
    
-
+  getBoard(path){
+    return this;
+  }
   
 
   defineLevels(levelsDef){

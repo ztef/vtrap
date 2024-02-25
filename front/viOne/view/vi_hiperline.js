@@ -41,6 +41,12 @@ class vi_Segment {
     
 
     }
+
+
+    getBoard(path){
+      return this;
+    }
+
   
     defineLevels(levelsDef){
       this.levelsDef = levelsDef;

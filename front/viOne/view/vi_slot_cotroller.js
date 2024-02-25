@@ -6,7 +6,8 @@ import { vi_slot } from "./vi_slot.js";
 
 export class vi_slot_controller {
 
-    constructor(board){
+    constructor(board,render){
+        this.render = render;
         this.board = board;
         this.graphics = {};
         this.axis = 'y';
@@ -53,10 +54,14 @@ export class vi_slot_controller {
 
         var slot;
 
+        // Si no existe el slot lo crea :
+
         if (!this.slots.has(path)) {
 
+
+            let board = this.board.getBoard(path);
             let point = this.board.locatePointByPath(path);
-            let angle = this.board.getAngleForPoint(point);
+            let angle = board.getAngleForPoint(point);
 
             slot = new vi_slot(point, this.delta, this.axis, angle);
             this.slots.set(path, slot );
@@ -89,7 +94,7 @@ export class vi_slot_controller {
         }
 
 
-        this.board.render.addGeometry(vo); 
+        this.render.addGeometry(vo); 
         const element = new vi_element(path, id, vo, object);
         slot.addElement(id, element);
 
@@ -147,7 +152,7 @@ export class vi_slot_controller {
             }
     
     
-            this.board.render.addGeometry(vo); 
+            this.render.addGeometry(vo); 
             const element = new vi_element(e, id, vo, object);
             slot.addElement(id, element);
     

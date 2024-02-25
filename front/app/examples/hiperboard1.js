@@ -66,10 +66,27 @@ hb.draw();
 //hb.setLabel('0', 'Valor 0');
 
 
+//mask .2.1.1
+//hiperlevels  3,2,10,2
 
+/*
+    0:0
+    1:1
+    2:.0.0.0
 
-hb.drawLabels('0',['uno','dos','tres'], -10);
-hb.drawLabels('1',['A','B'], -10);
+*/
+
+//hb.drawLabels('0',['uno','dos','tres'], -10);
+//hb.drawLabels('1',['A','B'], 0);
+//hb.drawLabels('.0.0.0',['0','1','2','3','4','5','6','7','8','9'], 0);
+//hb.drawLabels('.0.1.0',['0','1','2','3','4','5','6','7','8','9'], 0);
+
+hb.drawLabelsbyLevel(0,['uno','dos','tres'], -10);
+hb.drawLabelsbyLevel(1,['A','B'], 0);
+hb.drawLabelsbyLevel(2,['0','1','2','3','4','5','6','7','8','9'], 0);
+
+console.log(hb.mask);
+console.log(hb.hiperlevels);
 
 
 

@@ -232,6 +232,7 @@ export class vi_hipergeometry_factory {
         // Create column geometries
         if (_config.columns && Array.isArray(_config.columns)) {
             _config.columns.forEach(column => {
+
                 const columnName = Object.keys(column)[0];
                 const columnConfig = column[columnName];
                 if (columnConfig.shape) {
@@ -239,6 +240,8 @@ export class vi_hipergeometry_factory {
                     const columnMaterial = new THREE.MeshBasicMaterial({ color: columnConfig.color });
                     const column = new THREE.Mesh(columnGeometry, columnMaterial);
                     column.position.set(columnConfig.x || 0, columnConfig.height / 2 , columnConfig.z || 0);
+                
+                     column.name = columnName;
                     _group.add(column);
                 }
             });

@@ -43,7 +43,7 @@ hiperCircle.drawLabels(0,['uno','dos','tres'], -5);
 
 let object = {};
 
-const sc = new vi_slot_controller(hiperCircle);
+const sc = new vi_slot_controller(hiperCircle, renderer);
 sc.setDirection('out');      // La direccion del stackeo up/out
 //sc.setGraphics();
 

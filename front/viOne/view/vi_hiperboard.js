@@ -8,8 +8,9 @@ import { vi_HiperCircle } from './vi_hipercircle.js';
 
 
 class vi_Board {
-  constructor(tree, render,  origin, levels, type, angle, amplitude, graphics) {
+  constructor(tree, threedepth, render,  origin, levels, type, angle, amplitude, graphics) {
     this.tree = tree;
+    this.threedepth = threedepth -1; // zero based
     this.render_engine = render;
  
     this.origin = { ...origin };
@@ -213,6 +214,7 @@ export class vi_HiperBoard {
     this.mask = '';  // mascara de sub boards
     this.treeDepth = 1;  // profundidad del arbol
     this.maxTreeDepth = 0;
+     
   }
 
   addBoard(conf, tree) {
@@ -232,12 +234,13 @@ export class vi_HiperBoard {
     if(this.treeDepth > this.maxTreeDepth){
       this.maxTreeDepth = this.treeDepth;
       this.mask = this.mask + '.' + levels.length;
+      
 
     }
 
     
 
-    const newBoard = new vi_Board(tree, this.render_engine, origin, levels, type, angle, amplitude, graphics);
+    const newBoard = new vi_Board(tree, this.treeDepth,this.render_engine, origin, levels, type, angle, amplitude, graphics);
     this.boardContainer.set(tree, newBoard);
 
 
@@ -388,6 +391,75 @@ mask2array(mask){
 }
 
 
+getTakenLevels() {
+  const maskarray = this.mask2array(this.mask);
+  const takenLevels = [];
+  let taken = 0;
+
+  for (let i = 0; i < maskarray.length; i++) {
+      for (let j = 0; j < maskarray[i]; j++) {
+          takenLevels.push(taken);
+      }
+      taken += parseInt(maskarray[i]);
+  }
+
+  return takenLevels;
+}
+
+getDepthFromLevel(level){
+
+  // convierte un nivel absoluto en una profundidad en el arbol de tableros para
+  // poder leer todos los tableros a esa profundidad
+
+
+  // analiza la mascara :      .a.b.c...
+  // expande la posicion 0 a veces , ej;  2.1.1  => 0,0  (la posicion cero 2 veces)
+
+
+  const maskarray = this.mask2array(this.mask);
+  var levels = [];
+  var depth = 0;
+
+  let i = 0;
+  maskarray.forEach(number => {
+      for(let j=0; j<number; j++){
+           levels.push(i);
+      }
+      i++;
+  });
+  
+
+
+  if(level >= levels.length){
+    console.log('Error: Demasiados niveles');
+  } else {
+
+    depth = levels[level];
+    return depth;
+  }
+
+  return -1;
+
+}
+
+getPreviousLevels(level){
+  const maskarray = this.mask2array(this.mask);
+
+}
+
+// regresa apuntadores a todos los tableros de una profundidad depth
+getBoardsforDepth(depth){
+  const matchingElements = [];
+  this.boardContainer.forEach((board, key) => {
+    if (board.threedepth == depth) {
+        matchingElements.push(board);
+    }
+  });
+  return matchingElements;
+}
+
+
+
 
 removeExternalDots(inputString) {
   // Use a regular expression to remove leading and trailing dots
@@ -461,6 +533,45 @@ locatePointByPath(path){
 
 }
 
+getBoard(path){
+  let {board, node, point, angle} = this.getPosition(path);
+
+  return board.content;
+}
+
+
+
+mapHyperboardPath(levels, mask, path) {
+  const pathSegments = path.split('.');
+  let currentLevels = levels.slice(); // Create a copy of levels array
+  let currentMask = mask.split('.').map(Number); // Convert mask to an array of numbers
+  let boardPath = [];
+  let internalPath = [];
+
+  for (let i = 0; i < pathSegments.length; i++) {
+      const segment = pathSegments[i];
+      const segmentIndex = parseInt(segment) - 1;
+
+      // Check if the segment index is within the range of current levels and mask
+      if (segmentIndex >= 0 && segmentIndex < currentLevels[0] && segmentIndex < currentMask[0]) {
+          boardPath.push(segment);
+          internalPath.push(segment);
+
+          // Update current levels and mask
+          currentLevels = currentLevels.slice(1);
+          currentMask = currentMask.slice(1);
+      } else {
+          break; // Break the loop if the segment index is out of range
+      }
+  }
+
+  return {
+      boardPath: boardPath.join('.'),
+      internalPath: internalPath.join('.')
+  };
+}
+
+
 
 
  drawLabels(path, labels, offset){
@@ -474,8 +585,20 @@ locatePointByPath(path){
  }
 
 
- drawLabeslbyLevel(level, labels, offset){
+ drawLabelsbyLevel(level, labels, offset){
   
+
+  let takenlevels = this.getTakenLevels();
+  let resolvedLevels = 0;
+  const depth = this.getDepthFromLevel(level); // obtiene la profundidad
+  const boards = this.getBoardsforDepth(depth);  // obtiene todos los tableros a esa profundidad
+  const localLevel = level - takenlevels[level];
+
+  boards.forEach((board)=>{
+    board.content.drawLabels(localLevel, labels, offset);
+  }); 
+
+
  }
 
 

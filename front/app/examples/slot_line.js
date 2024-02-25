@@ -46,7 +46,7 @@ hiperLine.drawLabels(0,['cero','uno','dos','tres'], -3);
 
 let object = {};
 
-const sc = new vi_slot_controller(hiperLine);
+const sc = new vi_slot_controller(hiperLine,renderer);
 
 sc.setDirection('out');  // up o out 
 //sc.setGraphics();

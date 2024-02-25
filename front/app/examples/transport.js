@@ -153,7 +153,7 @@ var hiperLine = new vi_HiperLine( linelength,lineAngle ,lineOrigin,);
 
 // SLOTS
  
-const sc = new vi_slot_controller(hiperLine);
+const sc = new vi_slot_controller(hiperLine, renderer);
 sc.setDirection('out');  // up o out 
 let hgf= new vi_hipergeometry_factory(geometry_factory);
 
@@ -181,7 +181,7 @@ controller.addObserver('unidades','collectionLoaded',(col)=>{
          unidades.forEach(unidad => {
 
 
-                 let geomcfg = {};
+              let geomcfg = {};
              
 
                let capacidad = unidad.data.fields.capacidad/2;

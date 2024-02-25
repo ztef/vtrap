@@ -18,6 +18,7 @@ class vi_FirebaseListener extends vi_RemoteListener {
     this.dataSource = dataSource;
     this.collections = dataSource.config.collections;
     this.collectionsLoaded = 0;
+    this.collectionstobeloaded = 0;
 
     this.objectModel = mobileObjectModel;
 
@@ -32,11 +33,14 @@ class vi_FirebaseListener extends vi_RemoteListener {
 
   start() {
     
-    console.log("Suscribiendo a Firebase events");
+   
     for (let collectionNumber = 0; collectionNumber < this.collections.length; collectionNumber++) {
-      if(this.collections[collectionNumber].loadMode == "suscription"){
+      if(this.collections[collectionNumber].loadType == "suscription"){
+          console.log("Suscrito a ",this.collections[collectionNumber].collection);
           this.suscribeToCollection(this.collections[collectionNumber].collection);
       } else {
+          console.log("Pidiendo shot de ",this.collections[collectionNumber].collection);
+          this.collectionstobeloaded+=1;
           this.addCollection(this.collections[collectionNumber].collection);
       }
    }
@@ -129,7 +133,7 @@ class vi_FirebaseListener extends vi_RemoteListener {
       });
       this.objectModel.setCollectionLoaded(collectionName);
       this.collectionsLoaded = this.collectionsLoaded + 1;
-      if(this.collectionsLoaded == this.collections.length){
+      if(this.collectionsLoaded == this.collectionstobeloaded){
         this.objectModel.setAllCollectionsLoaded();
       }
     })

@@ -195,7 +195,7 @@ const windowFormater = new vi_WindowFormater();
  
 let object = {};
  
-const sc = new vi_slot_controller(hiperLine);
+const sc = new vi_slot_controller(hiperLine, renderer);
 
 sc.setDirection('out');  // up o out 
 
