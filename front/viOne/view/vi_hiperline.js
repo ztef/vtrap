@@ -35,7 +35,7 @@ class vi_Segment {
       this.graphics = {mainline:true};
       this.render = null;
       this.marker = null;
-      this.markerColor = 0xff0000;
+      this.markerColor = 0x808080;
       this.tree = '';
       this.levelsDef = null;
     

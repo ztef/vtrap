@@ -62,7 +62,7 @@ const windowFormater = new vi_WindowFormater();
  windowFormater.formatWindow("#warehouses_div","Warehouses",500,350);
  windowFormater.positionDiv("warehouses_div",10,50);
 
- windowFormater.formatWindow("#graphics","Warehouses",500,350);
+ windowFormater.formatWindow("#graphics","Inventory",500,350);
  windowFormater.positionDiv("graphics",10,50);
 
  const familiesView = new vi_ObjectGridView('families','families_div',controller,
@@ -136,20 +136,21 @@ controller.addObserver('','allCollectionsLoaded',(wh)=>{
          var conf = {
             board:{
          
-                type:"hipercircle",
+                type:"hiperline",
                 origin: {x:0, y:0, z:0},
-                amplitude: 50,
+                amplitude: 150,
                 angle:0,
                 levels: levelsArray,   //warehouses
                 graphics:{
-                    center:{amplitude:10, color:0x00ff00, transparent:true, opacity:0.5 }
+                    center:{amplitude:10, color:0x00ff00, transparent:true, opacity:0.5 },
+                    line:{color:0x00ff00, transparent:true, opacity:0.5}
                 },
                 content:
                 {
                     board:{
-                        type:"hipercircle",
+                        type:"hiperline",
                         origin: {x:0,y:0,z:0},
-                        amplitude: 20,
+                        amplitude: 100,
                         angle: 0,
                         levels: familiesArray,   // families
                         graphics:{
@@ -168,7 +169,7 @@ controller.addObserver('','allCollectionsLoaded',(wh)=>{
          hb.addBoard(conf);
          hb.draw();
          
-         hb.drawLabelsbyLevel(0,warehouses, -30);
+         hb.drawLabelsbyLevel(0,warehouses, 10);
          hb.drawLabelsbyLevel(1,families, 0);
          
          console.log("Mascara :", hb.mask);
@@ -195,15 +196,18 @@ function BLOC_INVENTORIES(domain, event, data){
 
       inventario = objectModel.readObject(domain, data.id);  
       let units = inventario.data.fields.units; 
+      if(units == 0){
+         units = 1;
+      }
         
       console.log('Inventario recibido, buscar slot');
 
        let  geomcfg = {
             "base": { "shape": "Circle", "radius": 1, "color":0xffff00 },
-            "label": { "value": "inventario x", "x": 0, "y": 0, "z":0, size:0.1 },
+            "label": { "value": inventario.data.fields.name, "x": 0, "y": 0, "z":0, size:0.1 },
             "columns": [
-               { "units": { "shape": "Cylinder", x:0,y:0, z:0, "radiusTop": 0.1, "radiusBottom": 0.1, "height": units, "color": 0xff0000 } },
-               { "variable2": { "shape": "Box", x:0.4,y:0, z:0.4, "width": 0.1, "height": 0.5, "depth": 0.1, "color": 0x0000ff } }
+               { "units": { "shape": "Cylinder", x:0,y:0, z:0, "radiusTop": 0.1, "radiusBottom": 0.1, "height": units, "color": 0x00ff00 } }
+              
             ]
          };
 
@@ -235,8 +239,19 @@ function BLOC_INVENTORIES(domain, event, data){
          let e = sc.getSlotandElement(p,'inventory.'+inventario.data.id);
          if(e){
             if(e.visual_object.isGroup){
+
                let units= e.visual_object.mesh.getObjectByName("units");
-               units.scale.y = 2;
+               const currentHeight = units.geometry.parameters.height;
+               const newHeight = inventario.data.fields.units;
+               const scaleFactor = (newHeight) / currentHeight;
+
+               console.log("height actual ", currentHeight);
+               console.log("height nuevo ", newHeight);
+
+                
+               units.scale.y *= scaleFactor;
+               units.position.y = (newHeight / 2);
+                
               }else {
                e.visual_object.mesh.material.color.set(0xff0000);
               }

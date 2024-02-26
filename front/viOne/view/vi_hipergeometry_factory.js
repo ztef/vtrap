@@ -235,11 +235,15 @@ export class vi_hipergeometry_factory {
 
                 const columnName = Object.keys(column)[0];
                 const columnConfig = column[columnName];
+                let h = columnConfig.height;
+                if(h == 0){
+                    h = 1;
+                }
                 if (columnConfig.shape) {
                     const columnGeometry = createGeometry(columnConfig.shape, columnConfig);
                     const columnMaterial = new THREE.MeshBasicMaterial({ color: columnConfig.color });
                     const column = new THREE.Mesh(columnGeometry, columnMaterial);
-                    column.position.set(columnConfig.x || 0, columnConfig.height / 2 , columnConfig.z || 0);
+                    column.position.set(columnConfig.x || 0, h / 2 , columnConfig.z || 0);
                 
                      column.name = columnName;
                     _group.add(column);
