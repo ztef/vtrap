@@ -127,7 +127,7 @@ var families;
 
 controller.addObserver('','allCollectionsLoaded',(wh)=>{
 
-         warehouses = objectModel.getUniqueFieldValues('warehouses', 'name');
+         warehouses = objectModel.getUniqueFieldValues('warehouses', 'id');
          levelsArray = [warehouses.length];
          
          families = objectModel.getUniqueFieldValues('families', 'family');
