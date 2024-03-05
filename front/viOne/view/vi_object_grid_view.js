@@ -27,7 +27,7 @@ class vi_ObjectGridView {
       this.rowFunction = rowFunction;
       } else {
         this.rowFunction = this.defaultRowFunction;
-      }
+    }
     
     
 
@@ -35,6 +35,12 @@ class vi_ObjectGridView {
     this.controller.addObserver(domain,'objectAdded', this.addObject.bind(this));
     this.controller.addObserver(domain,'objectUpdated', this.updateObject.bind(this));
     this.controller.addObserver(domain,'objectDeleted', this.removeObject.bind(this));
+
+
+    this.controller.addObserver(domain,'objectFiltered', this.hideObject.bind(this));
+    this.controller.addObserver(domain,'objectUnFiltered', this.unHideObject.bind(this));
+
+
 
       this.modelView = document.getElementById(divID);
 
@@ -165,8 +171,6 @@ class vi_ObjectGridView {
         this.handleRowClick(id);
       });
   
-     
-  
       // Generate cell content using createMobileHtml
       row.innerHTML = this.createObjectHtml(id, collection, data);
   
@@ -175,8 +179,6 @@ class vi_ObjectGridView {
     }
   
     updateObject(domain, event, object) {
-
-      console.log("GRID : SI LLEGA", object);
 
       let id = object.id;
       let collection = object.collection;
@@ -195,8 +197,41 @@ class vi_ObjectGridView {
         }
       }
     }
+
+    hideObject(domain, event, id) {
+
+      
+
+      // Find the row corresponding to the updated data
+      const rows = this.table.getElementsByTagName("tr");
+      for (const row of rows) {
+        const rowDataId = row.getAttribute("data-id");
+        if (rowDataId === id) {
+          row.style.display = 'none';
+            break;
+        }
+      }
+    }
+
+    unHideObject(domain, event, object) {
+
+      let id = object.id;
+      let collection = object.collection;
+      let updatedData = object.data;
+
+
+      // Find the row corresponding to the updated data
+      const rows = this.table.getElementsByTagName("tr");
+      for (const row of rows) {
+        const rowDataId = row.getAttribute("data-id");
+        if (rowDataId === id) {
+          row.style.display = '';
+            break;
+        }
+      }
+    }
   
-    removeObject(event, id) {
+    removeObject(domain, event, id) {
       // Find the row corresponding to the provided ID
       const rows = this.table.getElementsByTagName("tr");
       for (const row of rows) {

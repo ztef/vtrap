@@ -19,7 +19,8 @@ const config = {
    "SPREADSHEET_ID": "1iVyL2h1HJgvfM_MzrUshHtJOjqrvy4OTujKchNjiKSM",
    "collections" : [{
      "collection":"routers",
-     "collectionName" : "RUTEADORES"
+     "collectionName" : "RUTEADORES",
+     "geoField": {_lat:"_lat", _long:"_long"}
    }]
   }
   
@@ -82,8 +83,12 @@ const configAlert = {
        "appId": "1:445371639222:web:b8607e42343fd0edca4d17",
        "measurementId": "G-QE6S1YSDT4"
      },
-     "collection":"locations",
-     "collectionName":"Locations"
+     "collections" : [{
+         "collection":"locations",
+         "collectionName":"Locations",
+         "loadType":"suscription"
+     }
+     ]
    }
 
   const alertDataSource = new vi_DataSource('Firebase', configAlert);
@@ -100,10 +105,15 @@ const configAlert = {
        "appId": "1:445371639222:web:b8607e42343fd0edca4d17",
        "measurementId": "G-QE6S1YSDT4"
      },
-     "collection":"trips",
-     "collectionName":"trips"
+     "collections" : [{
+         "collection":"trips",
+         "collectionName":"trips",
+         "loadType":"suscription"
+     }
+     ]
    }
 
+  objectModel.setFilter('trips','status','==', 'active');
   const segmentsDataSource = new vi_DataSource('Firebase', configSegments);
 
 

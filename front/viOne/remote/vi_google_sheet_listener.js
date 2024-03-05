@@ -23,7 +23,7 @@ class vi_GoogleSheetListener extends vi_RemoteListener {
   async loadSheets() {
     try {
         for (let sheetnumber = 0; sheetnumber < this.collections.length; sheetnumber++) {
-            await this.loadData(sheetnumber, this.collections[sheetnumber].collection);
+            await this.loadData(sheetnumber, this.collections[sheetnumber]);
         }
     } catch (error) {
         console.error('Error loading sheets:', error);
@@ -31,7 +31,10 @@ class vi_GoogleSheetListener extends vi_RemoteListener {
 }
 
 
-  async loadData(sheetnumber, _collection) {
+  async loadData(sheetnumber, _collectionObj) {
+
+    const _collection = _collectionObj.collection;
+
     try {
       console.log("Fetch de datos de google hoja:", _collection);
       // Make an HTTP GET request to your Node.js route
@@ -45,10 +48,6 @@ class vi_GoogleSheetListener extends vi_RemoteListener {
         console.log("DATOS DE LA HOJA DE CALCULO");
         console.log(_sheetdata);
   
-        // TODOS LOS REGISTROS DEBEN TENER :
-            // id
-            // type (opcional)
-            // position (_lat, _long) (opcional)
 
         for (const _key in _sheetdata) {
           if (_sheetdata.hasOwnProperty(_key)) {
@@ -57,13 +56,22 @@ class vi_GoogleSheetListener extends vi_RemoteListener {
             const _record = {
                 id:_element.id,
                 type: _element.type,
-                position:{
-                    _lat: _element._lat,
-                    _long: _element._long
-                },
                 fields:_element
-
             };
+
+            if(_collectionObj.geoField){
+
+              _record.position = {
+                _lat: _element[_collectionObj.geoField._lat],
+                _long: _element[_collectionObj.geoField._long]
+              };
+              
+            }
+            
+
+
+
+
             console.log(_key, _record);
             this.objectModel.updateOrAddObject(_record.id,  _collection, _record);
           }

@@ -37,19 +37,22 @@ class vi_FirebaseListener extends vi_RemoteListener {
     for (let collectionNumber = 0; collectionNumber < this.collections.length; collectionNumber++) {
       if(this.collections[collectionNumber].loadType == "suscription"){
           console.log("Suscrito a ",this.collections[collectionNumber].collection);
-          this.suscribeToCollection(this.collections[collectionNumber].collection);
+          this.suscribeToCollection(this.collections[collectionNumber]);
       } else {
           console.log("Pidiendo shot de ",this.collections[collectionNumber].collection);
           this.collectionstobeloaded+=1;
-          this.addCollection(this.collections[collectionNumber].collection);
+          this.addCollection(this.collections[collectionNumber]);
       }
    }
   }
 
+  getNestedValue(obj, path) {
+    return path.split('.').reduce((acc, key) => acc ? acc[key] : undefined, obj);
+  }
 
-
-  suscribeToCollection(_collection){
+  suscribeToCollection(_collectionObject){
    
+    const _collection = _collectionObject.collection;
     const myCollection = collection(this.db, _collection);
 
     onSnapshot(myCollection, (snapshot) => {
@@ -62,13 +65,14 @@ class vi_FirebaseListener extends vi_RemoteListener {
         const record = {
           id:docId,
           type: docType,
-          position:{
-              _lat: 0,
-              _long: 0
-          },
           fields:docData
 
          };
+
+         if(_collectionObject.geoField){
+            record.position = this.getNestedValue(docData,_collectionObject.geoField);
+         }
+
 
          // && docData.status === "active"
         if (change.type === "added" ) {
@@ -85,7 +89,7 @@ class vi_FirebaseListener extends vi_RemoteListener {
 
         if (change.type === "removed") {
           console.log("Document Removed", docId);
-          this.objectModel.deleteObject(docId);
+          this.objectModel.deleteObject(collection, docId);
         }
       });
     });
@@ -114,20 +118,22 @@ class vi_FirebaseListener extends vi_RemoteListener {
     }
   }
 
-  addCollection(collectionName){
+  addCollection(_collectionObject){
+
+    const collectionName = _collectionObject.collection;
     this.getCollection(collectionName).then((collection)=>{
       collection.forEach((record)=>{
 
         const _record = {
           id:record.id,
           type: "",
-          position:{
-              _lat: 0,
-              _long: 0
-          },
           fields:record.data
-
          };
+
+
+         if(_collectionObject.geoField){
+            _record.position = this.getNestedValue(record.data,_collectionObject.geoField);
+         }
 
         this.objectModel.updateOrAddObject(record.id, collectionName, _record);
       });

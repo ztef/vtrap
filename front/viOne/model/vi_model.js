@@ -20,6 +20,9 @@ class vi_ObjectModel  {
   
      
       this.objects = [];
+
+      this.filters = new Map();
+
     }
   
     /*
@@ -30,6 +33,8 @@ class vi_ObjectModel  {
 
     updateOrAddObject(id, collection, data) {
 
+      let out;
+
       const existingObject = this.objects.find((object) => object.id === id && object.collection === collection);
 
       if (existingObject) {
@@ -38,26 +43,38 @@ class vi_ObjectModel  {
         existingObject.collection = collection;
          
         this.controller.triggerObjectUpdated(collection, existingObject);
-         
-        return existingObject;
+
+
+        out =  existingObject;
       } else {
         
-        /*
-        const newObject = {
-          id,
-          collection: collection,
-          data,
-           
-        };
-        */
-
         const newObject = new vi_Object(id, collection, data);
 
         this.objects.push(newObject);
         this.controller.triggerObjectAdded(collection, newObject);
 
-        return newObject;
+        out = newObject;
       }
+
+      // Check if there are a filter for this collection
+      let activeFilter = this.filters.get(collection);
+      if(activeFilter){    // if there, check if this record pass or not the filter
+
+        if(out.data.fields[activeFilter.field] == activeFilter.value){
+          // if match : Unfilter
+          this.controller.triggerObjectUnFiltered(collection, out);
+        }else{
+          // if not, filter
+          this.controller.triggerObjectFiltered(collection, out.id);
+        }    
+      }
+
+
+      return out;
+
+
+
+
     }
 
     setCollectionLoaded(collection){
@@ -114,13 +131,13 @@ class vi_ObjectModel  {
   
     /* 
     
-      Delete a mobile object by ID
+      Delete an object by ID
     
     */
     
       deleteObject(collection, id) {
 
-      const index = this.objects.findIndex((object) => {object.id === id && object.collection === collection});
+      const index = this.objects.findIndex((object) => object.id === id && object.collection === collection);
       if (index !== -1) {
         this.objects.splice(index, 1);
         
@@ -139,6 +156,34 @@ class vi_ObjectModel  {
     getAllObjects() {
       return this.objects;
     }
+
+    setFilter(collection,field,operator, value){
+
+        this.filters.set(collection, {field:field,operator:operator, value:value});
+
+        // Propaga el filtro
+        this.objects.forEach((o)=>{
+            if(o.collection == collection){
+              this.controller.triggerObjectFiltered(collection, o.id);
+
+              if(o.data.fields[field] == value){
+
+                this.controller.triggerObjectUnFiltered(collection, o);
+
+              } else {
+
+                
+
+              }
+            }
+          }
+          
+        );
+
+    }
+
+
+
   }
   
   export { vi_ObjectModel as vi_ObjectModel };

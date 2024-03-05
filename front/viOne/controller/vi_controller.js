@@ -62,6 +62,11 @@ class vi_Controller {
       this.actionObserver.notify(domain, 'objectAdded', data);
     }
 
+    triggerObjectUnFiltered(domain, data) {
+      
+      this.actionObserver.notify(domain, 'objectUnFiltered', data);
+    }
+
     triggerObjectUpdated(domain, data) {
       
       this.actionObserver.notify(domain, 'objectUpdated', data);
@@ -69,6 +74,11 @@ class vi_Controller {
 
     triggerObjectDeleted(domain, data) {
       this.actionObserver.notify(domain, 'objectDeleted', data);
+    }
+
+    triggerObjectFiltered(domain, data) {
+      
+      this.actionObserver.notify(domain, 'objectFiltered', data);
     }
 
 
