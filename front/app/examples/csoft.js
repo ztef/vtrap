@@ -1,4 +1,5 @@
 import { vi_HiperLine } from '../viOne/view/vi_hiperline.js';
+import { vi_HiperCircle} from '../viOne/view/vi_hipercircle.js';
 import { vi_toolbox } from '../viOne/view/vi_toolbox.js';
 import { vi_3DSceneRenderer} from '../viOne/all.js';
 import { vi_geometry_factory } from '../viOne/view/vi_geometry_factory.js';
@@ -78,10 +79,12 @@ const windowFormater = new vi_WindowFormater();
  // PARTE GRAFICA
 
 
- windowFormater.formatWindow("#graphics","Grafica",500,350);
+ windowFormater.formatWindow("#graphics0","Empresas",500,350);
+ windowFormater.formatWindow("#graphics1","Eventos",500,350);
 
 
- const renderer = new vi_3DSceneRenderer('graphics',controller,['tipos','empresas']);
+ const renderer0 = new vi_3DSceneRenderer('graphics0',controller,['tipos','empresas']);
+ const renderer1 = new vi_3DSceneRenderer('graphics1',controller,['eventos']);
 
 
  var toolBoxConfig = {
@@ -96,7 +99,7 @@ const windowFormater = new vi_WindowFormater();
 
           if(opcion == 'option1'){
            
-            sc.acceptVisitor((element)=>{
+            sc0.acceptVisitor((element)=>{
               if(element.object.data.fields.giro == 'Universidades'){
                  if(element.visual_object.isGroup){
                   let base = element.visual_object.mesh.getObjectByName("base");
@@ -111,17 +114,17 @@ const windowFormater = new vi_WindowFormater();
           }
 
           if(opcion == 'option2'){
-            renderer.toggleDamping();
+            renderer0.toggleDamping();
           }
 
           if(opcion == 'option3'){
-            renderer.setSkyBoxNight();
+            renderer0.setSkyBoxNight();
           }
 
  });
 
  
- renderer.setupToolBox(toolbox);
+ renderer0.setupToolBox(toolbox);
 
 
 
@@ -129,7 +132,7 @@ const windowFormater = new vi_WindowFormater();
 
  // Ventana Informativa :
 
- renderer.setInfoWindow((domain, object_id)=>{
+ renderer0.setInfoWindow((domain, object_id)=>{
 
   let object = objectModel.readObject(domain, object_id);
   let html = '';
@@ -154,6 +157,24 @@ const windowFormater = new vi_WindowFormater();
 
 });
 
+renderer1.setInfoWindow((domain, object_id)=>{
+
+  let object = objectModel.readObject(domain, object_id);
+  let html = '';
+
+  
+  
+  if(domain == 'eventos'){
+    html = object.data.fields["evento"];
+  }
+
+  
+
+  return html;
+
+});
+
+
 
 
 
@@ -162,6 +183,8 @@ const windowFormater = new vi_WindowFormater();
  //renderer.focus(0,0,0,100);
  
  
+// RENDER 0 :    Empresas y Participaciones
+
  const lineOrigin = { x: 0, y: 0, z: 0 };
  const lineAngle = 0; //  radianes
  const linelength = 50;
@@ -172,11 +195,9 @@ const windowFormater = new vi_WindowFormater();
  hiperLine.setLevels(levelsArray);
  hiperLine.defineLevels(['tipos']);
  
- hiperLine.setRenderEngine(renderer, geometry_factory);
-
-   // this.render.addLabel(label,plotPoint,rotate,this.graphics.labels.size, color);size = {size:2, height:0.1}
+ hiperLine.setRenderEngine(renderer0, geometry_factory);
   
- hiperLine.setGraphics({labels :{ size:{size:0.7, height:0.1}, color:0x000000}});
+ hiperLine.setGraphics({labels :{ size:{size:0.7, height:0.1}, color:0x000000, align:true}});
  
  hiperLine.draw(0);
 
@@ -208,9 +229,9 @@ const windowFormater = new vi_WindowFormater();
  
 let object = {};
  
-const sc = new vi_slot_controller(hiperLine,renderer);
+const sc0 = new vi_slot_controller(hiperLine,renderer0);
 
-sc.setDirection('out');  // up o out 
+sc0.setDirection('out');  // up o out 
 
 
 
@@ -243,7 +264,7 @@ let hgf= new vi_hipergeometry_factory(geometry_factory);
        
         const hg1 = hgf.createGeometriesFromConfig(config,{x:0,y:0,z:0});
         
-        sc.addObject2Slot(object.data.fields.tipo, domain+'.'+data.id, object,hg1);
+        sc0.addObject2Slot(object.data.fields.tipo, domain+'.'+data.id, object,hg1);
            
         break;
   
@@ -253,33 +274,25 @@ let hgf= new vi_hipergeometry_factory(geometry_factory);
  });
 
 
- controller.addObserver('participaciones',"objectAdded",(domain, _event, data)=>{
+
+
+
+controller.addObserver('participaciones',"objectSelected",(domain, _event, data)=>{
 
   switch (_event) {
    
-     case 'objectAdded':
+     case 'objectSelected':
    
 
           // lee la participacion
           let participacion = objectModel.readObject(domain, data.id);
 
-          // lee la empresa
-          let empresa = objectModel.readObjectbyField('empresas', 'nombre', participacion.data.fields.empresa);
-          
-
           // lee el evento
           let evento = objectModel.readObjectbyField('eventos', 'evento', participacion.data.fields.evento);
 
 
-          var color = 0x808080;
-    
-          var g = geometry_factory.createGeometry('Sphere',[0.2,10, 10]);
-          var m = geometry_factory.createObject(g,{x:0,y:0,z:0}, { color: color,transparent: false, opacity: 0.5, side: THREE.DoubleSide });
-          let geom = geometry_factory.createVisualObject(m,'participacion.'+participacion.data.fields.id);
+          controller.triggerObjectSelected('eventos', {id:evento.data.fields.id});
           
-           // slot, element, id, object, geometry
-           sc.addSlot2Element(empresa.data.fields.tipo,'empresas.'+empresa.id,'participaciones.'+participacion.data.fields.id,participacion,geom);
-
           
           
        break;
@@ -288,6 +301,7 @@ let hgf= new vi_hipergeometry_factory(geometry_factory);
        throw new Error(`Unsupported event: ${_event}`);
      }
 });
+
 
 
 controller.addObserver('eventos',"objectSelected",(domain, _event, data)=>{
@@ -301,7 +315,7 @@ controller.addObserver('eventos',"objectSelected",(domain, _event, data)=>{
           let evento = objectModel.readObject(domain, data.id);
 
           
-          sc.acceptVisitorToElements((element)=>{
+          sc0.acceptVisitorToElements((element)=>{
             
             // DESMARCA TODO :
             
@@ -358,6 +372,107 @@ controller.addObserver('eventos',"objectSelected",(domain, _event, data)=>{
 
 
 
+// RENDER 1 : EVENTOS POR TIPO Vs PARTICIPACIONES
+
+const centro = { x: 0, y: 0, z: 0 };
+const amplitude = 30;
+const _levelsArray = [6];
+
+const hiperCircle = new vi_HiperCircle(amplitude, 0, centro);
+hiperCircle.setLevels(_levelsArray);
+
+hiperCircle.setRenderEngine(renderer1, geometry_factory);
+hiperCircle.setGraphics({labels :{ size:{size:0.7, height:0.1}, color:0xff0000, align:false}});
+
+hiperCircle.draw(0);
+
+const tiposArray = ['Evento', 'Capacitación','Webminar','Oportunidad Comercial','Conferencia','Capacitacion'];
+
+ 
+hiperCircle.drawLabels(0,tiposArray, -5);
+
+
+const sc1 = new vi_slot_controller(hiperCircle,renderer1);
+sc1.setDirection('out');  // up o out 
+
+
+
+
+controller.addObserver('eventos',"objectAdded",(domain, _event, data)=>{
+
+  switch (_event) {
+   
+     case 'objectAdded':
+   
+          let evento = objectModel.readObject(domain, data.id);
+          let estatus = 1;
+           
+
+
+          var config = {
+           "base": { "shape": "Circle", "radius": 1 },
+           "label": { "value":evento.data.fields.evento, "x": 0, "y": 0, "z": 0, size:0.1 },
+           "columns": [
+               { "variable1": { "shape": "Cylinder", x:0,y:0, z:0, "radiusTop": 0.1, "radiusBottom": 0.1, "height": estatus, "color": 0x00ff00 } },
+           ]
+       };
+       
+      
+          const hg1 = hgf.createGeometriesFromConfig(config,{x:0,y:0,z:0});
+
+
+          const index = tiposArray.indexOf(evento.data.fields.tipo);
+          if(index >0){
+       
+              sc1.addObject2Slot(''+index, domain+'.'+data.id, evento,hg1);
+          } else {
+            console.log(evento.data.fields.tipo);
+          }
+                    
+       break;
+ 
+     default:
+       throw new Error(`Unsupported event: ${_event}`);
+     }
+});
+
+
+
+controller.addObserver('participaciones',"objectAdded",(domain, _event, data)=>{
+
+  switch (_event) {
+   
+     case 'objectAdded':
+   
+
+          // lee la participacion
+          let participacion = objectModel.readObject(domain, data.id);
+
+          // lee la empresa
+          let empresa = objectModel.readObjectbyField('empresas', 'nombre', participacion.data.fields.empresa);
+          
+
+          // lee el evento
+          let evento = objectModel.readObjectbyField('eventos', 'evento', participacion.data.fields.evento);
+
+
+          var color = 0x808080;
+    
+          var g = geometry_factory.createGeometry('Sphere',[0.2,10, 10]);
+          var m = geometry_factory.createObject(g,{x:0,y:0,z:0}, { color: color,transparent: false, opacity: 0.5, side: THREE.DoubleSide });
+          let geom = geometry_factory.createVisualObject(m,'participacion.'+participacion.data.fields.id);
+          
+           // slot, element, id, object, geometry
+           sc0.addSlot2Element(empresa.data.fields.tipo,'empresas.'+empresa.id,'participaciones.'+participacion.data.fields.id,participacion,geom);
+
+          
+          
+       break;
+ 
+     default:
+       throw new Error(`Unsupported event: ${_event}`);
+     }
+});
  
 
    

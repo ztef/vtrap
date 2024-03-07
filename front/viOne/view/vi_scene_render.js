@@ -65,6 +65,7 @@ export class vi_3DSceneRenderer extends vi_Renderer {
 
 
         this.selectedObject = null;
+        this.selectedCustomObject = {};
         this.selectedID = null;
         this.infoWindow = null;
         this.infoWindowContent = null;
@@ -531,17 +532,18 @@ t
          
     }
     */
+    
 
-    addLabel(label, position = { x: 0, y: 0, z: 0 }, rotation = { x: 0, y: 0, z: 0 }, size = { size: 2, height: 0.1 }, color = 0x000000) {
+    addLabel(label, position = { x: 0, y: 0, z: 0 }, rotation = { x: 0, y: 0, z: 0 }, graphics = {size : { size: 2, height: 0.1 }, color : 0x000000, align:false}) {
         // Create text geometry
         const textGeometry = new TextGeometry(label, {
             font: this.font, // Font used for the text
-            size: size.size, // Size of the text
-            height: size.height, // Thickness or extrusion of the text
+            size: graphics.size.size, // Size of the text
+            height: graphics.size.height, // Thickness or extrusion of the text
         });
     
         // Create a material for the text
-        const textMaterial = new THREE.MeshBasicMaterial({ color: color });
+        const textMaterial = new THREE.MeshBasicMaterial({ color: graphics.color });
     
         // Create a mesh using the text geometry and material
         const textMesh = new THREE.Mesh(textGeometry, textMaterial);
@@ -550,8 +552,19 @@ t
         textGeometry.computeBoundingBox();
         const textWidth = textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x;
     
-        // Position the text
-        textMesh.position.set(position.x , position.y, position.z + textWidth);
+        // Position the text : IF no rotation align to right.
+
+        if (graphics.align) {
+
+            textMesh.position.set(position.x , position.y, position.z + textWidth);
+            
+             
+        } else {
+
+            textMesh.position.set(position.x , position.y, position.z);
+            
+        }
+       
     
         // Set the rotation of the text
         textMesh.rotation.set(rotation.x, rotation.y, rotation.z);
@@ -878,13 +891,23 @@ t
 
         let id=domain+'.'+payload.id;  
 
-        this.selectedID = id;
+        if(this.selectedCustomObject.domain == domain && this.selectedCustomObject.id == payload.id)
+        {
+            // el objeto ya estaba seleccionado
+        }else{
 
-        let o = this.objectEntities.get(id);
+            this.selectedID = id;
 
-        this.unFocus();
+            let o = this.objectEntities.get(id);
+    
+            this.unFocus();
+    
+            this.flyCameraToObject(o);
 
-        this.flyCameraToObject(o);
+
+        }
+
+       
 
          
         //this.focusCameraOnObject(o);
@@ -913,17 +936,13 @@ t
 
             this.selectedID = customObject.id;
             this.selectedObject = object;
-           
             
-            /*
-            // Change the color of the selected object (assuming it has a material)
-            const material = object.material;
-            if (material) {
-                material.color.set(0xff0000); // Change to red (adjust the color as needed)
-            }
-            // Transform the selected object (for example, scale it on the z-axis)
-            object.scale.z += 0.1;
-            */
+           
+            let domain = customObject.id.split(".")[0];
+            let id = customObject.id.split(".")[1];
+
+            this.selectedCustomObject = {domain:domain,id:id};
+            this.controller.triggerObjectSelected(domain, {id:id});
 
 
             this.focusCameraOnObject(object);

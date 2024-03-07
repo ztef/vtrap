@@ -32,16 +32,20 @@ class vi_Segment {
       this.length = length || 0;
       this.separation = 5;
       this.globalMap = new Map();
-      this.graphics = {mainline:true};
+      this.graphics = {};
       this.render = null;
       this.marker = null;
       this.markerColor = 0x808080;
       this.tree = '';
       this.levelsDef = null;
     
-
+      this.initGraphics();
     }
 
+
+    initGraphics(){
+      this.graphics = {mainline:true, labels :{ size:{size:0.7, height:0.1}, color:0x000000, align:true}}
+    }
 
     getBoard(path){
       return this;
@@ -76,9 +80,6 @@ class vi_Segment {
     
     setGraphics(graphics){
       this.graphics = graphics;
-      if(!this.graphics.labels){
-        this.graphics.labels.size = {size:1, height:0.3};
-      }
     }
   
   
@@ -343,7 +344,7 @@ class vi_Segment {
 
                 //addLabel(label, position = { x: 0, y: 0, z: 0 }, rotation = { x: 0, y: 0, z: 0 }, size = {size:2, height:0.1}, color= 0x000000) {
   
-                this.render.addLabel(label,plotPoint,rotate, this.graphics.labels.size, this.graphics.labels.color);
+                this.render.addLabel(label,plotPoint,rotate, this.graphics.labels);
       }
     
   }

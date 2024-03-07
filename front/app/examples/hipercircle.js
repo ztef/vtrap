@@ -22,14 +22,10 @@ const geometry_factory = new vi_geometry_factory();
 
 const centro = { x: 0, y: 0, z: 0 };
 const amplitude = 30;
- 
 const levelsArray = [5,3,2];
-
- 
 
 const hiperCircle = new vi_HiperCircle(amplitude, 0, centro);
 hiperCircle.setLevels(levelsArray);
-
 
 hiperCircle.setRenderEngine(renderer, geometry_factory);
 
