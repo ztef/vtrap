@@ -72,11 +72,12 @@ class vi_Segment {
         this.globalMap.set(i, this.calcSegments(i));
       }
     }
-  
+
+    
     setGraphics(graphics){
       this.graphics = graphics;
       if(!this.graphics.labels){
-        this.graphics.labels = {size:1, height:0.3};
+        this.graphics.labels.size = {size:1, height:0.3};
       }
     }
   
@@ -340,7 +341,9 @@ class vi_Segment {
 
                 let rotate = {x:0, z:0, y:this.angle+Math.PI/2};
 
-                this.render.addLabel(label,plotPoint,rotate,this.graphics.labels);
+                //addLabel(label, position = { x: 0, y: 0, z: 0 }, rotation = { x: 0, y: 0, z: 0 }, size = {size:2, height:0.1}, color= 0x000000) {
+  
+                this.render.addLabel(label,plotPoint,rotate, this.graphics.labels.size, this.graphics.labels.color);
       }
     
   }

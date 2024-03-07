@@ -81,7 +81,7 @@ const windowFormater = new vi_WindowFormater();
  windowFormater.formatWindow("#graphics","Grafica",500,350);
 
 
- const renderer = new vi_3DSceneRenderer('graphics',controller,['tipos','empresas','eventos','participaciones']);
+ const renderer = new vi_3DSceneRenderer('graphics',controller,['tipos','empresas']);
 
 
  var toolBoxConfig = {
@@ -139,7 +139,7 @@ const windowFormater = new vi_WindowFormater();
   }
 
   if(domain == 'empresas'){
-    html = object.data.fields.nombre + '<br/>' + object.data.fields.razon + '<br/>'+'Capital Humano :' + object.data.fields.headcount;
+    html = object.data.fields.nombre + '<br/>' + object.data.fields.razon + '<br/>';
   }
   if(domain == 'eventos'){
     html = object.data.fields["evento"];
@@ -173,6 +173,10 @@ const windowFormater = new vi_WindowFormater();
  hiperLine.defineLevels(['tipos']);
  
  hiperLine.setRenderEngine(renderer, geometry_factory);
+
+   // this.render.addLabel(label,plotPoint,rotate,this.graphics.labels.size, color);size = {size:2, height:0.1}
+  
+ hiperLine.setGraphics({labels :{ size:{size:0.7, height:0.1}, color:0x000000}});
  
  hiperLine.draw(0);
 
@@ -189,7 +193,7 @@ const windowFormater = new vi_WindowFormater();
       case 'objectAdded':
     
            let object = objectModel.readObject(domain, data.id);
-           let point = hiperLine.drawLabel(''+data.id,  object.data.fields.tipo, 15 );
+           let point = hiperLine.drawLabel(''+data.id,  object.data.fields.tipo,2 );
                      
         break;
   
@@ -224,7 +228,7 @@ let hgf= new vi_hipergeometry_factory(geometry_factory);
     
            let object = objectModel.readObject(domain, data.id);
 
-           let headcount = object.data.fields.headcount/10;
+           let estatus = object.data.fields.estatus;
            
 
 
@@ -232,7 +236,7 @@ let hgf= new vi_hipergeometry_factory(geometry_factory);
             "base": { "shape": "Circle", "radius": 1 },
             "label": { "value":object.data.fields.nombre, "x": 0, "y": 0, "z": 0, size:0.1 },
             "columns": [
-                { "variable1": { "shape": "Cylinder", x:0.8,y:0, z:0, "radiusTop": 0.1, "radiusBottom": 0.1, "height": headcount, "color": 0xff0000 } },
+                { "variable1": { "shape": "Cylinder", x:0,y:0, z:0, "radiusTop": 0.1, "radiusBottom": 0.1, "height": estatus, "color": 0x00ff00 } },
             ]
         };
         
@@ -275,6 +279,73 @@ let hgf= new vi_hipergeometry_factory(geometry_factory);
           
            // slot, element, id, object, geometry
            sc.addSlot2Element(empresa.data.fields.tipo,'empresas.'+empresa.id,'participaciones.'+participacion.data.fields.id,participacion,geom);
+
+          
+          
+       break;
+ 
+     default:
+       throw new Error(`Unsupported event: ${_event}`);
+     }
+});
+
+
+controller.addObserver('eventos',"objectSelected",(domain, _event, data)=>{
+
+  switch (_event) {
+   
+     case 'objectSelected':
+   
+
+          // lee la participacion
+          let evento = objectModel.readObject(domain, data.id);
+
+          
+          sc.acceptVisitorToElements((element)=>{
+            
+            // DESMARCA TODO :
+            
+            if(element.visual_object.isGroup){
+              let base = element.visual_object.mesh.getObjectByName("base");
+              base.material.color.set(0x808080);
+            }else {
+              element.visual_object.mesh.material.color.set(0x808080);
+            }
+            
+
+            // MARCA LA SELECCION
+
+            if(element.object.collection == "participaciones"){
+
+               if(element.object.data.fields.evento == evento.data.fields.evento){ 
+
+                if(element.visual_object.mesh.material.color){    
+                  element.visual_object.mesh.material.color.set(0xff0000);
+                }
+                if(element.parent){
+
+                  if(element.parent.visual_object.isGroup){
+                    let base = element.parent.visual_object.mesh.getObjectByName("base");
+                    base.material.color.set(0xff0000);
+                   }else {
+                    element.parent.visual_object.mesh.material.color.set(0xff0000);
+                   }
+
+                 
+                }
+               }else {
+               }
+
+               // Empresa :
+
+              
+
+
+              }
+            }     
+        );
+
+        
 
           
           

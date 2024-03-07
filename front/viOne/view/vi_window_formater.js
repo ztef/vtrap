@@ -250,9 +250,16 @@ class vi_WindowFormater{
         }
       });
     
-      }
+    }
 
-      insertHtmlContent(divElement, htmlContent) {
+    setWindowTitle(divElement, newTitle) {
+      var titleColumn = $(divElement).find('.title-column');
+      titleColumn.text(newTitle);
+    }
+
+
+
+    insertHtmlContent(divElement, htmlContent) {
         const container = document.getElementById(divElement);
 
         if (container) {

@@ -59,7 +59,7 @@ const dbDataSource = new vi_DataSource('Firebase', config);
  windowFormater.positionDiv("objeto_div",10,50);
 
  windowFormater.formatWindow("#objetos_div","OBJETOS",500,350);
- windowFormater.positionDiv("objeto_div",10,50);
+ windowFormater.positionDiv("objetos_div",10,50);
 
  windowFormater.formatWindow("#graphics","3D",500,350);
  windowFormater.positionDiv("graphics",10,50);
@@ -94,6 +94,9 @@ function filterObjects(domain, event, data){
 
       objectModel.setFilter('objetos','tipo','==', objeto.data.fields.id);
 
+
+      windowFormater.setWindowTitle("#objetos_div", objeto.data.fields.nombre);
+
 }
 
 
@@ -103,12 +106,28 @@ function filterObjects(domain, event, data){
 const mapFactory = new vi_MapFactory();
 
 // Crea un mapa 
-const map = mapFactory.createMap("Cesium", controller, ['sucursales']);
+const map = mapFactory.createMap("Cesium", controller, ['objetos']);
 
 // Formatea el contendor de mapa como ventana
 windowFormater.formatWindow("#map_div","Mapa",500,350);
 
 map.loadMap('map_div').then(()=>{
-   //   mobilesRemoteListener = remoteListenerFactory.createRemoteListener(tripDataSource,objectModel);
-   //   cedisRemoteListener = remoteListenerFactory.createRemoteListener(sucursalesDataSource,objectModel);
+
+   var altura=65400;
+   var radio=500;	
+
+
+   map.addObjectGeometry('objetos', [
+      {
+         offset: {x:0, y:0, z:3500},
+         cylinder : {
+           length : altura,
+            topRadius :  radio,
+            bottomRadius : radio,
+            material : map.MapLib.Color.fromCssColorString("#0000FF"),
+            clampToGround: true,
+         
+      }},
+   ]);
+
 });

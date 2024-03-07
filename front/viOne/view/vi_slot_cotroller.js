@@ -13,6 +13,7 @@ export class vi_slot_controller {
         this.axis = 'y';
         this.delta = 3;
         this.slots = new Map();
+        this.elements = new Map();  // Todos los elementos sin importar el slot
         this.geometry_factory = new vi_geometry_factory();
         
     }
@@ -29,7 +30,7 @@ export class vi_slot_controller {
         
     }
 
-    getSlotandElement(s,e){
+    getElementFromSlot(s,e){
 
         var slot = null;
         var element = null;
@@ -95,8 +96,9 @@ export class vi_slot_controller {
 
 
         this.render.addGeometry(vo); 
-        const element = new vi_element(path, id, vo, object);
-        slot.addElement(id, element);
+        const element = new vi_element(path, id, vo, object, slot);
+        slot.addElement(id, element);  // agrega el elemento al slot
+        this.elements.set(id,element);  // agrega el elemento al mapa de elementos
 
 
         
@@ -107,12 +109,9 @@ export class vi_slot_controller {
 
     // Agrega un slot a un elemento :
     addSlot2Element(s,e,id, object, geom = null){
-        let slot_element = this.getSlotandElement(s,e);
+        let slot_element = this.getElementFromSlot(s,e);
 
-       
-        
-
-
+   
         if(slot_element){
 
             var slot;
@@ -153,14 +152,13 @@ export class vi_slot_controller {
     
     
             this.render.addGeometry(vo); 
-            const element = new vi_element(e, id, vo, object);
+
+            //slot_element lo agrega como padre
+            
+            const element = new vi_element(e, id, vo, object, slot, slot_element);
             slot.addElement(id, element);
+            this.elements.set(id,element); // Agrega al mapa global de elementos
     
-
-
-
-
-
 
         } else {
             console.log('No Slot');
@@ -179,6 +177,14 @@ export class vi_slot_controller {
             slot.elements.forEach(element =>{
                 visitor(element);
             });          
+        });
+    }
+
+    acceptVisitorToElements(visitor) {
+        this.elements.forEach(element => {
+             
+                visitor(element);
+                     
         });
     }
 

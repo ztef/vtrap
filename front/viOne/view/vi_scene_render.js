@@ -504,7 +504,8 @@ t
         this.scene.add(line);
     }
 
-    addLabel(label, position = { x: 0, y: 0, z: 0 }, rotation = { x: 0, y: 0, z: 0 }, size = {size:2, height:0.1}) {
+    /*
+    addLabel(label, position = { x: 0, y: 0, z: 0 }, rotation = { x: 0, y: 0, z: 0 }, size = {size:2, height:0.1}, color= 0x000000) {
          
             // Create text geometry
             const textGeometry = new TextGeometry(label, {
@@ -514,7 +515,7 @@ t
             });
     
             // Create a material for the text
-            const textMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+            const textMaterial = new THREE.MeshBasicMaterial({ color: color });
     
             // Create a mesh using the text geometry and material
             const textMesh = new THREE.Mesh(textGeometry, textMaterial);
@@ -529,6 +530,36 @@ t
             this.scene.add(textMesh);
          
     }
+    */
+
+    addLabel(label, position = { x: 0, y: 0, z: 0 }, rotation = { x: 0, y: 0, z: 0 }, size = { size: 2, height: 0.1 }, color = 0x000000) {
+        // Create text geometry
+        const textGeometry = new TextGeometry(label, {
+            font: this.font, // Font used for the text
+            size: size.size, // Size of the text
+            height: size.height, // Thickness or extrusion of the text
+        });
+    
+        // Create a material for the text
+        const textMaterial = new THREE.MeshBasicMaterial({ color: color });
+    
+        // Create a mesh using the text geometry and material
+        const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+    
+        // Calculate the width of the text
+        textGeometry.computeBoundingBox();
+        const textWidth = textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x;
+    
+        // Position the text
+        textMesh.position.set(position.x , position.y, position.z + textWidth);
+    
+        // Set the rotation of the text
+        textMesh.rotation.set(rotation.x, rotation.y, rotation.z);
+    
+        // Add the text mesh to the scene
+        this.scene.add(textMesh);
+    }
+    
 
     
 

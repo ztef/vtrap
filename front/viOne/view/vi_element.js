@@ -10,12 +10,14 @@
 
 export class vi_element {
 
-    constructor(path, id, visual_object, object){
+    constructor(path, id, visual_object, object, slot, parent_element = null){
        
         this.path = path;
         this.id = id;
         this.visual_object = visual_object;
         this.object = object;
+        this.slot = slot;
+        this.parent = parent_element;
     }
 
 
