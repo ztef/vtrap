@@ -6,7 +6,7 @@ import vi_RemoteListener from "./vi_remote_listener.js"
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-analytics.js";
-import { getFirestore, collection, onSnapshot, doc, getDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, doc, getDoc, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
 
 
@@ -152,8 +152,11 @@ class vi_FirebaseListener extends vi_RemoteListener {
         // Reference to the collection
         const collectionRef = collection(this.db, collectionName);
 
+        //, orderBy("name")
+        const q = query(collectionRef);
+
         // Get all documents in the collection
-        const querySnapshot = await getDocs(collectionRef);
+        const querySnapshot = await getDocs(q);
 
         // Initialize an array to store the documents
         const documents = [];

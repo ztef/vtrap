@@ -392,16 +392,18 @@ export class vi_3DSceneRenderer extends vi_Renderer {
                     ] );
     }
 
-    setSkyBoxNight(){
+    setSkyBoxMty(){
+
+        console.log("SKY BOX DE MONTERREY");
         this.scene.background = new THREE.CubeTextureLoader()
             .setPath( '/front/app/assets/' )
             .load( [
-                        'rainbow_bk.png',
-                        'rainbow_ft.png',
-                        'top.png',
-                        'rainbow_dn.png',
-                        'rainbow_rt.png',
-                        'rainbow_lf.png'
+                        'mty_back.png',
+                        'mty_front.png',
+                        'mty_top.png',
+                        'mty_down.png',
+                        'mty_right.png',
+                        'mty_left.png'
                     ] );
     }
 
@@ -532,6 +534,10 @@ t
          
     }
     */
+
+    setBackroundColor(_color){
+        this.scene.background = new THREE.Color(_color);
+    }
     
 
     addLabel(label, position = { x: 0, y: 0, z: 0 }, rotation = { x: 0, y: 0, z: 0 }, graphics = {size : { size: 2, height: 0.1 }, color : 0x000000, align:false}) {
@@ -572,12 +578,22 @@ t
         // Add the text mesh to the scene
         this.scene.add(textMesh);
     }
+
+    add(o){
+        this.scene.add(o);
+    }
     
 
-    
+    loadOBJ(objUrl, mtlUrl, scale){
+        return new Promise((resolve,reject)=>{
+            this.loadOBJModel(objUrl, mtlUrl, scale, (model)=>{
+                resolve(model);
+            })
+        });
+    }
 
 
-    loadOBJModel(objUrl, mtlUrl,  scale) {
+    loadOBJModel(objUrl, mtlUrl,  scale, _callback = null) {
 
 
        
@@ -600,6 +616,11 @@ t
                         this.scene.add(object);
 
                         this.pointToModel(object);
+
+
+                        if(_callback){
+                            _callback(object);
+                        }
                       
                       
                     },
@@ -913,6 +934,18 @@ t
         //this.focusCameraOnObject(o);
 
     }
+
+
+    flyToEntity(e){
+
+        let o = this.objectEntities.get(e);
+
+        this.unFocus();
+
+        this.flyCameraToObject(o);
+    
+    }
+
 
 
     addObject(domain, event, newObject) {

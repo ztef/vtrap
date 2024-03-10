@@ -118,7 +118,7 @@ const windowFormater = new vi_WindowFormater();
           }
 
           if(opcion == 'option3'){
-            renderer0.setSkyBoxNight();
+            renderer0.setSkyBoxMty();
           }
 
  });

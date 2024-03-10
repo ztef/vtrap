@@ -25,6 +25,7 @@ var conf = {
                 angle: 0,
                 levels:[5,2],
                 graphics:{
+                    labels :{ size:{size:0.7, height:0.1}, color:0xff0000, align:false},
                     line:{color:0x00ff00, transparent:true, opacity:0.5},
                     mainline:true,
                     innerlines:false,
@@ -38,6 +39,7 @@ var conf = {
                         angle: Math.PI/2,
                         levels:[5],
                         graphics:{
+                            labels :{ size:{size:0.7, height:0.1}, color:0xff0000, align:false},
                             center:{color:0x00ff00, amplitude:10, transparent:true, opacity:0.5}
                         },
                         content:{

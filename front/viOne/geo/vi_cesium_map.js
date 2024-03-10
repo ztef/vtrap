@@ -39,6 +39,8 @@ class vi_CesiumMap extends vi_Map {
   
     async loadMap(map_window) {
 
+      this.container = document.getElementById(map_window);
+
       await this.loadExternalFiles();
   
       this.MapLib = Cesium;
@@ -189,7 +191,67 @@ class vi_CesiumMap extends vi_Map {
       }
   }
 
-    
+
+  captureScene(scene, filename) {
+    // Get the rendered content from the scene
+    var imageDataURL = scene.canvas.toDataURL('image/png');
+
+    // Create a temporary anchor element to trigger the download
+    var link = document.createElement('a');
+    link.href = imageDataURL;
+    link.download = filename;
+
+    // Trigger a click event on the anchor to prompt the browser to download the image
+    link.click();
+}
+
+  lookDown(){
+    var pitch =  -Math.PI / 2; // Angle to look down (in radians)
+    var heading = this.viewer.camera.heading; // Keep the current heading
+    this.viewer.camera.setView({
+        orientation: {
+            pitch: pitch,
+            heading: heading
+        }
+    });  
+  }
+
+  lookUp(){
+    var pitch =  Math.PI / 2; // Angle to look down (in radians)
+    var heading = this.viewer.camera.heading; // Keep the current heading
+    this.viewer.camera.setView({
+        orientation: {
+            pitch: pitch,
+            heading: heading
+        }
+    });  
+  }
+
+  lookFront() {
+    var pitch = 0; // Angle to look straight ahead (in radians)
+    var heading = this.viewer.camera.heading; // Keep the current heading
+    this.viewer.camera.setView({
+        orientation: {
+            pitch: pitch,
+            heading: heading
+        }
+    });  
+}
+
+lookRight() {
+  var pitch = this.viewer.camera.pitch; // Keep the current pitch
+  var heading = this.viewer.camera.heading + Math.PI / 2; // Increase heading by π/2 radians
+
+  // Ensure that the heading stays within the range [-π, π]
+  heading = Cesium.Math.zeroToTwoPi(heading);
+
+  this.viewer.camera.setView({
+      orientation: {
+          pitch: pitch,
+          heading: heading
+      }
+  });  
+}
 
 
     handleObjectSelectedOutside(domain, event, payload) {

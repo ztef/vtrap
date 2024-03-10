@@ -21,9 +21,15 @@ class vi_Board {
     this.amplitude = amplitude;
     this.geometry_factory = new vi_geometry_factory();
     this.graphics = graphics;
+    this.hiperGeomFactory = null;
 
     // Initialize the content based on the board type
-    this.initializeContent();
+    
+  }
+
+
+  setHiperGeomFactory(hgf){
+    this.hiperGeomFactory = hgf;
   }
 
   initializeContent() {
@@ -44,6 +50,9 @@ class vi_Board {
           break;
       default:
         console.error(`Unknown board type: ${this.type}`);
+    }
+    if(this.setHiperGeomFactory){
+      this.content.setHiperGeomFactory(this.hiperGeomFactory);
     }
   }
 
@@ -214,7 +223,13 @@ export class vi_HiperBoard {
     this.mask = '';  // mascara de sub boards
     this.treeDepth = 1;  // profundidad del arbol
     this.maxTreeDepth = 0;
+    this.hiperGeomFactory = null;
      
+  }
+
+
+  setHiperGeomFactory(hgf){
+    this.hiperGeomFactory = hgf;
   }
 
   addBoard(conf, tree) {
@@ -242,6 +257,12 @@ export class vi_HiperBoard {
 
     const newBoard = new vi_Board(tree, this.treeDepth,this.render_engine, origin, levels, type, angle, amplitude, graphics);
     this.boardContainer.set(tree, newBoard);
+
+    if(this.hiperGeomFactory){
+      newBoard.setHiperGeomFactory(this.hiperGeomFactory);
+    }
+
+    newBoard.initializeContent();
 
 
     if(content.board){ // si hay board dentro del board
@@ -635,7 +656,7 @@ mapHyperboardPath(levels, mask, path) {
 
     let rotate = {x:0, y:angle, z:0};
 
-    this.render_engine.addLabel(label,pos,rotate,{size:1, height:0.3});
+    this.render_engine.addLabel(label,pos,rotate, {labels :{ size:{size:0.7, height:0.1}, color:0xff0000, align:false}});
     
    
 

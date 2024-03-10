@@ -105,7 +105,9 @@ const config = {
  hiperCircle.setRenderEngine(renderer, geometry_factory);
 
  hiperCircle.setGraphics({
-   center:{amplitude:30, color:0x00ff00, transparent:true, opacity:0.5 }});
+   center:{amplitude:30, color:0x00ff00, transparent:true, opacity:0.5 },
+   labels :{ size:{size:0.7, height:0.1}, color:0xff0000, align:false}
+  });
  
  hiperCircle.draw(0);
 

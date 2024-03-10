@@ -22,6 +22,7 @@ var conf = {
         angle:0,
         levels: [3,2],
         graphics:{
+            labels :{ size:{size:0.7, height:0.1}, color:0xff0000, align:false},
             center:{amplitude:30, color:0x00ff00, transparent:true, opacity:0.5 }
         },
         content:
@@ -33,6 +34,7 @@ var conf = {
                 angle: 0,
                 levels:[10],
                 graphics:{
+                    labels :{ size:{size:0.7, height:0.1}, color:0xff0000, align:false},
                     line:{color:0x00ff00, transparent:true, opacity:0.5}
                 },
                 content:{
@@ -44,6 +46,9 @@ var conf = {
                         angle: 0,
                         levels:[2],
                         graphics:{
+
+                            mainline:true, 
+                            labels :{ size:{size:0.7, height:0.1}, color:0x000000, align:true},
                             line:{color:0x00ff00, transparent:true, opacity:0.5}
                         },
                         content:{

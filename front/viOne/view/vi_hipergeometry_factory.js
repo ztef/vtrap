@@ -18,6 +18,11 @@ export class vi_hipergeometry_factory {
 
         this.font = vi_Font.getFont();
 
+        this.nullMesh = new THREE.Mesh(
+            new THREE.BoxGeometry(0.01, 0.01, 0.01),
+            new THREE.MeshBasicMaterial({color: 0xff0000})
+        );
+
     }
 
    
@@ -156,10 +161,7 @@ export class vi_hipergeometry_factory {
     createGeometriesFromConfig(_config,_point) {
         const _group = new THREE.Group();
 
-        const nullMesh = new THREE.Mesh(
-            new THREE.BoxGeometry(0.01, 0.01, 0.01),
-            new THREE.MeshBasicMaterial({color: 0xff0000})
-        );
+        
     
         // Helper function to create geometries based on the configuration
         function createGeometry(_shape, _properties) {
@@ -202,28 +204,12 @@ export class vi_hipergeometry_factory {
         
 
         if (_config.label && _config.label.value) {
-            var element = document.createElement('div');
-            element.textContent = _config.label.value;
-            element.style.position = 'absolute';
-            element.style.left = '0px';
-            element.style.top = '0px';
-            
-            element.style.color = 'black';
-            element.style.fontFamily = 'Arial';
-            element.style.fontSize = '15px';
 
-            var cssObject = new CSS2DObject(element);
-            cssObject.position.set(0,0,0);
-            cssObject.center.set( 0, 0 );
-      
-            const lod = new THREE.LOD();
+            var label = this.getLabelObjectHide(_config.label.value, '15px', true, 2, 10);
 
-            lod.addLevel(cssObject, 2);
-			lod.addLevel(nullMesh, 10);
+            label.position.set(0,0,0);
 
-            lod.position.set(0,0,0);
-
-            _group.add(lod);   
+            _group.add(label);   
       
             
         }
@@ -287,6 +273,93 @@ export class vi_hipergeometry_factory {
 
        return _vo;
     }
+
+    
+    getLabelObjectHide(value, size, lod, near =2, far = 10){
+        
+        var element = document.createElement('div');
+        element.textContent = value;
+        element.style.position = 'absolute';
+        element.style.left = '0px';
+        element.style.top = '0px';
+        
+        element.style.color = 'blue';
+        element.style.fontFamily = 'Arial';
+        element.style.fontSize = size;
+
+        var cssObject = new CSS2DObject(element);
+        cssObject.position.set(0,0,0);
+        cssObject.center.set( 0, 0 );
+
+            if(lod){
+  
+                const lod = new THREE.LOD();
+
+                lod.addLevel(cssObject, near);
+                lod.addLevel(this.nullMesh, far);
+
+                return lod;
+            }
+
+        return cssObject;        
+
+    }
+    
+
+    getLabelObject(value, size, lod, near = 2, far = 10) {
+        var element = document.createElement('div');
+        element.textContent = value;
+        element.style.position = 'absolute';
+        element.style.left = '0px';
+        element.style.top = '0px';
+    
+        // High-resolution style
+        var highResStyle = {
+            color: 'black',
+            fontFamily: 'Arial',
+            fontSize: size
+        };
+    
+        // Low-resolution style
+        var lowResStyle = {
+            color: 'grey', // or use 'rgba(0, 0, 0, 0.5)' for semi-transparent black
+            fontFamily: 'Arial',
+            fontSize: size
+        };
+    
+        // Creating CSS2DObject for high-resolution level
+        element.style.color = highResStyle.color;
+        element.style.fontFamily = highResStyle.fontFamily;
+        element.style.fontSize = highResStyle.fontSize;
+        var cssObject = new CSS2DObject(element);
+        cssObject.position.set(0, 0, 0);
+        cssObject.center.set(0, 0);
+    
+        if (lod) {
+            const lodObject = new THREE.LOD();
+    
+            // Adding high-resolution level
+            lodObject.addLevel(cssObject.clone(), near); // Clone to avoid position change
+    
+            // Creating CSS2DObject for low-resolution level
+            element.style.color = lowResStyle.color;
+            element.style.fontFamily = lowResStyle.fontFamily;
+            element.style.fontSize = lowResStyle.fontSize;
+            var lowResElement = element.cloneNode(true); // Clone for low-res
+            var lowResObject = new CSS2DObject(lowResElement);
+            lowResObject.position.set(0, 0, 0); // Set position to match high-res
+            lowResObject.center.set(0, 0); // Set center to match high-res
+            lodObject.addLevel(lowResObject, far);
+    
+            return lodObject;
+        }
+    
+        return cssObject;
+    }
+    
+
+
+
     
     
     

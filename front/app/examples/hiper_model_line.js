@@ -161,7 +161,7 @@ const windowFormater = new vi_WindowFormater();
       case 'objectAdded':
     
            let object = objectModel.readObject(domain, data.id);
-           let point = hiperLine.drawLabel(''+data.id,  object.data.fields.estado, 15 );
+           let point = hiperLine.drawLabel(''+data.id,  object.data.fields.estado, 1 );
                      
         break;
   

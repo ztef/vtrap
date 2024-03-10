@@ -18,6 +18,8 @@ const geometry_factory = new vi_geometry_factory();
 //renderer.focus(0,0,0,100);
 
 
+// HIPERLINE ***********************************
+
 const lineOrigin = { x: 0, y: 0, z: 0 };
 const lineAngle = 0; //Math.PI/4;   radianes
 //const lineAngle = 0; //  radianes

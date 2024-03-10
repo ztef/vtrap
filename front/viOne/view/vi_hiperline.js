@@ -38,13 +38,18 @@ class vi_Segment {
       this.markerColor = 0x808080;
       this.tree = '';
       this.levelsDef = null;
+      this.hiperGeomFactory = null;
     
       this.initGraphics();
     }
 
+   
+    setHiperGeomFactory(hgf){
+      this.hiperGeomFactory = hgf;
+    }
 
     initGraphics(){
-      this.graphics = {mainline:true, labels :{ size:{size:0.7, height:0.1}, color:0x000000, align:true}}
+      this.graphics = {mainline:true, labels :{ size:{size:0.7, height:0.1}, color:0x000000, align:true}, markers:{shape:'Circle',size:{size:0.8,definition:16}}};
     }
 
     getBoard(path){
@@ -80,6 +85,10 @@ class vi_Segment {
     
     setGraphics(graphics){
       this.graphics = graphics;
+      if(!this.graphics.markers){
+        this.graphics.markers = {shape:'Circle',size:{size:.08,definition:16}};
+      }
+      
     }
   
   
@@ -211,7 +220,8 @@ class vi_Segment {
 
   setMarker(){
 
-    this.marker = this.geometry_factory.createGeometry('Circle',[0.8,16]);
+   
+    this.marker = this.geometry_factory.createGeometry(this.graphics.markers.shape,[this.graphics.markers.size.size,this.graphics.markers.size.definition]);
 
 
   }
@@ -342,9 +352,18 @@ class vi_Segment {
 
                 let rotate = {x:0, z:0, y:this.angle+Math.PI/2};
 
-                //addLabel(label, position = { x: 0, y: 0, z: 0 }, rotation = { x: 0, y: 0, z: 0 }, size = {size:2, height:0.1}, color= 0x000000) {
-  
-                this.render.addLabel(label,plotPoint,rotate, this.graphics.labels);
+                if(this.graphics.labels.html){
+
+                  let _label = this.hiperGeomFactory.getLabelObject(label, this.graphics.labels.html.size, this.graphics.labels.html.lod, this.graphics.labels.html.min, this.graphics.labels.html.max);
+                  _label.position.set(plotPoint.x,plotPoint.y,plotPoint.z);
+                  _label.rotation.z = -Math.PI / 2;
+
+                  this.render.add(_label);
+            
+                 } else {
+                  this.render.addLabel(label,plotPoint,rotate,this.graphics.labels);
+                 }
+                
       }
     
   }

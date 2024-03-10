@@ -1,6 +1,5 @@
 
 import { vi_HiperCircle} from '../viOne/view/vi_hipercircle.js';
-import { vi_HiperLine} from '../viOne/view/vi_hiperline.js';
 import { vi_geometry_factory } from '../viOne/view/vi_geometry_factory.js';
 import {vi_3DSceneRenderer ,vi_WindowFormater, vi_ObjectModel, vi_RemoteListenerFactory, vi_ObjectGridView, vi_Controller, vi_DataSource} from '../viOne/all.js';
 import { vi_HiperBoard } from '../viOne/view/vi_hiperboard.js';
@@ -43,13 +42,7 @@ const windowFormater = new vi_WindowFormater();
          "collection":"families",
          "collectionName" : "FAMILIES",
          "loadType":"shot"
-         },
-
-         {
-            "collection":"products",
-            "collectionName" : "PRODUCTS",
-            "loadType":"shot"
-         },
+        },
          
    
         {
@@ -60,7 +53,7 @@ const windowFormater = new vi_WindowFormater();
       ]
     }
 
-const dbDataSource = new vi_DataSource('Firebase', config);
+   const dbDataSource = new vi_DataSource('Firebase', config);
 
 
  // Formatea div de objetos para que sea una ventana :
@@ -96,13 +89,17 @@ const dbDataSource = new vi_DataSource('Firebase', config);
 // GRAPHICS
 
 const renderer = new vi_3DSceneRenderer('graphics',controller,[]);
-const geometry_factory = new vi_geometry_factory();
+
+
 
 var toolBoxConfig = {
    "options":[
-     {"option1" : {"icon":"/front/app/assets/metro.png","tooltip":"Marcar Zonas Metropolitanas"}},
+     {"option1" : {"icon":"/front/app/assets/out.png","tooltip":"Marcar Out of Stock"}},
      {"option2" : {"icon":"/front/app/assets/damp.png","tooltip":"Cambiar Damping"}},  
-     {"option3" : {"icon":"/front/app/assets/sky.png","tooltip":"Sky Box"}},       
+     {"option3" : {"icon":"/front/app/assets/sky.png","tooltip":"Sky Box"}},  
+     {"option4" : {"icon":"/front/app/assets/dark.png","tooltip":"Modo Oscuro"}},
+     {"option5" : {"icon":"/front/app/assets/day.png","tooltip":"Modo Claro"}},  
+     {"option6" : {"icon":"/front/app/assets/reset.png","tooltip":"Reset"}},        
    ]
 }
 
@@ -111,7 +108,7 @@ const toolbox = new vi_toolbox(toolBoxConfig,(opcion)=>{
      if(opcion == 'option1'){
       
        sc.acceptVisitor((element)=>{
-         if(element.object.data.fields.capital == 'si'){
+         if(element.object.data.fields.units < 30){
             if(element.visual_object.isGroup){
              let base = element.visual_object.mesh.getObjectByName("base");
              base.material.color.set(0xff0000);
@@ -132,10 +129,39 @@ const toolbox = new vi_toolbox(toolBoxConfig,(opcion)=>{
        renderer.setSkyBox();
      }
 
+     if(opcion == 'option4'){
+      renderer.setBackroundColor(0x000000);
+    }
+    if(opcion == 'option5'){
+      renderer.setBackroundColor(0xffffff);
+    }
+    if(opcion == 'option6'){
+      
+      sc.acceptVisitor((element)=>{
+        if(element.object.data.fields.units >= 0){
+           if(element.visual_object.isGroup){
+            let base = element.visual_object.mesh.getObjectByName("base");
+            base.material.color.set(0xf4A020);
+           }else {
+            element.visual_object.mesh.material.color.set(0xf4A020);
+           }
+           
+        } 
+    });
+
+    }
+
 });
 
 
 renderer.setupToolBox(toolbox);
+
+
+
+
+
+
+const geometry_factory = new vi_geometry_factory();
 
 
 
@@ -147,7 +173,8 @@ renderer.setInfoWindow((domain, object_id)=>{
    if(domain == 'inventory'){
      html = 'CODE: '+object.data.fields.code + '<br>Family :' + object.data.fields.family + '<br>Product :' + object.data.fields.name +'<br>Units :'+object.data.fields.units;
    }
-
+ 
+ 
    return html;
  
  });
@@ -156,42 +183,19 @@ renderer.setInfoWindow((domain, object_id)=>{
 
 let hgf= new vi_hipergeometry_factory(geometry_factory);
 
-const lineOrigin = { x: 0, y: 0, z: 0 };
-const lineAngle = 0; //Math.PI/4;   radianes
-const linelength = 200;
 
-const centro = { x: 0, y: 0, z: 0 };
-const amplitude = 20;
-
-// OPCIONES GRAFICAS
-
-const hf = new vi_HiperCircle(amplitude, 0, centro);
- //const hf = new vi_HiperLine( linelength,lineAngle ,lineOrigin,);
-
-      hf.setRenderEngine(renderer, geometry_factory);
-
-      hf.setGraphics({
-                     center:{lines:false},
-                     labels :{ size:{size:0.1, height:0.001}, color:0x000000, align:false}, 
-                      markers:{shape:'Circle',size:{size:.08,definition:8}}
-                     });
-
-var hb = new vi_HiperBoard(renderer);    
-
-hb.setHiperGeomFactory(hgf);   //Utilizaremos hiper geometrias para los labels
-
+var hb = new vi_HiperBoard(renderer);
 var warehousesArray;
 var familiesArray;
-var productsArray;
 
 
 // SLOT CONTROLLER 
-const sc = new vi_slot_controller(hf,renderer);
+const sc = new vi_slot_controller(hb,renderer);
 sc.setDirection('out');  // up o out 
+sc.setDelta(1);
 
 var warehouses;
 var families;
-var products;
 
 controller.addObserver('','allCollectionsLoaded',(wh)=>{
 
@@ -201,46 +205,39 @@ controller.addObserver('','allCollectionsLoaded',(wh)=>{
          families = objectModel.getUniqueFieldValues('families', 'family');
          familiesArray = [families.length];
 
-         products = objectModel.getUniqueFieldValues('products', 'name');
-         productsArray = [products.length];
-
-         //hf.setLevels(productsArray);
-
-         //hf.draw(0);
-
          var conf = {
             board:{
          
                 type:"hiperline",
                 origin: {x:0, y:0, z:0},
-                amplitude: 1000,
+                amplitude: 150,
                 angle:0,
-                levels: productsArray,   // Productos
+                levels: warehousesArray,   //families
                 graphics:{
-                    center:{amplitude:30, color:0x00ff00, transparent:true, opacity:0.5, lines:false },
-                    labels :{ size:{size:0.7, height:0.1}, color:0xff0000, align:false, html:{size:'8px', lod:true, min:5, max:50}},
-                    line:{color:0x00ff00, transparent:true, opacity:0.5},
-                    markers:{shape:'Circle',size:{size:.08,definition:8}},
-                    mainline:true,
-                    innerlines:false,
-                },
+                  center:{amplitude:30, color:0x00ff00, transparent:true, opacity:0.5, lines:false },
+                  labels :{ size:{size:0.7, height:0.1}, color:0x0000ff, align:false, html:false},
+                  line:{color:0x00ff00, transparent:true, opacity:0.5},
+                  markers:{shape:'Circle',size:{size:.08,definition:8}},
+                  mainline:true,
+                  innerlines:false,
+              },
                 content:
                 {
                     board:{
                         type:"hiperline",
                         origin: {x:0,y:0,z:0},
-                        amplitude: 30,
+                        amplitude: 100,
                         angle: 0,
-                        levels: warehousesArray,   // Warehouses
+                        levels:  familiesArray,   // families
                         graphics:{
-                            mainline:false,
-                            innerlines:false,
-                            center:{amplitude:20,color:0x00ff00, transparent:true, opacity:0.5},
-                            labels :{ size:{size:0.7, height:0.1}, color:0xff0000, align:false},
-                            line:{color:0x00ff00, transparent:true, opacity:0.5},
-                            mainline:false,
-                            innerlines:false,
-                        },
+                           mainline:false,
+                           innerlines:false,
+                           center:{amplitude:20,color:0xffffff, transparent:true, opacity:0.5},
+                           labels :{ size:{size:0.7, height:0.1}, color:0x0000ff, align:false, html:false},
+                           line:{color:0x00ff00, transparent:true, opacity:0.5},
+                           mainline:false,
+                           innerlines:false,
+                       },
                         content: {}
                     }
                 }
@@ -251,19 +248,18 @@ controller.addObserver('','allCollectionsLoaded',(wh)=>{
           
          hb.addBoard(conf);
          hb.draw();
-
-         hb.drawLabelsbyLevel(0,products, 1);
-
-
-
-
-
-
-         //hf.drawLabels(0,products, 0);
+         
+         hb.drawLabelsbyLevel(0,warehouses, 0);
+         hb.drawLabelsbyLevel(1,families, -10);
          
         
-         //controller.addObserver('inventory',"objectAdded",BLOC_INVENTORIES);
-         //controller.addObserver('inventory',"objectUpdated",BLOC_INVENTORIES);
+         
+         console.log("Mascara :", hb.mask);
+         console.log("Hiperlevels :", hb.hiperlevels);
+
+        
+         controller.addObserver('inventory',"objectAdded",BLOC_INVENTORIES);
+         controller.addObserver('inventory',"objectUpdated",BLOC_INVENTORIES);
       
 
 });
@@ -285,15 +281,22 @@ function BLOC_INVENTORIES(domain, event, data){
       if(units == 0){
          units = 1;
       }
-      units = units / 10;
-        
+
+      let _color = 0x00ff00;
+      if (units < 30){
+         _color = 0xff0000;
+      } 
+      units = units / 100;
+      
+      
+
       console.log('Inventario recibido, buscar slot');
 
        let  geomcfg = {
-            "base": { "shape": "Circle", "radius": 1, "color":0xffff00 },
+            "base": { "shape": "Circle", "radius": 0.25, "color":0xf4A020 },
             "label": { "value": inventario.data.fields.name, "x": 0, "y": 0, "z":0, size:0.1 },
             "columns": [
-               { "units": { "shape": "Cylinder", x:0,y:0, z:0, "radiusTop": 0.1, "radiusBottom": 0.1, "height": units, "color": 0x00ff00 } }
+               { "units": { "shape": "Cylinder", x:0,y:0, z:0, "radiusTop": 0.01, "radiusBottom": 0.01, "height": units, "color": _color } }
               
             ]
          };
@@ -323,21 +326,54 @@ function BLOC_INVENTORIES(domain, event, data){
          let p2 = families.indexOf(inventario.data.fields.family);
          let p = p1+'.'+p2;
 
-         let e = sc.getSlotandElement(p,'inventory.'+inventario.data.id);
+         let e = sc.getElementFromSlot(p,'inventory.'+inventario.data.id);
          if(e){
             if(e.visual_object.isGroup){
 
+               console.log("Quitando cilindro");
+
                let units= e.visual_object.mesh.getObjectByName("units");
-               const currentHeight = units.geometry.parameters.height;
-               const newHeight = inventario.data.fields.units;
-               const scaleFactor = (newHeight) / currentHeight;
+               let unitsVal = units.geometry.parameters.height * 100; // aplica el mismo factor pero inverso 
 
-               console.log("height actual ", currentHeight);
-               console.log("height nuevo ", newHeight);
+               
+               console.log("Unidades actuales ", unitsVal);
 
-                
-               units.scale.y *= scaleFactor;
-               units.position.y = (newHeight / 2);
+               //units.geometry.dispose();
+               //units.material.dispose();
+
+               let newUnits = inventario.data.fields.units;
+
+               console.log("Unidades nuevas ", newUnits);
+
+               let base = e.visual_object.mesh.getObjectByName("base");
+               
+               let _color = 0x00ff00;
+               if(newUnits < 30){ 
+                  _color = 0xff0000;
+                     base.material.color.set(0xff0000);
+               } else {
+                     base.material.color.set(0xf4A020);
+               }
+
+               var scaleFactorY = newUnits / unitsVal;
+
+               var newHeight = newUnits / 100;  //aplica el factor de nuevo
+
+               // Store the current position of the cylinder
+               var currentPosition = units.position.clone();
+
+               // Resize the cylinder along the y-axis
+               units.scale.setY(scaleFactorY);
+
+               // AJUSTA POSICION
+
+               // Calculate the difference in height after scaling
+               var deltaY = (units.geometry.parameters.height - units.geometry.parameters.height * scaleFactorY);
+
+               // Adjust the position of the cylinder to maintain its bottom at y = 0
+               units.position.y = 0 + newHeight / 2;
+
+
                 
               }else {
                e.visual_object.mesh.material.color.set(0xff0000);
@@ -358,6 +394,20 @@ function BLOC_INVENTORIES(domain, event, data){
 
   
 }
+
+controller.addObserver('families',"objectSelected",(domain, event, data)=>{
+
+   let familia = objectModel.readObject(domain, data.id); 
+
+   let famNumber = families.indexOf(familia.data.fields.family);
+
+   if(famNumber >=0){
+         let id = "marker.root.0."+famNumber;
+         renderer.flyToEntity(id);
+
+   }
+
+});
 
 
 

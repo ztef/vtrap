@@ -27,7 +27,12 @@ var conf = {
                 angle: 0,
                 levels:[10],
                 graphics:{
-                    line:{color:0x00ff00, transparent:true, opacity:0.5}
+                    center:{amplitude:30, color:0x00ff00, transparent:true, opacity:0.5, lines:false },
+                    labels :{ size:{size:0.7, height:0.1}, color:0xff0000, align:false, html:false},
+                    line:{color:0x00ff00, transparent:true, opacity:0.5},
+                    markers:{shape:'Circle',size:{size:.8,definition:18}},
+                    mainline:true,
+                    innerlines:false,
                 },
                 content:{
 
@@ -38,7 +43,12 @@ var conf = {
                         angle: Math.PI/2,
                         levels:[10],
                         graphics:{
-                            line:{color:0x00ff00, transparent:true, opacity:0.5}
+                            center:{amplitude:30, color:0x00ff00, transparent:true, opacity:0.5, lines:false },
+                            labels :{ size:{size:0.7, height:0.1}, color:0xff0000, align:false, html:false},
+                            line:{color:0x00ff00, transparent:true, opacity:0.5},
+                            markers:{shape:'Circle',size:{size:.8,definition:18}},
+                            mainline:true,
+                            innerlines:false,
                         },
                         content:{
 

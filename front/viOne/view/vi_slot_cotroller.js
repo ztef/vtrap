@@ -18,6 +18,9 @@ export class vi_slot_controller {
         
     }
 
+    setDelta(_d){
+        this.delta = _d;
+    }
 
     setDirection(direction){
 

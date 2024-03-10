@@ -55,12 +55,12 @@ const windowFormater = new vi_WindowFormater();
  const grid1View = new vi_ObjectGridView('municipios','municipios',controller);
  const grid2View = new vi_ObjectGridView('oxxos','oxxos',controller,
  ()=>{
-    return "<th>ID</th><th>Unidad</th><th>Lat</th><th>Long</th>";
+    return "<th>ID</th><th>Unidad</th>";
  },
  (id,collection,data)=>{
     return `<td>${data.id}</td>
     <td>${data.fields["Nombre de la Unidad Económica"]}</td>
-    <td>${data.position._lat}</td><td>${data.position._long}</td>`;
+    `;
  });
      
  const remoteListener = remoteListenerFactory.createRemoteListener(dataSource,objectModel);

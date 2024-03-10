@@ -32,6 +32,8 @@ class vi_Map {
       this.mapGeometries = {};
 
       this.MapLib;
+
+      this.container;
       
       
     }
@@ -41,6 +43,10 @@ class vi_Map {
       // Initialize the map
     }
 
+
+    setupToolBox(toolbox){
+      this.container.appendChild(toolbox.getToolboxElement());
+    }
 
     entityBuilder(newObject){
 

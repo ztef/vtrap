@@ -154,11 +154,23 @@ body {
   width: 20px;
   height: 20px;
   margin-right: 5px;
+  background-color: #ffffff;
+}
+
+
+.icon_container {
+  background-color: #f0f0f0; /* Set background color */
+        padding: 10px; /* Add padding for spacing */
+        display: inline-block; /* Ensure container wraps around image */
+        width: 100px; /* Set a fixed width for the container */
+        height: 50px; /* Set a fixed height for the container */
+        overflow: hidden; /* Hide overflow content */
+        position: relative; /* Ensure positioning context */
 }
 
 .ttooltip {
   
-  background-color: #333;
+  background-color: #000000;
   color: #fff; /* Adjust the text color for better visibility */
   padding: 5px;
   border-radius: 3px;

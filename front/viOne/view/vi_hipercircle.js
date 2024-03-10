@@ -103,8 +103,26 @@ class vi_mainCircle {
       this.centralCircle.separation = this.separation; // delta de radio entre circulos (niveles)
       this.tree = '';
       this.levelsDef = null;
+      this.hiperGeomFactory = null;
+
+      this.initGraphics();
     }
+
+    
+     
   
+
+
+    setHiperGeomFactory(hgf){
+      this.hiperGeomFactory = hgf;
+    }
+
+
+
+  
+    initGraphics(){
+      this.graphics = {center:{lines:true}, mainline:true, labels :{ size:{size:0.7, height:0.1}, color:0x000000, align:true}, markers:{shape:'Circle',size:{size:0.8,definition:16}}};
+    }
   
    
   getBoard(path){
@@ -128,6 +146,12 @@ class vi_mainCircle {
       if(!this.graphics.labels){
         this.graphics.labels = {size:1, height:0.3};
       }
+      if(!this.graphics.markers){
+        this.graphics.markers = {shape:'Circle',size:{size:.08,definition:16}};
+      }
+      if(!this.graphics.center)
+       this.graphics.center={lines:true}
+      
   
     }
 
@@ -141,7 +165,7 @@ class vi_mainCircle {
 
   setMarker(){
 
-    this.marker = this.geometry_factory.createGeometry('Circle',[0.3,16]);
+    this.marker = this.geometry_factory.createGeometry(this.graphics.markers.shape,[this.graphics.markers.size.size,this.graphics.markers.size.definition]);
 
 
   }
@@ -262,7 +286,9 @@ class vi_mainCircle {
           this.render.addGeometry(o); 
 
           if(level==0){
-              this.render.addLine(init,pos);
+            if(this.graphics.center.lines){
+                   this.render.addLine(init,pos);
+            }
           }
 
 
@@ -341,18 +367,30 @@ class vi_mainCircle {
       const offsetX =  offset * Math.cos(angle);
       const offsetZ =  offset * Math.sin(angle);
 
-
       let plotPoint ={x:0, y:0, z:0}
 
       plotPoint.x = point.x+offsetX;
       plotPoint.z = point.z-offsetZ;
       plotPoint.y = point.y;
 
-
       let rotate = {x:0, y:angle, z:0};
 
+//      
+
+     if(this.graphics.labels.html){
+
+
+      let _label = this.hiperGeomFactory.getLabelObject(label, this.graphics.labels.html.size, this.graphics.labels.html.lod, this.graphics.labels.html.min, this.graphics.labels.html.max);        
+       _label.position.set(plotPoint.x,plotPoint.y,plotPoint.z);
+      this.render.add(_label);
+
+     } else {
       this.render.addLabel(label,plotPoint,rotate,this.graphics.labels);
-    }
+     }
+
+    
+
+}
   
   
   

@@ -1,12 +1,10 @@
 
 import { vi_HiperCircle} from '../viOne/view/vi_hipercircle.js';
-import { vi_HiperLine} from '../viOne/view/vi_hiperline.js';
 import { vi_geometry_factory } from '../viOne/view/vi_geometry_factory.js';
 import {vi_3DSceneRenderer ,vi_WindowFormater, vi_ObjectModel, vi_RemoteListenerFactory, vi_ObjectGridView, vi_Controller, vi_DataSource} from '../viOne/all.js';
 import { vi_HiperBoard } from '../viOne/view/vi_hiperboard.js';
 import { vi_slot_controller } from '../viOne/view/vi_slot_cotroller.js';
 import { vi_hipergeometry_factory } from '../viOne/view/vi_hipergeometry_factory.js';
-import { vi_toolbox } from '../viOne/view/vi_toolbox.js';
 
 const windowFormater = new vi_WindowFormater();
 
@@ -43,13 +41,7 @@ const windowFormater = new vi_WindowFormater();
          "collection":"families",
          "collectionName" : "FAMILIES",
          "loadType":"shot"
-         },
-
-         {
-            "collection":"products",
-            "collectionName" : "PRODUCTS",
-            "loadType":"shot"
-         },
+        },
          
    
         {
@@ -60,7 +52,7 @@ const windowFormater = new vi_WindowFormater();
       ]
     }
 
-const dbDataSource = new vi_DataSource('Firebase', config);
+   const dbDataSource = new vi_DataSource('Firebase', config);
 
 
  // Formatea div de objetos para que sea una ventana :
@@ -98,45 +90,6 @@ const dbDataSource = new vi_DataSource('Firebase', config);
 const renderer = new vi_3DSceneRenderer('graphics',controller,[]);
 const geometry_factory = new vi_geometry_factory();
 
-var toolBoxConfig = {
-   "options":[
-     {"option1" : {"icon":"/front/app/assets/metro.png","tooltip":"Marcar Zonas Metropolitanas"}},
-     {"option2" : {"icon":"/front/app/assets/damp.png","tooltip":"Cambiar Damping"}},  
-     {"option3" : {"icon":"/front/app/assets/sky.png","tooltip":"Sky Box"}},       
-   ]
-}
-
-const toolbox = new vi_toolbox(toolBoxConfig,(opcion)=>{
-
-     if(opcion == 'option1'){
-      
-       sc.acceptVisitor((element)=>{
-         if(element.object.data.fields.capital == 'si'){
-            if(element.visual_object.isGroup){
-             let base = element.visual_object.mesh.getObjectByName("base");
-             base.material.color.set(0xff0000);
-            }else {
-             element.visual_object.mesh.material.color.set(0xff0000);
-            }
-            
-         } 
-     });
-
-     }
-
-     if(opcion == 'option2'){
-       renderer.toggleDamping();
-     }
-
-     if(opcion == 'option3'){
-       renderer.setSkyBox();
-     }
-
-});
-
-
-renderer.setupToolBox(toolbox);
-
 
 
 renderer.setInfoWindow((domain, object_id)=>{
@@ -147,7 +100,10 @@ renderer.setInfoWindow((domain, object_id)=>{
    if(domain == 'inventory'){
      html = 'CODE: '+object.data.fields.code + '<br>Family :' + object.data.fields.family + '<br>Product :' + object.data.fields.name +'<br>Units :'+object.data.fields.units;
    }
-
+ 
+    
+ 
+ 
    return html;
  
  });
@@ -156,71 +112,39 @@ renderer.setInfoWindow((domain, object_id)=>{
 
 let hgf= new vi_hipergeometry_factory(geometry_factory);
 
-const lineOrigin = { x: 0, y: 0, z: 0 };
-const lineAngle = 0; //Math.PI/4;   radianes
-const linelength = 200;
 
-const centro = { x: 0, y: 0, z: 0 };
-const amplitude = 20;
-
-// OPCIONES GRAFICAS
-
-const hf = new vi_HiperCircle(amplitude, 0, centro);
- //const hf = new vi_HiperLine( linelength,lineAngle ,lineOrigin,);
-
-      hf.setRenderEngine(renderer, geometry_factory);
-
-      hf.setGraphics({
-                     center:{lines:false},
-                     labels :{ size:{size:0.1, height:0.001}, color:0x000000, align:false}, 
-                      markers:{shape:'Circle',size:{size:.08,definition:8}}
-                     });
-
-var hb = new vi_HiperBoard(renderer);    
-
-hb.setHiperGeomFactory(hgf);   //Utilizaremos hiper geometrias para los labels
-
-var warehousesArray;
+var hb = new vi_HiperBoard(renderer);
+var levelsArray;
 var familiesArray;
-var productsArray;
 
 
 // SLOT CONTROLLER 
-const sc = new vi_slot_controller(hf,renderer);
+const sc = new vi_slot_controller(hb,renderer);
 sc.setDirection('out');  // up o out 
 
 var warehouses;
 var families;
-var products;
 
 controller.addObserver('','allCollectionsLoaded',(wh)=>{
 
          warehouses = objectModel.getUniqueFieldValues('warehouses', 'id');
-         warehousesArray = [warehouses.length];
+         levelsArray = [warehouses.length];
          
          families = objectModel.getUniqueFieldValues('families', 'family');
          familiesArray = [families.length];
-
-         products = objectModel.getUniqueFieldValues('products', 'name');
-         productsArray = [products.length];
-
-         //hf.setLevels(productsArray);
-
-         //hf.draw(0);
 
          var conf = {
             board:{
          
                 type:"hiperline",
                 origin: {x:0, y:0, z:0},
-                amplitude: 1000,
+                amplitude: 150,
                 angle:0,
-                levels: productsArray,   // Productos
+                levels: levelsArray,   //warehouses
                 graphics:{
-                    center:{amplitude:30, color:0x00ff00, transparent:true, opacity:0.5, lines:false },
-                    labels :{ size:{size:0.7, height:0.1}, color:0xff0000, align:false, html:{size:'8px', lod:true, min:5, max:50}},
+                    center:{amplitude:10, color:0x00ff00, transparent:true, opacity:0.5 },
+                    labels :{ size:{size:0.7, height:0.1}, color:0xff0000, align:false},
                     line:{color:0x00ff00, transparent:true, opacity:0.5},
-                    markers:{shape:'Circle',size:{size:.08,definition:8}},
                     mainline:true,
                     innerlines:false,
                 },
@@ -229,16 +153,14 @@ controller.addObserver('','allCollectionsLoaded',(wh)=>{
                     board:{
                         type:"hiperline",
                         origin: {x:0,y:0,z:0},
-                        amplitude: 30,
+                        amplitude: 100,
                         angle: 0,
-                        levels: warehousesArray,   // Warehouses
+                        levels: familiesArray,   // families
                         graphics:{
-                            mainline:false,
-                            innerlines:false,
                             center:{amplitude:20,color:0x00ff00, transparent:true, opacity:0.5},
                             labels :{ size:{size:0.7, height:0.1}, color:0xff0000, align:false},
                             line:{color:0x00ff00, transparent:true, opacity:0.5},
-                            mainline:false,
+                            mainline:true,
                             innerlines:false,
                         },
                         content: {}
@@ -251,19 +173,16 @@ controller.addObserver('','allCollectionsLoaded',(wh)=>{
           
          hb.addBoard(conf);
          hb.draw();
-
-         hb.drawLabelsbyLevel(0,products, 1);
-
-
-
-
-
-
-         //hf.drawLabels(0,products, 0);
          
+         hb.drawLabelsbyLevel(0,warehouses, 10);
+         hb.drawLabelsbyLevel(1,families, 0);
+         
+         console.log("Mascara :", hb.mask);
+         console.log("Hiperlevels :", hb.hiperlevels);
+
         
-         //controller.addObserver('inventory',"objectAdded",BLOC_INVENTORIES);
-         //controller.addObserver('inventory',"objectUpdated",BLOC_INVENTORIES);
+         controller.addObserver('inventory',"objectAdded",BLOC_INVENTORIES);
+         controller.addObserver('inventory',"objectUpdated",BLOC_INVENTORIES);
       
 
 });
