@@ -20,42 +20,9 @@ var div = document.getElementById("d3");
 
     
     
-
-/*    
- 
-    const data = [
-      { x: "A", y: 10 },
-      { x: "B", y: 20 },
-      { x: "C", y: 30 },
-      { x: "D", y: 40 },
-      { x: "E", y: 50 }
-  ];
-
-   
-  // Create SVG element
-  const svg = d3.select("#d3")
-      .append("svg")
-      .attr("width", width)
-      .attr("height", height);
-
-  const xScale = d3.scaleBand()
-      .domain(data.map(d => d.x)) // Map x values to the domain
-      .range([0, 300]) // Set range for x values within SVG width
-      .padding(0.1); // Add padding between bars
-
-  // Create bars
-  const bars = svg.selectAll("rect")
-      .data(data)
-      .enter()
-      .append("rect")
-      .attr("x", (d) => 100+xScale(d.x)) // Set x position based on x value
-      .attr("y", (d) => height - d.y * 2) // Set y position based on y value (scaled)
-      .attr("width", 20) // Set width of bars
-      .attr("height", (d) => d.y * 2) // Set height of bars (scaled)
-      .style("fill", "steelblue"); // Set fill color of bars
-
-
-  */
+const data = {
+  "name":"flare","children":[{"name":"uno",children:[{"name":"dos"},{"name":"tres"}]},{"name":"dos"},{"name":"tres"}]
+ }
 
 
 var width = div.clientWidth;
@@ -74,9 +41,7 @@ const _color_node = "#555";
 const _color_leaf = "#999";
  
 
-const data = {
-  "name":"flare","children":[{"name":"uno",children:[{"name":"dos"},{"name":"tres"}]},{"name":"dos"},{"name":"tres"}]
- }
+
 
   const root = d3.hierarchy(data);
   
