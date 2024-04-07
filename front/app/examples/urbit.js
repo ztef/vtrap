@@ -312,7 +312,7 @@ map.loadMap('mapContainer').then(()=>{
             let battery = object.data.fields.BattSt.percentage / 10;
 
             if (battery < 9  ){
-                let _color = 0xff0000;
+                 _color = 0xff0000;
             }
 
             let  geomcfg = {
