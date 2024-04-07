@@ -99,6 +99,15 @@ class vi_ObjectModel  {
       return this.objects.find((object) => object.id === id && object.collection === collection);
     }
 
+    indexOfObject(collection, id) {
+      // Filter objects based on the collection
+      const filteredObjects = this.objects.filter(object => object.collection === collection);
+      // Find index of the object within the filtered array
+      const index = filteredObjects.findIndex(object => object.id === id);
+      // Return the index
+      return index;
+  }
+
     // lectura de un objeto cuyo campo sea igual a un valor determinado (regresa el primero si hay varios)
     readObjectbyField(collection, field, value) {
       return this.objects.find((object) => object.data.fields[field] === value && object.collection === collection);

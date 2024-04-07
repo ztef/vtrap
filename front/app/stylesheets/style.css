@@ -280,3 +280,19 @@ a:hover {
 .card-footer {
     padding: 0.5rem;
 }
+
+.vi-object-grid-table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  .vi-object-grid-table th,
+  .vi-object-grid-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  
+  .vi-object-grid-table th {
+    background-color: #333;
+    color: white;
+  }

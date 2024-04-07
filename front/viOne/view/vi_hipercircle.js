@@ -98,7 +98,7 @@ class vi_mainCircle {
       this.render = null;
       this.geometry_factory = null;
       this.marker = null;
-      this.markerColor = 0xff0000;
+      this.markerColor = 0xB2BEB5;
       this.separation = 5;
       this.centralCircle.separation = this.separation; // delta de radio entre circulos (niveles)
       this.tree = '';
@@ -340,6 +340,8 @@ class vi_mainCircle {
       let point = this.locatePointByPath(path);
 
       this.plotLabel(point, label, offset);
+
+      return point;
 
     }
 

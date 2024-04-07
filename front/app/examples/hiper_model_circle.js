@@ -126,7 +126,7 @@ const config = {
   
   
            let object = objectModel.readObject(domain, data.id);
-            let point = hiperCircle.drawLabel(''+data.id,  object.data.fields.estado, -10 );
+           let point = hiperCircle.drawLabel(''+data.id,  object.data.fields.estado, -10 );
            
   
             
@@ -135,9 +135,6 @@ const config = {
       default:
         throw new Error(`Unsupported event: ${_event}`);
       }
-
-
-
 
  });
 
@@ -149,9 +146,6 @@ let object = {};
 const sc = new vi_slot_controller(hiperCircle,renderer);
 
 sc.setDirection('out');  // up o out 
-
-
-
 
 
  controller.addObserver('municipios',"objectAdded",(domain, _event, data)=>{

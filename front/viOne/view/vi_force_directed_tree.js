@@ -1,7 +1,12 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
 export class vi_force_directed_tree {
-    constructor(data, outerDivId) {
+    constructor(data, outerDivId, controller, domain) {
+
+
+
+        this.controller = controller;
+        this.domain = domain;
         this.data = data;
         
         this.data = data;
@@ -37,6 +42,14 @@ export class vi_force_directed_tree {
         // Update the dimensions and recreate the force-directed tree
         this.updateDimensions();
         this.createForceDirectedTree();
+    }
+
+    handleNodeClick(object) {
+
+        
+  
+        this.controller.triggerObjectSelected(object.type, { id: object.id });
+    
     }
 
     /*
@@ -167,16 +180,23 @@ export class vi_force_directed_tree {
         // Add right-click listener for nodes
         node.on("contextmenu", (event, d) => {
             event.preventDefault(); // Prevent default browser context menu
-            // Custom actions for right-click on a node
-            console.log("Node Right-clicked:", d.data.name);
+            this.drag.call(node, event, d);
+        });
+
+        node.on("click", (event, d) => {
+            // Handle node selection
+            console.log("Node Clicked:", d.data);
+            this.handleNodeClick(d.data);
         });
 
         // Add right-click listener for the graph background
+        /*
         svg.on("contextmenu", (event, d) => {
             event.preventDefault(); // Prevent default browser context menu
             // Custom actions for right-click on the graph background
             console.log("Graph Right-clicked");
         });
+        */
     
         simulation.on("tick", () => {
             link

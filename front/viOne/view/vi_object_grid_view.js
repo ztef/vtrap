@@ -53,6 +53,8 @@ class vi_ObjectGridView {
       this.table = document.createElement("table");
       this.table.style.borderCollapse = "collapse";
 
+      this.table.classList.add("vi-object-grid-table");
+
       this.hasRecords = false;
 
       

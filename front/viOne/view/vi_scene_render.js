@@ -917,6 +917,9 @@ t
             // el objeto ya estaba seleccionado
         }else{
 
+
+            this.selectedCustomObject = {domain:domain,id:payload.id}; 
+
             this.selectedID = id;
 
             let o = this.objectEntities.get(id);
