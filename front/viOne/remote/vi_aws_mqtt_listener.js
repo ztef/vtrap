@@ -5,13 +5,13 @@ import vi_RemoteListener from "./vi_remote_listener.js"
 
 
 class vi_aws_mqtt_listener extends vi_RemoteListener {
-  constructor(dataSource, mobileObjectModel) {
+  constructor(dataSource, objectModel) {
 
     super();
     this.dataSource = dataSource;
     this.collection = dataSource.config.collection;
 
-    this.objectModel = mobileObjectModel;
+    this.objectModel = objectModel;
 
         var rtLibInstance = new dataSource.config.library();
   

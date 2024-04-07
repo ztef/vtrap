@@ -12,6 +12,10 @@ const swaggerUi = require('swagger-ui-express');
 const specs = require('./swagger');
 const fs = require('fs'); 
 require('dotenv').config();
+var moment = require('moment');
+
+// SQL SERVER
+const sql = require('mssql');
 
 const sheets = require('google-spreadsheet');
 var router = express.Router();
@@ -44,6 +48,28 @@ try {
 */
 
 
+//const dbPassword = process.env.DB_PASSWORD;
+
+const dbPassword = "Secr3t0sTEST.1";
+console.log(dbPassword);
+
+const sqlconfig = {
+  user: 'cuadromando',
+  password: dbPassword,
+  port:1433,
+  server: 'palaciosqlserver.ctfozmrzumd0.us-east-1.rds.amazonaws.com',    
+  database: 'InndotEnrollDBP',
+  requestTimeout: 1800000,
+  options: {
+      encrypt: false,
+      useUTC: true
+  },
+  pool: {
+      max: 10,
+      min: 0,
+      idleTimeoutMillis: 60000
+  }
+};
 
 
 
@@ -98,6 +124,76 @@ async function getFromSheet(data){
   
 
 
+    async function getMSSQLDataSTREAM(params, outs) {
+      const q = params.query;
+  
+      console.log(q);
+  
+      try {
+          await sql.connect(sqlconfig);
+  
+          // STREAM
+          const request = new sql.Request();
+          request.stream = true; // You can set streaming differently for each request
+          request.query(q); // or request.execute(procedure)
+  
+          // Set headers for Server-Sent Events (SSE)
+          outs.setHeader('Content-Type', 'text/event-stream');
+          outs.setHeader('Cache-Control', 'no-cache');
+          outs.setHeader('Connection', 'keep-alive');
+  
+          // Send initial event to indicate start of data
+          //outs.write('data: [\n\n');
+  
+          request.on('row', row => {
+              // Send each row as a separate event
+              outs.write('data: ' + JSON.stringify({ msg: 'row', data: row }) + '\n\n');
+          });
+  
+          request.on('done', result => {
+              // Send event to indicate end of data
+              //outs.write(']\n\n');
+              outs.end(); // Close the connection
+          });
+      } catch (err) {
+          // Send error response to the client
+          outs.status(500).send('Internal Server Error');
+          console.error('Error:', err);
+      }
+  }
+  
+
+
+    async function getMSSQLData(params, outs){
+
+      
+     
+      const q = params.query;
+
+      console.log(q);
+
+
+      try {
+      await sql.connect(sqlconfig)
+    
+      const result = await sql.query(q);
+    
+      return(result);
+    
+    
+          //console.log(result)
+          //return(result)
+      } catch (err) {
+        return err
+      }
+    }
+
+
+
+
+
+
+
 /**
  * @swagger
  * /getFromSheet:
@@ -145,6 +241,67 @@ async function getFromSheet(data){
     
     
     });
+
+
+    router.get('/getMSSQLData',(req, res) => {
+
+      let inicio = moment();
+      console.log("Recibiendo query : ");
+      console.log(req.query);
+    
+      res.setHeader('Content-Type', 'application/json');
+    
+      getMSSQLData(req.query,res).then((datos)=>{
+    
+                
+                res.setHeader('Content-Type', 'application/json');
+    
+                let medio = moment()
+
+                console.log(datos);
+    
+                if(datos.recordset === undefined){
+                  res.end(JSON.stringify({'error de tiempo':'timeout'}))
+                } else {
+                  res.end(JSON.stringify(datos.recordset))
+                }
+    
+    
+                let fin = moment()
+                console.log("Respondiendo query en : ", fin.diff(inicio));
+                
+    
+        });
+    
+    
+    });
+
+
+    router.get('/getMSSQLDataSTREAM',(req, res) => {
+
+      let inicio = moment();
+      console.log("Recibiendo query : ");
+      console.log(req.query);
+    
+      res.setHeader('Content-Type', 'application/json');
+    
+      getMSSQLDataSTREAM(req.query,res).then((datos)=>{
+    
+    
+                let fin = moment()
+                console.log("Respondiendo query en : ", fin.diff(inicio));
+                
+    
+        });
+    
+    
+    });
+
+
+
+
+
+    
 
 
     router.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
